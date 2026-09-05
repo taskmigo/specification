@@ -180,7 +180,7 @@ numeric ADD SUBTRACT MULTIPLY DIVIDE NEGATE
 Filter AST is independent of ECMAScript syntax and persistence APIs.
 
 Verification: Inspect the Filter AST API and translate equivalent predicates from policy IR and a future client-filter producer without exposing persistence types in the AST.
-Traceability: [Scope](01-introduction.md#12-scope); [Appendix B](11-appendices.md#111-future-extensions) `filterBy` extension.
+Traceability: [Scope](01-introduction.md#12-scope); [Appendix B](11-appendices.md#111-future-extensions-non-normative) `filterBy` extension.
 
 ### OBJ-004 — Database execution
 

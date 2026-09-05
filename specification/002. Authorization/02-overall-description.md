@@ -98,4 +98,4 @@ The following scenarios are supporting context, not additional normative require
 
 ## 2.5 Out of Scope
 
-The current authorization capability excludes client-facing `filterBy` syntax, nested or relationship Object filtering, and target kinds beyond `target.api`. These boundaries are detailed in the [Scope](01-introduction.md#12-scope) and [Appendix B](11-appendices.md#111-future-extensions).
+The current authorization capability excludes client-facing `filterBy` syntax, nested or relationship Object filtering, and target kinds beyond `target.api`. These boundaries are detailed in the [Scope](01-introduction.md#12-scope) and [Appendix B](11-appendices.md#111-future-extensions-non-normative).

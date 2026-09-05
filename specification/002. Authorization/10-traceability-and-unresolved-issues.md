@@ -6,4 +6,4 @@ Each normative requirement has a stable identifier, an observable verification o
 
 ## 10.2 Unresolved Issues
 
-No unresolved conflict is recorded in this SRS. Deferred client filtering, relationship predicates, and additional operators are recorded as non-normative future extensions in [Appendix B](11-appendices.md#111-future-extensions).
+No unresolved conflict is recorded in this SRS. Deferred client filtering, relationship predicates, and additional operators are recorded as non-normative future extensions in [Appendix B](11-appendices.md#111-future-extensions-non-normative).
