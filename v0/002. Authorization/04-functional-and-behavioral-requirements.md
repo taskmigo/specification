@@ -113,7 +113,7 @@ Policy evaluation SHALL verify that each concrete decision result is boolean bef
 
 A non-boolean policy result SHALL raise an authorization exception and fail closed.
 
-Failures in policy evaluation or required authorization input resolution SHALL fail closed.
+Failures in policy evaluation or required `principal`/`request` input resolution SHALL fail closed.
 
 Verification: Evaluate matching allow and deny Statements, including default-deny and deny-overrides cases, and inject parser, evaluator, and required-input failures; confirm the result is denial where required.
 Traceability: [Fail-Closed Behavior](07-constraints.md#74-fail-closed-behavior); TECH-004.
@@ -122,14 +122,27 @@ Traceability: [Fail-Closed Behavior](07-constraints.md#74-fail-closed-behavior);
 
 A target-matching DENY Statement whose compiled policy is constant `TRUE` SHALL immediately produce the final DENY result.
 
-After the final result is known, authorization SHALL NOT evaluate remaining policies or resolve resources that cannot change that result.
+After the final result is known, authorization SHALL NOT evaluate remaining policies or resolve authorization inputs that cannot change that result.
 
 A constant-`TRUE` ALLOW SHALL NOT bypass applicable DENY Statements.
 
 The required database Statement resolution for the operation occurs before these in-operation evaluation short-circuits; short-circuiting SHALL NOT skip the per-operation DB source-of-truth lookup.
 
-Verification: Use a constant-true deny followed by an instrumented policy/resource and confirm the deny short-circuits evaluation after database resolution has occurred.
+Verification: Use a constant-true deny followed by an instrumented policy/input resolution and confirm the deny short-circuits evaluation after database resolution has occurred.
 Traceability: [Resolution and Operation Snapshot](02-overall-description.md#221-resolution-and-operation-snapshot); PERF-004.
+
+### REQ-003 — Request input boundary
+
+For `scope: request`, authorization SHALL evaluate the policy using only the `principal` and `request` values already available at the time of authorization.
+
+Request Authorization SHALL NOT load business resources, invoke resource adapters, or make resource data available through `object`.
+
+A Request policy that declares or references `object` SHALL be rejected before the Statement becomes active. Resource declarations and resolution are excluded by [RES-001–RES-003](03-external-interface-requirements.md#32-authorization-inputs-and-operation-snapshot). No compatibility fallback SHALL ignore these constructs.
+
+Statement database resolution and creation of the operation-scoped Authorization Snapshot SHALL remain part of authorization and SHALL not be interpreted as business-resource loading.
+
+Verification: Accept Request policies using the supported `principal` and `request` fields; reject direct, destructured, and property-based `object` references; verify the resource exclusions and no resource lookup specified by RES-001–RES-003; inject missing required request inputs and confirm denial.
+Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); INPUT-001 through INPUT-003; RES-001 through RES-003; [Fail-Closed Behavior](07-constraints.md#74-fail-closed-behavior).
 
 ## 4.3 Object Authorization and Shared Filter AST
 

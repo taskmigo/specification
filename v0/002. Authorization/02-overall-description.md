@@ -29,10 +29,9 @@ The authorization system provides:
 - direct and inherited User, Group, Role, and Statement semantics;
 - database resolution of effective Statements for every authorization operation;
 - one immutable authorization snapshot shared across Request and Object Authorization;
-- named resource loading for Request policies;
 - persistence-neutral Filter AST generation for Object policies;
 - bounded authorization-state resolution without complete in-memory hierarchy loading;
-- fail-closed handling for invalid policies, non-boolean results, and resource-resolution failures.
+- fail-closed handling for invalid policies, non-boolean results, and required-input failures.
 
 ### 2.2.1 Resolution and Operation Snapshot
 
@@ -67,22 +66,18 @@ The authorization system SHALL:
 - treat non-boolean results as authorization failures and fail closed;
 - keep database-loaded Statement state authoritative for every operation;
 - permit compiled Policy IR reuse only as a derived optimization that cannot bypass database resolution;
-- evaluate Request policies and partially evaluate Object policies through Policy IR;
+- evaluate Request policies using only `principal` and `request`, and partially evaluate Object policies through Policy IR;
 - retain the default-deny, deny-overrides, constant short-circuit, and built-in authorization semantics;
 - exclude the legacy SpEL compiler/evaluator and statement_conditions from the authorization model.
 
-### 2.2.4 Request Resource Authorization
+### 2.2.4 Request Authorization Input Boundary
 
 The authorization system SHALL:
 
 - provide request.pathVariables as authorization input;
-- accept the optional resources named export only for scope: request;
-- reject resources for scope: object;
-- resolve resource(type, key) descriptors through registered resource adapters;
-- support multiple named resources with deduplicated and batched compatible lookups;
-- expose resolved immutable values under object;
-- reuse resolved resources only within the same authorization operation;
-- fail closed when required resource resolution fails and avoid N+1 behavior.
+- make only `principal` and `request` available to `scope: request` policies;
+- reject policies that declare `resources` or use `resource(...)`, and reject Request policies that declare or reference `object`, before activation;
+- perform Request Authorization without loading business resources or invoking resource adapters.
 
 ### 2.2.5 Integration and Consistency
 
@@ -90,14 +85,14 @@ The web, security, and Object Authorization boundaries SHALL share the same requ
 
 ## 2.3 Stakeholders and Users
 
-The authorization capability is consumed by policy authors, authorization-aware application components, resource-adapter and Filter Schema owners, and operators or reviewers of authorization changes. It does not prescribe a user interface or operational persona.
+The authorization capability is consumed by policy authors, authorization-aware application components, Filter Schema owners, and operators or reviewers of authorization changes. It does not prescribe a user interface or operational persona.
 
 ## 2.4 Operational Context and Scenarios
 
 The following scenarios are supporting context, not additional normative requirements:
 
 1. A request operation resolves effective authorization state from the database, creates one immutable snapshot, matches the request target, and evaluates applicable Request Statements.
-2. A Request policy may resolve named resources through registered adapters; resolved immutable values are supplied under `object`.
+2. A Request policy evaluates the available `principal` and `request` inputs without loading business resources.
 3. An Object policy partially evaluates known inputs, translates the residual Filter AST to the resource query, and applies authorization before pagination.
 4. A committed authorization change is observed by the next operation while the current operation continues with its existing snapshot.
 

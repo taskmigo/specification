@@ -16,7 +16,7 @@ target:
     path: <full-match path regex>
 
 policy: |
-  export default ({ request, principal, object }) => {
+  export default ({ request, principal }) => {
     return true;
   };
 ```
@@ -41,7 +41,7 @@ Traceability: [ECMAScript Policy Contract](02-overall-description.md#223-ecmascr
 
 Every policy SHALL define a supported `export default` function or arrow function.
 
-The decision function MAY declare no arguments or one object-pattern argument selecting supported roots.
+The decision function MAY declare no arguments or one object-pattern argument selecting supported roots. `principal` and `request` are supported for Request and Object Authorization; `object` is supported only for Object Authorization.
 
 Examples:
 
@@ -132,12 +132,12 @@ Traceability: [Product Perspective](02-overall-description.md#21-product-perspec
 
 ### INPUT-001 — Policy roots
 
-The decision function SHALL use these roots:
+The decision function SHALL use these scope-dependent roots:
 
 ```text
 principal
 request
-object
+object (Object Authorization only)
 ```
 
 The minimum request shape is:
@@ -160,16 +160,44 @@ principal.username
 Additional principal attributes require an explicit typed authorization contract.
 
 Verification: Provide a request with path variables and the minimum principal fields and confirm the policy input shape; reject or separately specify unsupported principal attributes.
-Traceability: [Request Resource Authorization](02-overall-description.md#224-request-resource-authorization); [Product Perspective](02-overall-description.md#21-product-perspective-and-baseline).
+Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); [Product Perspective](02-overall-description.md#21-product-perspective-and-baseline).
 
-### INPUT-002 — Object root
+### INPUT-002 — Object root and Request boundary
 
-For `scope: request`, `object` contains named resources resolved through the request-resource contract in [Request Resources](03-external-interface-requirements.md#33-request-resources).
+For `scope: request`, the `object` root SHALL be unavailable. A Request policy that declares, destructures, or references `object` SHALL be rejected before activation.
 
 For `scope: object`, `object.*` remains symbolic during partial evaluation and is validated through the selected Filter Schema.
 
-Verification: Partially evaluate a request policy with resolved resources and an object policy with symbolic object fields, confirming the two input modes.
-Traceability: [Shared Object Filter](02-overall-description.md#222-shared-object-filter); OBJ-001.
+Verification: Compile Request policies that use `principal` and `request` and confirm they are accepted; reject direct, destructured, and property-based `object` references. Partially evaluate an Object policy with symbolic object fields and confirm that Object input remains supported.
+Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); [Shared Object Filter](02-overall-description.md#222-shared-object-filter); OBJ-001.
+
+### INPUT-003 — Request input availability
+
+For `scope: request`, Taskmigo SHALL supply only the `principal` and `request` values already available at the time of authorization. Request Authorization SHALL NOT obtain additional business data to complete those inputs.
+
+Verification: Evaluate a Request policy using the supported `principal` and `request` fields with no business-resource lookup and confirm the supplied values are the complete policy input.
+Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); REQ-003.
+
+### RES-001 — Resource export exclusion
+
+The named export `resources` SHALL not be part of the policy contract for either authorization scope. A policy that declares `resources` SHALL be rejected before activation.
+
+Verification: Attempt to activate Request and Object policies declaring `resources` and confirm both are rejected before activation.
+Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); STMT-003.
+
+### RES-002 — Resource intrinsic exclusion
+
+The `resource(type, key)` compiler intrinsic SHALL not be part of the policy contract. A policy that invokes `resource(...)` SHALL be rejected before activation.
+
+Verification: Attempt to activate a policy invoking `resource(...)` and confirm it is rejected before activation.
+Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); POLICY-002.
+
+### RES-003 — No resource resolution
+
+Request Authorization SHALL NOT load business resources or invoke resource adapters. Statement database resolution and the operation snapshot remain required authorization inputs and are not business-resource loading.
+
+Verification: Instrument resource adapters and business-resource persistence during Request Authorization and confirm neither is invoked; confirm required Statement database resolution still occurs.
+Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); REQ-003; TECH-004.
 
 ### SNAPSHOT-001 — One snapshot per operation
 
@@ -177,11 +205,11 @@ Taskmigo SHALL establish exactly one immutable Authorization Snapshot for each r
 
 The snapshot SHALL represent the effective authorization state required by that operation without prescribing a `List<Statement>` representation.
 
-Request Authorization, request-resource authorization, and Object Authorization in the same operation SHALL consume that same snapshot and SHALL NOT independently resolve effective authorization state again.
+Request Authorization and Object Authorization in the same operation SHALL consume that same snapshot and SHALL NOT independently resolve effective authorization state again.
 
 The snapshot is request/operation-scoped materialization, not a cross-request cache.
 
-Verification: Instrument effective-Statement resolution during an operation containing request, resource, and object authorization and confirm one shared snapshot is used.
+Verification: Instrument effective-Statement resolution during an operation containing Request and Object Authorization and confirm one shared snapshot is used.
 Traceability: [Scope](01-introduction.md#12-scope); [Resolution and Operation Snapshot](02-overall-description.md#221-resolution-and-operation-snapshot).
 
 ### SNAPSHOT-002 — Consistency
@@ -219,59 +247,3 @@ An Authorization Snapshot SHALL be discarded when its operation ends and SHALL N
 
 Verification: Exercise sequential operations with distinct authorization changes and confirm each operation creates and consumes a distinct snapshot.
 Traceability: [Scope](01-introduction.md#12-scope); PERF-004.
-
-## 3.3 Request Resources
-
-### RES-001 — Scope restriction
-
-The named export `resources` SHALL be valid only for `scope: request`.
-
-A `scope: object` policy declaring `resources` SHALL be rejected before activation.
-
-The default export remains mandatory regardless of scope.
-
-Verification: Attempt to activate an object policy with a `resources` export and no default export, confirming rejection for both violations.
-Traceability: [Request Resource Authorization](02-overall-description.md#224-request-resource-authorization); STMT-003.
-
-### RES-002 — Declaration
-
-A Request policy MAY declare:
-
-```js
-export function resources({ request, principal }) {
-  return {
-    project: resource("project", request.pathVariables.projectId),
-    user: resource("user", request.pathVariables.userId),
-  };
-}
-
-export default ({ principal, object }) => {
-  return (
-    object.project.ownerId === principal.id &&
-    object.user.projectId === object.project.id
-  );
-};
-```
-
-`resources` SHALL return a statically analyzable object whose values are `resource(type, key)` descriptors.
-
-`resource(type, key)` is a compiler intrinsic. It SHALL describe a lookup and SHALL NOT perform persistence access itself.
-
-Verification: Compile a Request policy with one and multiple named resource descriptors and confirm the declarations are static and contain no persistence operation.
-Traceability: [Request Resource Authorization](02-overall-description.md#224-request-resource-authorization); INPUT-001.
-
-### RES-003 — Resource adapters
-
-Resource types SHALL be resolved through registered adapters.
-
-Resolution SHALL:
-
-- deduplicate identical `(type, key)` lookups;
-- batch compatible lookups where supported;
-- avoid N+1 behavior;
-- expose immutable policy input values rather than repositories or JPA entities.
-
-Unknown resource types or required resource-resolution failures SHALL fail closed.
-
-Verification: Resolve repeated and compatible resource descriptors, including unknown types and adapter failures, and confirm deduplication/batching and denial on required failures.
-Traceability: [Request Resource Authorization](02-overall-description.md#224-request-resource-authorization); TECH-004.

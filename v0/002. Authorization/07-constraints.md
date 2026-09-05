@@ -17,14 +17,14 @@ The authorization architecture SHOULD apply established design patterns when the
 
 Preferred applications include:
 
-| Concern                                                                  | Preferred pattern |
-| ------------------------------------------------------------------------ | ----------------- |
-| Constant/identity authorization behavior                                 | Null Object       |
-| Request evaluation vs Object partial evaluation                          | Strategy          |
-| Policy IR and Filter AST boolean trees                                   | Composite         |
-| Request-resource loading and persistence-specific translation boundaries | Adapter           |
-| Database authorization predicates                                        | Specification     |
-| Resource adapters / Filter Schemas selected by registered type or target | Registry          |
+| Concern                                              | Preferred pattern |
+| ---------------------------------------------------- | ----------------- |
+| Constant/identity authorization behavior             | Null Object       |
+| Request evaluation vs Object partial evaluation      | Strategy          |
+| Policy IR and Filter AST boolean trees               | Composite         |
+| Persistence-specific translation boundaries          | Adapter           |
+| Database authorization predicates                    | Specification     |
+| Filter Schemas selected by registered type or target | Registry          |
 
 Equivalent patterns or simpler designs are acceptable where they better fit the architecture. The authorization architecture SHOULD make its intent clear when a non-obvious pattern is introduced.
 
