@@ -1,0 +1,36 @@
+---
+name: Quality Gate
+
+on:
+  pull_request:
+  push:
+    branches: [next]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  quality-gate:
+    name: Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - uses: pnpm/setup@v2
+        with:
+          cache: true
+          install: false
+
+      - name: Install dependencies
+        run: pnpm ci
+
+      - name: Lint
+        run: pnpm lint:check
+
+      - name: Check types
+        run: pnpm types:check
+
+      - name: Build
+        run: pnpm build
