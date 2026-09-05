@@ -1,6 +1,6 @@
 ---
 name: Authorization feature
-version: 0.1.0
+version: 0.2.0
 ---
 
 <!-- markdownlint-disable MD041 -->
@@ -11,7 +11,7 @@ version: 0.1.0
 | ------- | ------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
 | 1       | Introduction                                      | Purpose, scope, terminology, references, and document control         | [01-introduction.md](01-introduction.md)                                                         |
 | 2       | Overall Description                               | Product context, stakeholders, users, scenarios, and boundaries       | [02-overall-description.md](02-overall-description.md)                                           |
-| 3       | External Interface Requirements                   | Statement, input, snapshot, and resource interfaces                   | [03-external-interface-requirements.md](03-external-interface-requirements.md)                   |
+| 3       | External Interface Requirements                   | Statement, input, and snapshot interfaces                             | [03-external-interface-requirements.md](03-external-interface-requirements.md)                   |
 | 4       | Functional and Behavioral Requirements            | Policy compilation, request authorization, and object authorization   | [04-functional-and-behavioral-requirements.md](04-functional-and-behavioral-requirements.md)     |
 | 5       | Data and Information Requirements                 | Authorization data, integrity, privacy, and lifecycle                 | [05-data-and-information-requirements.md](05-data-and-information-requirements.md)               |
 | 6       | Quality and Performance Requirements              | Security, consistency, performance, and applicable quality attributes | [06-quality-and-performance-requirements.md](06-quality-and-performance-requirements.md)         |
@@ -29,4 +29,5 @@ Read the documents in section-number order from 1 through 11. Use the section li
 
 | Version | Short summary of changes                                                                                                     |
 | ------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| 0.2.0   | Restricted Request Authorization to principal/request inputs and removed request-time business-resource loading.             |
 | 0.1.0   | Defined the ECMAScript policy authorization model, shared query filtering, operation snapshots, and verification boundaries. |

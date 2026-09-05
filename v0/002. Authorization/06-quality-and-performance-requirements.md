@@ -2,7 +2,7 @@
 
 ## 6.1 Security
 
-Security requirements are specified by [security and failure constraints](07-constraints.md#73-security-and-failure-constraints), [Statement validation](03-external-interface-requirements.md#31-statement-contract), [request resources](03-external-interface-requirements.md#33-request-resources), [policy compilation](04-functional-and-behavioral-requirements.md#41-ecmascript-policy-compilation), and [request authorization](04-functional-and-behavioral-requirements.md#42-request-authorization).
+Security requirements are specified by [security and failure constraints](07-constraints.md#73-security-and-failure-constraints), [Statement validation](03-external-interface-requirements.md#31-statement-contract), [Request input boundary](03-external-interface-requirements.md#32-authorization-inputs-and-operation-snapshot), [policy compilation](04-functional-and-behavioral-requirements.md#41-ecmascript-policy-compilation), and [request authorization](04-functional-and-behavioral-requirements.md#42-request-authorization).
 
 ## 6.2 Consistency
 

@@ -15,7 +15,7 @@ The authorization model SHALL use a required ECMAScript policy entry point while
 - User, Group, Role, and Statement inheritance/assignment semantics are preserved.
 - Every authorization operation resolves its relevant effective Statements from the database; Statement state is not cached across requests.
 - One authorization operation uses one immutable authorization snapshot from start to finish.
-- Request policies may explicitly load named resources.
+- Request Authorization uses only the `principal` and `request` values available at authorization time; it does not load business resources.
 - Object policies compile to a persistence-neutral Filter AST that can also be reused by future query filtering.
 
 Package/module ownership and public SDK boundaries are governed by issue #54 and are not redefined here.
@@ -34,7 +34,7 @@ The following capabilities are outside the scope of this SRS:
 | Authorization Snapshot | Immutable authorization state used for one request or authorization operation.                          |
 | Filter AST             | Persistence-neutral boolean predicate representation used for Object Authorization and query filtering. |
 | Policy IR              | Taskmigo-owned intermediate representation produced from supported ECMAScript policy syntax.            |
-| Request Authorization  | Authorization based on the request, principal, and applicable Request Statements.                       |
+| Request Authorization  | Authorization based only on the available request, principal, and applicable Request Statements.        |
 | Object Authorization   | Database-side visibility filtering based on symbolic object fields and applicable Object Statements.    |
 | Statement              | Named authorization rule with an effect, scope, API target, and policy.                                 |
 
