@@ -1,17 +1,31 @@
 name: Release
 
 on:
-  workflow_run:
-    workflows: ["Quality Gate"]
-    branches:
-      - next
-    types:
-      - completed
+  workflow_dispatch:
 
 jobs:
+  quality-gate:
+    name: Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: package.json
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run style:check
+
+      - run: npm run markdown:check
+
   release:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    needs:
+      - quality-gate
     permissions:
       contents: write
     steps:
@@ -40,9 +54,20 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG_NAME="v${{ steps.package_version.outputs.version }}"
+          VERSION="${{ steps.package_version.outputs.version }}"
+          TAG_NAME="v${VERSION}"
 
-          gh release create "$TAG_NAME" \
-            --title "$TAG_NAME" \
-            --generate-notes \
-            --prerelease
+          if [[ "$VERSION" =~ - ]]; then
+            echo "Detected pre-release version: $VERSION"
+
+            gh release create "$TAG_NAME" \
+              --title "$TAG_NAME" \
+              --generate-notes \
+              --prerelease
+          else
+            echo "Detected full release version: $VERSION"
+
+            gh release create "$TAG_NAME" \
+              --title "$TAG_NAME" \
+              --generate-notes
+          fi
