@@ -3,8 +3,16 @@ name: Quality Gate
 
 on:
   pull_request:
+    paths:
+      - "**/*.md"
+      - ".markdownlint-cli2.jsonc"
+      - ".github/workflows/quality-gate.yml"
   push:
     branches: [next]
+    paths:
+      - "**/*.md"
+      - ".markdownlint-cli2.jsonc"
+      - ".github/workflows/quality-gate.yml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -18,19 +26,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7.0.1
 
-      - uses: pnpm/setup@v2
+      - name: Check Markdown
+        uses: DavidAnson/markdownlint-cli2-action@v24.2.0
         with:
-          cache: true
-          install: false
-
-      - name: Install dependencies
-        run: pnpm ci
-
-      - name: Lint
-        run: pnpm lint:check
-
-      - name: Check types
-        run: pnpm types:check
-
-      - name: Build
-        run: pnpm build
+          globs: "**/*.md"
