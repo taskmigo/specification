@@ -4,11 +4,8 @@ const withMDX = createMDX();
 
 const isGithubPages = process.env.GITHUB_ACTIONS === 'true';
 const repoName = process.env.GITHUB_REPOSITORY?.split('/')[1];
-const repoOwner = process.env.GITHUB_REPOSITORY?.split('/')[0];
 const isUserOrOrgPage = repoName?.endsWith('.github.io');
 const basePath = isGithubPages && repoName && !isUserOrOrgPage ? `/${repoName}` : '';
-const defaultSiteUrl =
-  isGithubPages && repoOwner ? `https://${repoOwner}.github.io${basePath}` : 'http://localhost:3000';
 
 /** @type {import('next').NextConfig} */
 const config = {
@@ -16,7 +13,7 @@ const config = {
   reactStrictMode: true,
   basePath,
   env: {
-    DEFAULT_SITE_URL: defaultSiteUrl,
+    NEXT_PUBLIC_BASE_PATH: basePath,
   },
 };
 

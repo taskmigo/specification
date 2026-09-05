@@ -1,5 +1,5 @@
 import { loader } from 'fumadocs-core/source';
-import { docsContentRoute, docsImageRoute, docsRoute } from './shared';
+import { docsContentRoute, docsImageRoute, docsRoute, withBasePath } from './shared';
 import { defineDocs } from 'fumadocs-mdx/macro';
 import { metaSchema, pageSchema } from 'fumadocs-core/source/schema';
 
@@ -28,7 +28,7 @@ export function getPageImageUrl(page: (typeof source)['$inferPage']) {
 
   return {
     segments,
-    url: '/' + [page.locale, ...docsImageRoute.split('/'), ...segments].filter(Boolean).join('/'),
+    url: withBasePath(`${docsImageRoute}/${segments.join('/')}`),
   };
 }
 
@@ -37,7 +37,7 @@ export function getPageMarkdownUrl(page: (typeof source)['$inferPage']) {
 
   return {
     segments,
-    url: '/' + [page.locale, ...docsContentRoute.split('/'), ...segments].filter(Boolean).join('/'),
+    url: withBasePath(`${docsContentRoute}/${segments.join('/')}`),
   };
 }
 
