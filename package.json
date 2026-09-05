@@ -1,0 +1,29 @@
+{
+  "name": "@taskmigo/specification",
+  "version": "0.1.0",
+  "engines": {
+    "node": "26.2.0",
+    "npm": "11.13.0"
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "26.2.0",
+      "onFail": "error"
+    },
+    "packageManager": {
+      "name": "npm",
+      "version": "11.13.0",
+      "onFail": "error"
+    }
+  },
+  "scripts": {
+    "markdown:check": "markdownlint-cli2 --config \".markdownlint-cli2.jsonc\" \"**/*.md\" \"#node_modules\"",
+    "style:check": "prettier --check .",
+    "style:fix": "prettier --write ."
+  },
+  "devDependencies": {
+    "markdownlint-cli2": "^0.23.2",
+    "prettier": "3.9.6"
+  }
+}

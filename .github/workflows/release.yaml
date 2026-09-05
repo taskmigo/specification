@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  workflow_run:
+    workflows: ["Quality Gate"]
+    branches:
+      - next
+    types:
+      - completed
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7.0.1
+
+      - name: Read version from package.json
+        id: package_version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Verify tag uniqueness
+        run: |
+          TAG_NAME="v${{ steps.package_version.outputs.version }}"
+
+          git fetch --tags
+
+          if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+            echo "Error: Tag $TAG_NAME already exists in the repository."
+            exit 1
+          fi
+
+      - name: Create GitHub Release with gh CLI
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG_NAME="v${{ steps.package_version.outputs.version }}"
+
+          gh release create "$TAG_NAME" \
+            --title "$TAG_NAME" \
+            --generate-notes \
+            --prerelease
