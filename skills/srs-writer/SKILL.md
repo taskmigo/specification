@@ -1,6 +1,6 @@
 ---
 name: srs-writer
-description: Draft, restructure, or review software requirements specifications using ISO/IEC/IEEE 29148:2018 with tailored information-item content, README-first navigation, stable requirement IDs, and human- and agent-friendly traceability.
+description: Draft, restructure, or review software requirements specifications with tailored information-item content, README-first navigation, stable requirement IDs, and human- and agent-friendly traceability.
 ---
 
 # SRS Writer
@@ -11,7 +11,7 @@ Use this skill when the requested deliverable is a Software Requirements Specifi
 
 Produce a decision-ready Software Requirements Specification (SRS) that expresses an agreed software need as verifiable requirements and preserves its context, constraints, dependencies, and traceability without turning the specification into a development task list.
 
-- Use ISO/IEC/IEEE 29148:2018 as the governing requirements-engineering framework. Treat the SRS as a tailored information item rather than imposing a fixed universal template. Cover the information needed for the product boundary and audience, including purpose and scope, operational context, stakeholders and users, assumptions and dependencies, interfaces, functional and quality requirements, data, constraints, verification, and traceability.
+- Use [ISO/IEC/IEEE 29148:2018](https://committee.iso.org/standard/72089.html) as the governing requirements-engineering framework. Treat the SRS as a tailored information item rather than imposing a fixed universal template. Cover the information needed for the product boundary and audience, including purpose and scope, operational context, stakeholders and users, assumptions and dependencies, interfaces, functional and quality requirements, data, constraints, verification, and traceability.
 - Distinguish the SRS from related information items. Use a Business Requirements Specification (BRS), Stakeholder Requirements Specification (StRS), System Requirements Specification (SyRS), Concept/Operational Concept, or Requirements Traceability Matrix (RTM) when the requested content belongs there; link related items rather than silently combining incompatible abstraction levels.
 - Keep requirements normative and testable. Use SHALL for mandatory behavior, MAY for permitted options, and SHOULD only for justified preferences.
 - Preserve existing requirement IDs, domain terms, public contracts, and user decisions. Do not silently invent business rules, wire formats, roles, fallbacks, or acceptance behavior.
@@ -19,7 +19,7 @@ Produce a decision-ready Software Requirements Specification (SRS) that expresse
 - Write each requirement so its subject, condition, action or capability, and measurable outcome are clear. Check the individual requirement and the requirement set for necessity, feasibility, consistency, completeness, singularity, unambiguity, verifiability, correctness, and traceability; tailor the checks to the deliverable instead of asserting unsupported conformance.
 - Include failure behavior, security boundaries, consistency, performance, persistence, and conformance criteria when they affect the requested system.
 
-For the detailed 29148 information-item mapping and requirement-writing pattern, read [references/iso-iec-ieee-29148-outline.md](references/iso-iec-ieee-29148-outline.md).
+For the detailed standard information-item mapping and requirement-writing pattern, read [references/iso-iec-ieee-29148-outline.md](references/iso-iec-ieee-29148-outline.md).
 
 ## Repository and document structure
 
@@ -35,9 +35,13 @@ The canonical entry point for a split SRS SHALL be `README.md`. It SHALL contain
 
 The README body SHALL contain only navigation metadata: the table of contents, read order, and history. It SHALL not repeat the SRS purpose, scope, requirements, or common knowledge. Because the README body intentionally has no level-one heading, it SHALL include `<!-- markdownlint-disable MD041 -->` immediately before the first heading.
 
-Use Markdown links for all internal navigation and traceability. Replace bare section notation such as `2.2.2` with a link to the relevant file and anchor, for example `[Shared Object Filter](02-overall-description.md#222-shared-object-filter)`. Do not leave unlinked section notation in the SRS.
+Each `History` summary cell SHALL describe the changes in that version as bullet points so reviewers can identify each change quickly. Keep the table at exactly two columns; use HTML list markup such as `<ul><li>...</li></ul>` inside the summary cell when a multi-item Markdown list would break the table layout.
 
-Split the SRS according to the tailored ISO/IEC/IEEE 29148:2018 information-item structure:
+Use Markdown links for all internal navigation and traceability. Replace bare section notation such as `2.2.2` with a link to the relevant file and anchor, for example [Shared Object Filter](../../specification/002.%20Authorization/02-overall-description.md#222-shared-object-filter). Do not leave unlinked section notation in the SRS. Whenever prose refers to another Markdown file, verify that the relative target path exists and that any fragment identifies a heading in the target file; repair or remove broken links before finalizing. Check links again after restructuring, renaming, or moving files. Validate internal links with the repository's link checker when available, or perform an equivalent local path-and-anchor check when it is not.
+
+Any issue, pull request, ticket, external document, standard, website, or other artifact outside the repository SHALL be referenced with a descriptive Markdown link on its first mention in each document, or in that document's References section. After the first linked mention, use a short, unambiguous name without repeating the URL unless the reader could lose the reference context. Do not leave a bare URL or unlinked external identifier before its canonical link is established; if a reliable link is unavailable, identify the item as unresolved instead of inventing a destination. External link availability is outside the repository's control and does not need to be validated by the internal-link check.
+
+Split the SRS according to the tailored standard's information-item structure:
 
 ```text
 README.md
@@ -72,20 +76,24 @@ Write for both HUMAN and AGENT readers:
 
 - Use concise domain language, intention-revealing headings, short requirement blocks, examples, and tables that help a human review decisions quickly.
 - Use stable requirement IDs, predictable section/file names, explicit normative keywords, machine-retrievable anchors, and Markdown links for agent navigation and traceability.
-- Include only project-specific needs, decisions, constraints, interfaces, behavior, quality criteria, verification, and traceability. Common knowledge, generic tutorials, textbook definitions, and explanations that do not change a project decision SHALL NOT be included in the SRS.
+- Begin every prose sentence, bullet-point item, table-cell sentence, and history-summary bullet with an uppercase letter. Preserve the spelling and case of code identifiers, requirement IDs, URLs, file names, and other literal values.
+- No Common Knowledge: Omit self-evident facts, elementary background information, generic tutorials, textbook definitions, and explanations that do not change a project decision. Include only project-specific needs, decisions, constraints, interfaces, behavior, quality criteria, verification, and traceability.
+- No Repeated Information: Do not re-explain a point that is already stated. Cross-reference the existing content with a verified Markdown link, such as [Review checklist](#review-checklist) for a same-file reference, or a relative file-and-anchor link for content in another Markdown file.
 - If a term is necessary for unambiguous interpretation, define it briefly in the document glossary; do not add general educational material.
 
 ## Review checklist
 
 - README is the only canonical start point, its body contains only the table of contents, read order, and history, and every table link resolves.
-- README frontmatter contains only the feature `name` and document `version`; its History table has exactly `Version` and `Short summary of changes` columns, and `MD041` is disabled for the intentionally heading-less body.
-- The files follow the tailored ISO/IEC/IEEE 29148:2018 section structure and contain no stale duplicate document.
-- The SRS contains project-specific knowledge only and is useful to both HUMAN reviewers and AGENT retrieval/execution.
-- The SRS identifies its 29148 information-item scope and tailoring decisions; it does not claim full standard conformance unless the evidence supports that claim.
+- README frontmatter contains only the feature `name` and document `version`; its History table has exactly `Version` and `Short summary of changes` columns, every summary cell presents changes as bullet points, and `MD041` is disabled for the intentionally heading-less body.
+- The files follow the tailored standard section structure and contain no stale duplicate document.
+- The SRS contains project-specific knowledge only, omits self-evident facts and elementary background information, and is useful to both HUMAN reviewers and AGENT retrieval/execution.
+- The SRS does not repeat information; repeated points are replaced with verified Markdown cross-references to the existing section or requirement.
+- The SRS identifies its information-item scope and tailoring decisions; it does not claim full standard conformance unless the evidence supports that claim.
 - Scope, operational context, stakeholders, assumptions, dependencies, constraints, and out-of-scope behavior are explicit.
 - Requirements are atomic enough to verify but grouped into readable sections.
 - Requirements are necessary, feasible, consistent, complete enough for their scope, singular, unambiguous, correct, verifiable, and traceable—or any exception is explicit.
 - Normative language is consistent and non-normative rationale is distinguishable.
 - Public interfaces, persistence effects, authorization/security rules, failure modes, freshness/consistency, and performance limits are not ambiguous.
-- All internal references use Markdown links rather than unlinked section notation. No stale duplicate document, broken anchor, unexplained acronym, or development-only phrase remains.
+- All internal references use Markdown links rather than unlinked section notation. Every relative link to another Markdown file resolves to an existing file and valid anchor, including after restructuring. Each external issue, pull request, and artifact has one canonical descriptive Markdown link per document, with later mentions using the established short name where context remains clear. No stale duplicate document, broken anchor, unexplained acronym, or development-only phrase remains.
+- Every prose sentence, bullet-point item, table-cell sentence, and history-summary bullet begins with an uppercase letter, except where a literal value must retain its original case.
 - Run the repository’s Markdown lint and link/format checks when available; report actual results separately from checks that could not run.

@@ -4,7 +4,7 @@
 
 This Software Requirements Specification (SRS) defines the authorization model for ECMAScript authorization policies and shared query filtering. It specifies the policy contract, authorization decisions, effective-state resolution, database filtering, security boundaries, and verification conditions.
 
-This document is tailored to the software-requirements information-item guidance in ISO/IEC/IEEE 29148:2018. The tailoring covers the software boundary, operational context, interfaces, functional and quality requirements, data/persistence constraints, verification, and traceability relevant to this authorization capability. It does not claim full conformance to the standard.
+This document is tailored to the software-requirements information-item guidance in [ISO/IEC/IEEE 29148:2018](https://committee.iso.org/standard/72089.html). The tailoring covers the software boundary, operational context, interfaces, functional and quality requirements, data/persistence constraints, verification, and traceability relevant to this authorization capability. It does not claim full conformance to the standard.
 
 ## 1.2 Scope
 
@@ -18,7 +18,7 @@ The authorization model SHALL use a required ECMAScript policy entry point while
 - Request Authorization uses only the `principal` and `request` values available at authorization time; it does not load business resources.
 - Object policies compile to a persistence-neutral Filter AST that can also be reused by future query filtering.
 
-Package/module ownership and public SDK boundaries are governed by issue #54 and are not redefined here.
+Package/module ownership and public SDK boundaries are governed by [issue #54](https://github.com/taskmigo/specification/issues/54) and are not redefined here.
 
 The following capabilities are outside the scope of this SRS:
 
@@ -40,8 +40,8 @@ The following capabilities are outside the scope of this SRS:
 
 ## 1.4 References and baseline
 
-- ISO/IEC/IEEE 29148:2018, software-requirements information-item guidance. This document uses the guidance as a tailored framework; it does not reproduce or claim certification against the standard.
-- Issue #54, module ownership and public SDK boundaries. This is a related product decision and remains outside the scope of this SRS.
+- The linked standard's software-requirements information-item guidance. This document uses the guidance as a tailored framework; it does not reproduce or claim certification against the standard.
+- The linked issue, module ownership and public SDK boundaries. This is a related product decision and remains outside the scope of this SRS.
 - Baseline: the Taskmigo server `next` source review recorded in the preceding authorization specification, used only to identify the legacy authorization behavior that the requirements replace or preserve. The source repository and exact baseline commit are not included here, so this document does not claim a fresh runtime verification.
 
 ## 1.5 Overview
