@@ -31,6 +31,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
 
       - name: Read version from package.json
         id: package_version
@@ -50,6 +52,24 @@ jobs:
             exit 1
           fi
 
+      - name: Find previous release tag
+        id: previous_release
+        run: |
+          TAG_NAME="v${{ steps.package_version.outputs.version }}"
+          PREVIOUS_TAG=$(git tag --list 'v*' --sort=-version:refname | grep -Fxv "$TAG_NAME" | head -n 1 || true)
+
+          echo "tag=$PREVIOUS_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Generate release notes
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SERVER_URL: ${{ github.server_url }}
+        run: |
+          node .github/scripts/generate-release-notes.mjs \
+            "${{ steps.previous_release.outputs.tag }}" \
+            "$GITHUB_SHA" \
+            "$RUNNER_TEMP/release-notes.md"
+
       - name: Create GitHub Release with gh CLI
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -62,12 +82,14 @@ jobs:
 
             gh release create "$TAG_NAME" \
               --title "$TAG_NAME" \
-              --generate-notes \
+              --notes-file "$RUNNER_TEMP/release-notes.md" \
+              --target "$GITHUB_SHA" \
               --prerelease
           else
             echo "Detected full release version: $VERSION"
 
             gh release create "$TAG_NAME" \
               --title "$TAG_NAME" \
-              --generate-notes
+              --notes-file "$RUNNER_TEMP/release-notes.md" \
+              --target "$GITHUB_SHA"
           fi
