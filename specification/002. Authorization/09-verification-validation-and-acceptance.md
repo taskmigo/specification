@@ -7,7 +7,7 @@
 | STMT-001–STMT-007         | Inspect and test the canonical Statement schema, TPL source contract, boolean result, effect, target matching, and removal of legacy fields/source execution. |
 | INPUT-001–INPUT-003       | Test policy-root shape, path variables, principal identity, Request-only inputs, rejection of object/resource usage, and symbolic Object fields.             |
 | SNAPSHOT-001–SNAPSHOT-004 | Instrument one operation and sequential operations to verify one immutable snapshot, coherent creation, freshness, and disposal.                             |
-| RES-001–RES-003           | Test rejection of resource roots/intrinsics and confirm Request Authorization performs no business-resource or adapter resolution.                            |
+| RES-001–RES-003           | Test rejection of unavailable resource roots and undeclared resource-loading utility calls, and confirm Request Authorization performs no business-resource or adapter resolution. |
 | POLICY-001–POLICY-005     | Inspect the TPL/Policy IR boundary and test static validation, scope schemas, state-keyed reuse, and constant folding.                                        |
 | REQ-001–REQ-003           | Test default deny, deny-overrides, Request input boundaries, failure behavior, and constant-true deny short-circuiting.                                      |
 | OBJ-001–OBJ-005           | Test TPL partial evaluation, Filter Schema queryability, Filter AST independence/algebra, database-before-pagination execution, and allow/deny composition.  |
