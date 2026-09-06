@@ -1,7 +1,7 @@
 ---
 metadata:
-  version: 0.1.0
-  changelog: Defined the initial Taskmigo Policy Language syntax, semantics, constraints, and verification boundaries.
+  version: 0.2.0
+  changelog: Renamed Policy Language to Embedded Language and generalized language-owned terminology without changing the current language semantics.
 ---
 
 <!-- markdownlint-disable MD041 -->
@@ -12,7 +12,7 @@ metadata:
 | ------- | ------------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
 | 1       | Introduction                                      | Purpose, scope, terminology, references, and document control            | [01-introduction.md](01-introduction.md)                                                         |
 | 2       | Overall Description                               | Product context, execution model, stakeholders, and boundaries           | [02-overall-description.md](02-overall-description.md)                                           |
-| 3       | External Interface Requirements                   | Policy-body syntax, environment, and compiled-policy interfaces          | [03-external-interface-requirements.md](03-external-interface-requirements.md)                   |
+| 3       | External Interface Requirements                   | Program syntax, environment, and compiled-program interfaces             | [03-external-interface-requirements.md](03-external-interface-requirements.md)                   |
 | 4       | Functional and Behavioral Requirements            | Typing, control flow, evaluation, partial evaluation, and query lowering | [04-functional-and-behavioral-requirements.md](04-functional-and-behavioral-requirements.md)     |
 | 5       | Data and Information Requirements                 | Values, schemas, compiled artifacts, and source metadata                 | [05-data-and-information-requirements.md](05-data-and-information-requirements.md)               |
 | 6       | Quality and Performance Requirements              | Determinism, bounded compilation, and execution quality                  | [06-quality-and-performance-requirements.md](06-quality-and-performance-requirements.md)         |
