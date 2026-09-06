@@ -32,8 +32,46 @@ function gitOrNull(args) {
   }
 }
 
-function versionFrom(readme) {
-  return readme?.match(/^version:\s*([^\s]+)\s*$/m)?.[1] ?? null;
+function metadataFrom(readme) {
+  const frontmatter = readme?.match(/^---\n([\s\S]*?)\n---/m)?.[1];
+
+  if (!frontmatter) {
+    return null;
+  }
+
+  const metadata = frontmatter.match(/^metadata:\n([\s\S]*?)(?=^\S|$)/m)?.[1];
+
+  if (!metadata) {
+    return null;
+  }
+
+  const version = metadata.match(/^\s+version:\s*([^\s]+)\s*$/m)?.[1];
+  const changelogMatch = metadata.match(/^\s+changelog:\s*(.*)$/m);
+  const changelogValue = changelogMatch?.[1].trim();
+  let changelog = changelogValue;
+
+  if (changelogValue && /^[|>][-+]?\s*(?:#.*)?$/.test(changelogValue)) {
+    const changelogLines = metadata
+      .slice(changelogMatch.index + changelogMatch[0].length)
+      .split("\n");
+
+    changelog = undefined;
+
+    for (const line of changelogLines) {
+      if (!line.trim()) {
+        continue;
+      }
+
+      if (!/^\s+/.test(line)) {
+        break;
+      }
+
+      changelog = line.trim();
+      break;
+    }
+  }
+
+  return version && changelog ? { version, changelog } : null;
 }
 
 function readmeAt(commit, specPath) {
@@ -179,19 +217,31 @@ function versionsForSpec(specPath) {
   const versions = new Map();
 
   for (const commit of commitsForReadme(specPath)) {
-    const version = versionFrom(readmeAt(commit, specPath));
-    const parentVersion = versionFrom(parentReadmeAt(commit, specPath));
+    const metadata = metadataFrom(readmeAt(commit, specPath));
+    const parentMetadata = metadataFrom(parentReadmeAt(commit, specPath));
 
-    if (version && version !== parentVersion && !versions.has(version)) {
-      versions.set(version, commit);
+    if (
+      metadata &&
+      (!parentMetadata ||
+        metadata.version !== parentMetadata.version ||
+        metadata.changelog !== parentMetadata.changelog) &&
+      !versions.has(metadata.version)
+    ) {
+      versions.set(metadata.version, {
+        changelog: metadata.changelog,
+        commit,
+      });
     }
   }
 
   if (versions.size === 0) {
-    const currentVersion = versionFrom(readmeAt(head, specPath));
+    const currentMetadata = metadataFrom(readmeAt(head, specPath));
 
-    if (currentVersion) {
-      versions.set(currentVersion, versionCommit(specPath, currentVersion));
+    if (currentMetadata) {
+      versions.set(currentMetadata.version, {
+        changelog: currentMetadata.changelog,
+        commit: versionCommit(specPath, currentMetadata.version),
+      });
     }
   }
 
@@ -213,9 +263,9 @@ for (const directory of changedSpecPaths()) {
   const specLink = `${serverUrl}/${repository}/tree/${head}/${encodePath(specPath)}`;
   notes.push(`- [${directory}](${specLink}):`);
 
-  for (const [version, commit] of versions) {
+  for (const [version, { changelog, commit }] of versions) {
     notes.push(
-      `  - [v${version}](${serverUrl}/${repository}/commit/${commit})`,
+      `  - [v${version}](${serverUrl}/${repository}/commit/${commit}): ${changelog}`,
     );
   }
 }

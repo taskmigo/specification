@@ -1,6 +1,7 @@
 ---
-name: Authorization feature
-version: 0.3.0
+metadata:
+  version: 0.3.0
+  changelog: Replaced the restricted ECMAScript policy source contract with Taskmigo Policy Language and delegated language semantics to the Policy Language specification.
 ---
 
 <!-- markdownlint-disable MD041 -->

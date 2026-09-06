@@ -1,6 +1,7 @@
 ---
-name: Policy Language feature
-version: 0.1.0
+metadata:
+  version: 0.1.0
+  changelog: Defined the initial Taskmigo Policy Language syntax, semantics, constraints, and verification boundaries.
 ---
 
 <!-- markdownlint-disable MD041 -->
