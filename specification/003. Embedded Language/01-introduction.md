@@ -33,14 +33,14 @@ The following capabilities are outside the scope of this SRS:
 
 ## 1.3 Definitions, Acronyms, and Abbreviations
 
-| Term               | Definition                                                                                                     |
-| ------------------ | -------------------------------------------------------------------------------------------------------------- |
-| ANTLR              | Parser generator required for the Embedded Language lexer/parser frontend.                                     |
+| Term               | Definition                                                                                                      |
+| ------------------ | --------------------------------------------------------------------------------------------------------------- |
+| ANTLR              | Parser generator required for the Embedded Language lexer/parser frontend.                                      |
 | Environment Schema | Consumer-provided typed definition of roots, paths, nullability, and query capabilities available to a program. |
-| Language IR        | Typed intermediate representation independent of the parser frontend and consumer APIs.                        |
-| Partial Evaluation | Evaluation that resolves known-dependent subexpressions while preserving unknown-dependent subexpressions.     |
-| Query Lowering     | Conversion of residual Language IR into a consumer-owned persistence-neutral query representation.             |
-| Residual Predicate | Boolean Language IR remaining after partial evaluation because it depends on one or more unknown values.       |
+| Language IR        | Typed intermediate representation independent of the parser frontend and consumer APIs.                         |
+| Partial Evaluation | Evaluation that resolves known-dependent subexpressions while preserving unknown-dependent subexpressions.      |
+| Query Lowering     | Conversion of residual Language IR into a consumer-owned persistence-neutral query representation.              |
+| Residual Predicate | Boolean Language IR remaining after partial evaluation because it depends on one or more unknown values.        |
 
 ## 1.4 References and Baseline
 

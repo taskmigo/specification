@@ -7,7 +7,7 @@
 | SYNTAX-001–SYNTAX-004   | Parse the direct program syntax, JavaScript-like delimiters/operators/literals, and reject export/function/arrow/call/member-method syntax.      |
 | ENV-001–ENV-003         | Compile against explicit Environment Schemas, verify consumer-defined root namespaces, and inspect compiled-program/diagnostic interfaces.       |
 | EVAL-IF-001–EVAL-IF-002 | Validate typed runtime inputs and direct/residual result forms without coercion.                                                                 |
-| LANG-001–LANG-004       | Inspect language-owned Language IR and test complete boolean returns, immutable `const` bindings, conditional semantics, and early return.        |
+| LANG-001–LANG-004       | Inspect language-owned Language IR and test complete boolean returns, immutable `const` bindings, conditional semantics, and early return.       |
 | TYPE-001–TYPE-004       | Test strict types, boolean/equality, arithmetic/ordering, null, lists, and membership semantics.                                                 |
 | REF-001                 | Test static path resolution and reject dynamic paths, method calls, and call expressions.                                                        |
 | EVAL-001–EVAL-002       | Test known-input evaluation, branch/short-circuit/return behavior, and deterministic repeated results.                                           |
