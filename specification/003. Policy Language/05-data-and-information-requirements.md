@@ -15,7 +15,7 @@ Traceability: EVAL-IF-001; [Isolation and Host Access](07-constraints.md#74-isol
 
 A compiled policy artifact SHALL be associated with the Environment Schema contract against which it was type-checked.
 
-A compiled artifact SHALL NOT be reused under a schema whose roots, path types, nullability, intrinsic signatures, or query capabilities are incompatible with the compiled artifact.
+A compiled artifact SHALL NOT be reused under a schema whose roots, path types, nullability, or query capabilities are incompatible with the compiled artifact.
 
 Verification: Reuse a compiled artifact with compatible and incompatible schema revisions and confirm incompatible reuse is rejected.
 Traceability: ENV-001; DATA-003.
@@ -31,14 +31,14 @@ At minimum, the identity SHALL cover:
 - The policy source content or a collision-resistant source fingerprint.
 - The TPL language version.
 - The Environment Schema identity or compatible revision fingerprint.
-- The intrinsic registry contract required by the compiled policy.
+- The compiler contract required to preserve the parsed function/export semantics and typed Policy IR.
 
 Verification: Change each identity input independently and confirm a stale artifact cannot be treated as an exact match.
 Traceability: [Compilation Reuse](06-quality-and-performance-requirements.md#63-compilation-reuse).
 
 ### DATA-004 — Source locations
 
-Policy IR or associated diagnostic metadata SHALL preserve source spans sufficient to report the location of parse, binding, type, and queryability errors to a policy author.
+Policy IR or associated diagnostic metadata SHALL preserve source spans sufficient to report the location of parse, binding, export, function-call, type, and queryability errors to a policy author.
 
 Verification: Produce one error in each category and confirm diagnostics identify the relevant source range.
 Traceability: DIAG-001.

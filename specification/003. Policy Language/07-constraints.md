@@ -21,8 +21,9 @@ TPL SHALL NOT provide:
 
 ```text
 loops
-recursion
-user-defined functions
+direct or indirect recursion
+function parameters or call arguments
+nested functions
 closures or lambdas
 mutable assignment
 object construction
@@ -33,23 +34,26 @@ filesystem, network, process, clock, or random I/O
 dynamic property access
 reflection
 arbitrary host method calls
+built-in or registered utility functions
 ```
 
-A future language revision SHALL require an explicit specification change before adding one of these capabilities.
+Top-level zero-argument source-declared functions are explicitly permitted by FUNC-001 through FUNC-004 and SHALL remain subject to the acyclic-call and purity constraints.
+
+A future language revision SHALL require an explicit specification change before adding one of the excluded capabilities.
 
 Verification: Confirm the grammar excludes each construct and rejection tests cover representative syntax.
-Traceability: [Scope](01-introduction.md#12-scope); QUAL-002.
+Traceability: [Scope](01-introduction.md#12-scope); QUAL-002; FUNC-003.
 
 ## 7.3 Strict Semantics
 
 ### TECH-003 — No ECMAScript coercion model
 
-TPL SHALL NOT implement ECMAScript truthiness, `undefined`, loose equality, prototype lookup, JavaScript number edge cases, or implicit string/number/boolean coercion.
+TPL SHALL NOT implement ECMAScript truthiness, `undefined`, loose equality, prototype lookup, JavaScript number edge cases, automatic semicolon insertion, or implicit string/number/boolean coercion.
 
-All operator and intrinsic behavior SHALL follow the TPL type rules and Environment Schema.
+JavaScript-like tokens and declaration forms specified by TPL SHALL follow TPL's own type, binding, control-flow, and evaluation rules.
 
-Verification: Attempt policies that depend on truthiness, `undefined`, loose equality, or implicit coercion and confirm rejection.
-Traceability: TYPE-001 through TYPE-004.
+Verification: Attempt policies that depend on truthiness, `undefined`, loose equality, implicit coercion, or omitted required semicolons and confirm rejection.
+Traceability: TYPE-001 through TYPE-004; SYNTAX-003.
 
 ## 7.4 Isolation and Host Access
 
@@ -59,16 +63,16 @@ Policy source SHALL be treated as untrusted compiler input.
 
 TPL SHALL NOT expose repositories, dependency-injection containers, persistence entities, filesystems, networks, processes, reflection, class loaders, arbitrary Java objects, or host methods to policy expressions.
 
-Registered intrinsics SHALL receive only typed TPL values and declared evaluation context required by their contract.
+A call expression SHALL invoke only a source-declared function resolved according to FUNC-001. A function name SHALL NOT become privileged merely because it matches a host or utility function name.
 
-Verification: Attempt to reference forbidden host facilities and confirm they are unreachable through roots, property access, and intrinsics.
-Traceability: INTR-002; DATA-001.
+Verification: Attempt to reference forbidden host facilities and call undeclared utility/host functions and confirm they are unreachable.
+Traceability: FUNC-001; DATA-001.
 
 ## 7.5 Compiler Limits
 
 ### TECH-005 — Fail closed on compiler-limit exhaustion
 
-The compiler limits required by PERF-001 SHALL be applied before an oversized or excessively deep policy becomes executable.
+The compiler limits required by PERF-001 SHALL be applied before an oversized, excessively deep, or excessively connected policy becomes executable.
 
 Limit exhaustion SHALL produce `ComplexityError` and SHALL NOT fall back to a less-restricted parser or evaluator.
 

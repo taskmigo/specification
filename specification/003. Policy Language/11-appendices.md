@@ -7,31 +7,59 @@ The examples in this section are supporting material and do not add requirements
 ### Request Predicate
 
 ```text
-let readable = request.method == "GET";
-let enabled = principal.enabled == true;
+function canRead() {
+  const readable = request.method == "GET";
+  const enabled = principal.enabled == true;
+  return readable && enabled;
+}
 
-readable and enabled
+export default function policy() {
+  return canRead();
+}
 ```
 
 ### Object Predicate
 
 ```text
-let owner = object.ownerId == principal.id;
-let departmentAccess =
-    object.departmentId in principal.departmentIds
-    and object.classification != "SECRET";
+function isOwner() {
+  return object.ownerId == principal.id;
+}
 
-principal.admin or owner or departmentAccess
+function hasDepartmentAccess() {
+  return object.departmentId in principal.departmentIds
+    && object.classification != "SECRET";
+}
+
+export default function policy() {
+  return principal.admin || isOwner() || hasDepartmentAccess();
+}
 ```
 
 ### Conditional Predicate
 
 ```text
-if principal.admin then
-    true
-else
-    object.ownerId == principal.id
+export default function policy() {
+  if (principal.admin) {
+    return true;
+  } else {
+    return object.ownerId == principal.id;
+  }
+}
 ```
+
+### Named Export
+
+```text
+export function isOwner() {
+  return object.ownerId == principal.id;
+}
+
+export default function policy() {
+  return isOwner();
+}
+```
+
+The named export does not create a cross-policy import facility in this version.
 
 ## 11.2 Partial Evaluation Example
 
@@ -47,11 +75,14 @@ object = unknown
 The policy:
 
 ```text
-principal.admin
-or (
-    object.ownerId == principal.id
-    and request.method == "GET"
-)
+function isOwner() {
+  return object.ownerId == principal.id;
+}
+
+export default function policy() {
+  return principal.admin
+    || (isOwner() && request.method == "GET");
+}
 ```
 
 SHALL specialize to a residual predicate equivalent to:
@@ -60,21 +91,21 @@ SHALL specialize to a residual predicate equivalent to:
 object.ownerId == "u-123"
 ```
 
-The exact internal Policy IR shape is implementation-private as long as the residual semantics and query-lowering contract are preserved.
+The exact internal Policy IR shape is implementation-private as long as the function-body semantics, residual semantics, and query-lowering contract are preserved.
 
-## 11.3 Intrinsic Extension Guidance (non-normative)
+## 11.3 Utility Functions (non-normative)
 
-Future intrinsics can provide runtime semantics and optional query lowering without changing the core evaluation model.
+Utility functions are intentionally absent from the initial language contract.
 
-Examples include:
+The following undeclared calls are examples of syntax that SHALL NOT compile in this version:
 
 ```text
-startsWith(object.name, "task-")
-lower(object.email) == lower(principal.email)
-isNull(object.deletedAt)
+startsWith(object.name)
+lower(object.email)
+contains(principal.roles)
 ```
 
-A runtime-only intrinsic is suitable for direct Request evaluation but cannot remain in an Object Authorization residual predicate unless the selected consumer provides a semantics-preserving query-lowering implementation.
+A future language revision may define utility functions only after specifying their static types, runtime behavior, partial-evaluation behavior, and query-lowering semantics.
 
 ## 11.4 Source-Language Migration Note (non-normative)
 

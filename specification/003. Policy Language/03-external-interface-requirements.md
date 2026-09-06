@@ -4,20 +4,31 @@
 
 ### SYNTAX-001 — Canonical policy shape
 
-A TPL source SHALL contain zero or more `let` declarations followed by exactly one expression and end-of-file.
+A TPL source SHALL contain top-level function declarations and exactly one `export default function` declaration that defines the policy entry point.
 
 Example:
 
 ```text
-let owner = object.ownerId == principal.id;
-let readable = request.method == "GET";
+function isOwner() {
+  return object.ownerId == principal.id;
+}
 
-principal.admin or (readable and owner)
+export default function policy() {
+  const readable = request.method == "GET";
+
+  if (principal.admin) {
+    return true;
+  }
+
+  return readable && isOwner();
+}
 ```
 
-A policy SHALL NOT require a module declaration, exported function, wrapper function, or implicit return statement.
+A non-default function SHALL be named. The default-exported function MAY be named or anonymous.
 
-Verification: Parse the example and equivalent single-expression policies, then reject trailing statements or additional result expressions.
+A top-level function MAY be declared with `export function <name>() { ... }`. Named export syntax SHALL NOT imply cross-policy import or module-linking support in this version.
+
+Verification: Parse the example, named exports, named and anonymous default exports, and reject sources with zero or multiple default exports.
 Traceability: [Policy Model](02-overall-description.md#221-policy-model).
 
 ### SYNTAX-002 — Canonical grammar
@@ -25,42 +36,60 @@ Traceability: [Policy Model](02-overall-description.md#221-policy-model).
 The parser SHALL implement language behavior equivalent to this grammar:
 
 ```ebnf
-policy       ::= letDecl* expression EOF ;
-letDecl      ::= "let" IDENT "=" expression ";" ;
+policy        ::= topLevelDecl* EOF ;
 
-expression   ::= conditional ;
-conditional  ::= "if" expression "then" expression "else" expression
-               | orExpr ;
+topLevelDecl ::= functionDecl
+               | "export" functionDecl
+               | "export" "default" defaultFunctionDecl ;
 
-orExpr       ::= andExpr ( "or" andExpr )* ;
-andExpr      ::= equalityExpr ( "and" equalityExpr )* ;
-equalityExpr ::= compareExpr ( ( "==" | "!=" ) compareExpr )* ;
-compareExpr  ::= inExpr ( ( "<" | "<=" | ">" | ">=" ) inExpr )* ;
-inExpr       ::= additiveExpr ( "in" additiveExpr )? ;
-additiveExpr ::= multiplyExpr ( ( "+" | "-" ) multiplyExpr )* ;
-multiplyExpr ::= unaryExpr ( ( "*" | "/" | "%" ) unaryExpr )* ;
-unaryExpr    ::= ( "not" | "+" | "-" ) unaryExpr
-               | primary ;
+functionDecl        ::= "function" IDENT "(" ")" block ;
+defaultFunctionDecl ::= "function" IDENT? "(" ")" block ;
 
-primary      ::= literal
-               | listLiteral
-               | reference
-               | call
-               | "(" expression ")" ;
+block         ::= "{" statement* "}" ;
+statement     ::= constDecl | ifStmt | returnStmt ;
+constDecl     ::= "const" IDENT "=" expression ";" ;
+returnStmt    ::= "return" expression ";" ;
+ifStmt        ::= "if" "(" expression ")" block
+                  ( "else" ( ifStmt | block ) )? ;
 
-reference    ::= IDENT ( "." IDENT )* ;
-call         ::= IDENT "(" ( expression ( "," expression )* )? ")" ;
-listLiteral  ::= "[" ( expression ( "," expression )* )? "]" ;
+expression    ::= orExpr ;
+orExpr        ::= andExpr ( "||" andExpr )* ;
+andExpr       ::= equalityExpr ( "&&" equalityExpr )* ;
+equalityExpr  ::= compareExpr ( ( "==" | "!=" ) compareExpr )* ;
+compareExpr   ::= inExpr ( ( "<" | "<=" | ">" | ">=" ) inExpr )* ;
+inExpr        ::= additiveExpr ( "in" additiveExpr )? ;
+additiveExpr  ::= multiplyExpr ( ( "+" | "-" ) multiplyExpr )* ;
+multiplyExpr  ::= unaryExpr ( ( "*" | "/" | "%" ) unaryExpr )* ;
+unaryExpr     ::= ( "!" | "+" | "-" ) unaryExpr
+                | primary ;
 
-literal      ::= "true" | "false" | "null" | NUMBER | STRING ;
+primary       ::= literal
+                | listLiteral
+                | reference
+                | call
+                | "(" expression ")" ;
+
+reference     ::= IDENT ( "." IDENT )* ;
+call          ::= IDENT "(" ")" ;
+listLiteral   ::= "[" ( expression ( "," expression )* )? "]" ;
+
+literal       ::= "true" | "false" | "null" | NUMBER | STRING ;
 ```
 
-`let`, `if`, `then`, `else`, `and`, `or`, `not`, `in`, `true`, `false`, and `null` SHALL be reserved keywords.
+`function`, `export`, `default`, `const`, `if`, `else`, `return`, `in`, `true`, `false`, and `null` SHALL be reserved keywords.
 
-Verification: Generate parser tests covering each production and precedence boundary, including mixed boolean, comparison, membership, arithmetic, unary, call, and grouping expressions.
+The source SHALL contain exactly one top-level declaration with both `export` and `default`.
+
+Function parameters and call arguments SHALL NOT be supported in this version; the parentheses remain mandatory syntax.
+
+Verification: Generate parser tests covering each production and precedence boundary, including function/export forms, declarations, parenthesized `if`, boolean operators, comparison, membership, arithmetic, unary, calls, and grouping expressions.
 Traceability: SYNTAX-001; [Parser Frontend](07-constraints.md#71-parser-frontend).
 
-### SYNTAX-003 — Identifiers and literals
+### SYNTAX-003 — Delimiters, identifiers, and literals
+
+Parentheses around every `if` condition SHALL be mandatory. Braces around every `if` and `else` body SHALL be mandatory except that `else if (...) { ... }` MAY use the nested `if` form defined by SYNTAX-002.
+
+Semicolons SHALL be mandatory after `const` and `return`; TPL SHALL NOT provide automatic semicolon insertion.
 
 Identifiers SHALL begin with an ASCII letter or `_` and SHALL continue with ASCII letters, decimal digits, or `_`.
 
@@ -70,12 +99,12 @@ Number literals SHALL represent finite base-10 values without `NaN` or infinity 
 
 List literals SHALL preserve source order.
 
-Verification: Test valid and invalid identifiers, string escapes, finite number literals, unary signs, and list literal ordering.
-Traceability: TYPE-001 through TYPE-004.
+Verification: Test required delimiters/semicolons, valid and invalid identifiers, string escapes, finite number literals, unary signs, and list literal ordering.
+Traceability: SYNTAX-002; TYPE-001 through TYPE-004.
 
 ### SYNTAX-004 — No dynamic member or method syntax
 
-Property paths SHALL use static dot-separated identifiers. Computed member syntax, method-call syntax, and optional-chaining syntax SHALL be rejected.
+Property paths SHALL use static dot-separated identifiers. Computed member syntax, method-call syntax, optional-chaining syntax, and calls through property paths SHALL be rejected.
 
 The following forms are outside the language:
 
@@ -100,10 +129,12 @@ Compilation SHALL receive an Environment Schema that defines every available roo
 - Whether the path may remain symbolic during partial evaluation.
 - Whether the path can participate in consumer query lowering when it remains symbolic.
 
-An identifier that is neither a local `let` binding, a schema root, nor a registered intrinsic SHALL be rejected before activation.
+A reference that is neither a local `const` binding, a source-declared function call, nor a schema root/path SHALL be rejected before activation.
 
-Verification: Compile the same source against schemas that add/remove a root or path and confirm deterministic acceptance or rejection.
-Traceability: REF-001; QUERY-001.
+No built-in or registered utility-function namespace SHALL be available in this language version.
+
+Verification: Compile the same source against schemas that add/remove a root or path, call declared and undeclared function names, and confirm deterministic acceptance or rejection.
+Traceability: REF-001; FUNC-001; QUERY-001.
 
 ### ENV-002 — Authorization roots
 
@@ -129,14 +160,14 @@ Traceability: DIAG-001; DATA-002.
 
 Evaluation and partial evaluation SHALL receive values conforming to the Environment Schema used by the compiled policy.
 
-A missing required value, incompatible runtime value type, or invalid intrinsic result SHALL be an evaluation failure rather than an implicit coercion.
+A missing required value or incompatible runtime value type SHALL be an evaluation failure rather than an implicit coercion.
 
 Verification: Execute a compiled policy with matching and mismatching runtime values and confirm strict validation.
 Traceability: TYPE-001; [Strict Semantics](07-constraints.md#73-strict-semantics).
 
 ### EVAL-IF-002 — Result forms
 
-Direct evaluation SHALL return exactly one `Bool` result or an evaluation failure.
+Direct evaluation of the default-exported function SHALL return exactly one `Bool` result or an evaluation failure.
 
 Partial evaluation SHALL return either:
 

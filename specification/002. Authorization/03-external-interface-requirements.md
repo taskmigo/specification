@@ -16,7 +16,9 @@ target:
     path: <full-match path regex>
 
 policy: |
-  principal.enabled and request.method == "GET"
+  export default function policy() {
+    return principal.enabled && request.method == "GET";
+  }
 ```
 
 The canonical Statement SHALL contain the fields and nesting shown above.
@@ -35,30 +37,32 @@ The Statement SHALL be invalid when `policy` is missing, `null`, empty, or white
 Verification: Test create and update requests for each invalid value and confirm that no invalid Statement becomes active.
 Traceability: [Policy Language Contract](02-overall-description.md#223-policy-language-contract); POLICY-001.
 
-### STMT-003 — Required boolean policy expression
+### STMT-003 — Required default export
 
-Every policy SHALL satisfy the [TPL source contract](../003.%20Policy%20Language/03-external-interface-requirements.md#31-source-contract) and compile to a final expression of static type `Bool`.
-
-Authorization SHALL NOT require an `export default` wrapper, JavaScript function, module entry point, or implicit return.
+Every policy SHALL satisfy the [TPL source contract](../003.%20Policy%20Language/03-external-interface-requirements.md#31-source-contract), including exactly one `export default function` entry point whose reachable paths return static `Bool` values.
 
 Examples:
 
 ```text
-true
+export default function policy() {
+  return true;
+}
 ```
 
 ```text
-principal.username == "admin"
+export default function policy() {
+  return principal.username == "admin";
+}
 ```
 
-A policy that fails TPL parsing, binding, type checking, scope validation, or applicable queryability validation SHALL be rejected before the Statement becomes active.
+A policy that fails TPL parsing, export validation, binding, function-call validation, type checking, scope validation, or applicable queryability validation SHALL be rejected before the Statement becomes active.
 
-Verification: Compile valid boolean expressions and invalid syntax, non-boolean result expressions, unavailable roots, and unsupported residual operations.
+Verification: Compile valid default exports and invalid missing/multiple default exports, non-boolean return paths, unavailable roots, and unsupported residual operations.
 Traceability: [Policy Language Contract](02-overall-description.md#223-policy-language-contract); POLICY-001 through POLICY-003.
 
 ### STMT-004 — Boolean decision contract
 
-A valid active Statement policy SHALL have static result type `Bool`.
+A valid active Statement policy SHALL have a default-exported function whose reachable paths return static type `Bool`.
 
 During authorization:
 
@@ -69,8 +73,8 @@ During authorization:
 
 An evaluation failure or invalid residual contract SHALL raise an authorization exception and fail closed.
 
-Verification: Compile non-boolean policy results and confirm activation is rejected; inject typed-input or intrinsic evaluation failures and confirm authorization fails closed.
-Traceability: [TPL boolean policy result](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#lang-002--boolean-policy-result); TECH-004; REQ-001.
+Verification: Compile non-boolean/fall-through default functions and confirm activation is rejected; inject typed-input or function-evaluation failures and confirm authorization fails closed.
+Traceability: [TPL boolean policy result](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#lang-002--boolean-default-policy-result); TECH-004; REQ-001.
 
 ### STMT-005 — Effect semantics
 
@@ -84,7 +88,9 @@ policy == false -> Statement does not match
 An unconditional Statement SHALL be authored explicitly:
 
 ```text
-true
+export default function policy() {
+  return true;
+}
 ```
 
 Verification: Evaluate matching allow and deny Statements with true and false policy results and confirm that only true results apply the declared effect.
@@ -177,12 +183,14 @@ The `resources` root SHALL not be part of the Authorization TPL Environment Sche
 Verification: Attempt to activate Request and Object policies referencing `resources` and confirm both are rejected before activation.
 Traceability: INPUT-001; [TPL static reference resolution](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#ref-001--static-reference-resolution).
 
-### RES-002 — Resource intrinsic exclusion
+### RES-002 — No resource-loading utility function
 
-The `resource(type, key)` intrinsic SHALL not be registered by the Authorization TPL consumer. A policy that invokes `resource(...)` SHALL be rejected before activation.
+TPL and the Authorization consumer SHALL NOT provide a built-in `resource(...)` function or another privileged utility function for loading business resources.
 
-Verification: Attempt to activate a policy invoking `resource(...)` and confirm it is rejected before activation.
-Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); [TPL registered intrinsics](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#intr-001--registered-pure-intrinsics).
+An undeclared call to `resource(...)` SHALL be rejected by TPL. A source-declared zero-argument function named `resource` SHALL have no privileged behavior and SHALL NOT gain access to repositories or resource adapters.
+
+Verification: Reject undeclared `resource(...)` calls and confirm a locally declared `resource()` cannot access business-resource loading facilities.
+Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); [TPL source-declared functions](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#func-001--source-declared-functions-only).
 
 ### RES-003 — No resource resolution
 
