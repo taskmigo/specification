@@ -39,7 +39,9 @@ function metadataFrom(readme) {
     return null;
   }
 
-  const metadata = frontmatter.match(/^metadata:\n([\s\S]*?)(?=^\S|$)/m)?.[1];
+  const metadata = frontmatter.match(
+    /^metadata:\n((?:[ \t]+.*(?:\n|$))*)/m,
+  )?.[1];
 
   if (!metadata) {
     return null;
@@ -154,7 +156,7 @@ function changedSpecPaths() {
     "specification",
   ]);
 
-  return [
+  const directories = [
     ...new Set(
       changedFiles
         .split("\0")
@@ -164,6 +166,8 @@ function changedSpecPaths() {
   ].sort((left, right) =>
     left.localeCompare(right, undefined, { numeric: true }),
   );
+
+  return directories;
 }
 
 function commitsForReadme(specPath) {
