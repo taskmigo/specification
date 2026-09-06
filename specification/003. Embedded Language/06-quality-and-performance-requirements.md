@@ -11,7 +11,7 @@ Traceability: EVAL-002; PARTIAL-001.
 
 ### QUAL-002 — Guaranteed termination
 
-Every valid policy SHALL terminate without relying on runtime instruction quotas for loops or recursion because the language SHALL provide neither loops nor callable constructs.
+Every valid program SHALL terminate without relying on runtime instruction quotas for loops or recursion because the language SHALL provide neither loops nor callable constructs.
 
 Verification: Inspect the grammar and test deeply nested but valid bounded control flow under compiler limits.
 Traceability: [Language Restrictions](07-constraints.md#72-language-restrictions); TECH-002.
@@ -20,9 +20,9 @@ Traceability: [Language Restrictions](07-constraints.md#72-language-restrictions
 
 ### PERF-001 — Bounded source complexity
 
-The compiler SHALL enforce finite configurable upper bounds for policy source size, token count, syntax-tree depth, Policy IR node count, block nesting depth, and list literal size.
+The compiler SHALL enforce finite configurable upper bounds for program source size, token count, syntax-tree depth, Language IR node count, block nesting depth, and list literal size.
 
-A policy exceeding any configured bound SHALL be rejected before execution with a diagnostic identifying the exceeded category.
+A program exceeding any configured bound SHALL be rejected before execution with a diagnostic identifying the exceeded category.
 
 Verification: Exercise each configured boundary at, below, and above its limit.
 Traceability: [Compiler Limits](07-constraints.md#75-compiler-limits); DIAG-001.
@@ -31,14 +31,14 @@ Traceability: [Compiler Limits](07-constraints.md#75-compiler-limits); DIAG-001.
 
 Partial evaluation SHALL use the dependency information required by PARTIAL-004, or an equivalent precomputed analysis, to avoid repeatedly traversing an unchanged subtree solely to rediscover whether it depends on an unknown root.
 
-Verification: Instrument a large multi-root policy and confirm dependency discovery is not recomputed recursively for every specialization decision.
+Verification: Instrument a large multi-root program and confirm dependency discovery is not recomputed recursively for every specialization decision.
 Traceability: PARTIAL-004.
 
 ## 6.3 Compilation Reuse
 
 ### PERF-003 — Compile before execution
 
-A policy SHALL pass parsing, binding, control-flow validation, type checking, complexity validation, and applicable queryability validation before it becomes executable for a consumer contract.
+A program SHALL pass parsing, binding, control-flow validation, type checking, complexity validation, and applicable queryability validation before it becomes executable for a consumer contract.
 
 A consumer MAY reuse an exact compiled artifact instead of recompiling the same source on every operation when the identity requirements in DATA-002 and DATA-003 are satisfied.
 
@@ -67,7 +67,7 @@ Traceability: DATA-004.
 
 ### QUAL-003 — Frontend replacement boundary
 
-Core Policy Language semantics SHALL depend on language-owned AST/Policy IR contracts rather than generated parser node types so that parser-generator upgrades or frontend replacement do not require rewriting evaluation and query semantics.
+Core Embedded Language semantics SHALL depend on language-owned AST/Language IR contracts rather than generated parser node types so that parser-generator upgrades or frontend replacement do not require rewriting evaluation and query semantics.
 
 Verification: Inspect dependency direction between syntax, semantic, evaluation, and query-lowering components.
 Traceability: LANG-001; [Parser Frontend](07-constraints.md#71-parser-frontend).
