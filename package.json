@@ -1,6 +1,6 @@
 {
   "name": "@taskmigo/specification",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0-alpha.4",
   "engines": {
     "node": "26.2.0",
     "npm": "11.13.0"
