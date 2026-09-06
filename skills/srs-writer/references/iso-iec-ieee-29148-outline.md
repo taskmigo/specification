@@ -90,13 +90,13 @@ Keep the canonical navigation in `README.md` and split the substantive SRS by th
 
 Use additional files only when the document becomes genuinely unwieldy or the user requests finer separation. Keep one canonical version and update all Markdown links and traceability references after restructuring.
 
-The README frontmatter SHALL contain only the feature name and document version. Its body SHALL contain a `Table of contents`, `Read order`, and `History` table with exactly `Version` and `Short summary of changes` columns. Each History summary cell SHALL present the changes for that version as bullet points; use HTML list markup such as `<ul><li>...</li></ul>` when a multi-item Markdown list would break the table layout. It SHALL disable `MD041` because it intentionally has no level-one heading. The README is navigation metadata, not a place for common knowledge or duplicated SRS content.
+The README SHALL contain navigation metadata only. Its frontmatter SHALL contain only the feature name and document version; its body SHALL contain a `Table of contents` and a `Read order` section. It SHALL not contain a `History` table, a history section, release notes, or duplicated change descriptions. Because the README intentionally has no level-one heading, it SHALL include `<!-- markdownlint-disable MD041 -->` immediately before the first heading. The README is navigation metadata, not a place for common knowledge or duplicated SRS content.
 
 Use one descriptive Markdown link for each issue, pull request, ticket, external document, standard, website, or other artifact outside the repository on its first mention in each document, or in that document's References section. Use a short, unambiguous name for later mentions unless the reader could lose the reference context. Do not leave bare URLs or unlinked external identifiers before the canonical link is established. Validate every relative Markdown link to another repository file by checking both its target path and fragment anchor, including after files are renamed or moved. External link availability is outside the repository's control and does not need to be validated by the internal-link check.
 
 ## Language quality
 
-Begin every prose sentence, bullet-point item, table-cell sentence, and History-summary bullet with an uppercase letter. Preserve the spelling and case of code identifiers, requirement IDs, URLs, file names, and other literal values.
+Begin every prose sentence, bullet-point item, and table-cell sentence with an uppercase letter. Preserve the spelling and case of code identifiers, requirement IDs, URLs, file names, and other literal values.
 
 No Common Knowledge: Omit self-evident facts and elementary background information. Include only information that changes a project decision or supports a verifiable requirement.
 

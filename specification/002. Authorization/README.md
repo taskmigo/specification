@@ -1,6 +1,6 @@
 ---
 name: Authorization feature
-version: 0.2.0
+version: 0.3.0
 ---
 
 <!-- markdownlint-disable MD041 -->
@@ -23,11 +23,4 @@ version: 0.2.0
 
 ## Read order
 
-Read the documents in section-number order from 1 through 11. Use the section links above for focused retrieval; use Section 9 for verification evidence and Section 10 for traceability or unresolved issues.
-
-## History
-
-| Version | Short summary of changes                                                                                                     |
-| ------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| 0.2.0   | Restricted Request Authorization to principal/request inputs and removed request-time business-resource loading.             |
-| 0.1.0   | Defined the ECMAScript policy authorization model, shared query filtering, operation snapshots, and verification boundaries. |
+Read the documents in section-number order from 1 through 11. Use the section links above for focused retrieval; use [Section 9](09-verification-validation-and-acceptance.md) for verification evidence and [Section 10](10-traceability-and-unresolved-issues.md) for traceability or unresolved issues.

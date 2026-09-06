@@ -2,7 +2,9 @@
 
 ## 6.1 Security
 
-Security requirements are specified by [security and failure constraints](07-constraints.md#73-security-and-failure-constraints), [Statement validation](03-external-interface-requirements.md#31-statement-contract), [Request input boundary](03-external-interface-requirements.md#32-authorization-inputs-and-operation-snapshot), [policy compilation](04-functional-and-behavioral-requirements.md#41-ecmascript-policy-compilation), and [request authorization](04-functional-and-behavioral-requirements.md#42-request-authorization).
+Security requirements are specified by [security and failure constraints](07-constraints.md#73-security-and-failure-constraints), [Statement validation](03-external-interface-requirements.md#31-statement-contract), [Request input boundary](03-external-interface-requirements.md#32-authorization-inputs-and-operation-snapshot), [policy compilation](04-functional-and-behavioral-requirements.md#41-policy-language-compilation), and [request authorization](04-functional-and-behavioral-requirements.md#42-request-authorization).
+
+The Policy Language compiler/evaluator security boundary is additionally governed by the [Policy Language constraints](../003.%20Policy%20Language/07-constraints.md).
 
 ## 6.2 Consistency
 
@@ -23,11 +25,11 @@ Traceability: [Product Perspective](02-overall-description.md#21-product-perspec
 
 Authorization-state resolution SHALL:
 
-- use a bounded number of database round trips;
-- avoid N+1 behavior;
-- avoid loading unrelated authorization graph nodes;
-- deduplicate effective authorization state;
-- avoid repeating the same effective-state resolution for Request and Object Authorization in one operation.
+- Use a bounded number of database round trips.
+- Avoid N+1 behavior.
+- Avoid loading unrelated authorization graph nodes.
+- Deduplicate effective authorization state.
+- Avoid repeating the same effective-state resolution for Request and Object Authorization in one operation.
 
 Unrelated growth in the authorization graph SHALL NOT increase the number of database round trips for one authorization operation.
 
@@ -36,10 +38,10 @@ Traceability: [Resolution and Operation Snapshot](02-overall-description.md#221-
 
 ### PERF-003 — Stress case
 
-The authorization system SHALL support a principal with approximately 500 effective Statements targeting the same API, including a case where no early constant result can terminate evaluation. This behavior SHALL use bounded database round trips and SHALL exercise target matching plus policy evaluation/partial evaluation.
+The authorization system SHALL support a principal with approximately 500 effective Statements targeting the same API, including a case where no early constant result can terminate evaluation. This behavior SHALL use bounded database round trips and SHALL exercise target matching plus Policy Language evaluation/partial evaluation.
 
-Verification: Run the approximately 500-Statement stress scenario with query-count instrumentation and verify target matching plus request evaluation and object partial evaluation.
-Traceability: [Resolution and Operation Snapshot](02-overall-description.md#221-resolution-and-operation-snapshot); PERF-002.
+Verification: Run the approximately 500-Statement stress scenario with query-count instrumentation and verify target matching plus Request evaluation and Object partial evaluation.
+Traceability: [Resolution and Operation Snapshot](02-overall-description.md#221-resolution-and-operation-snapshot); [Policy Language partial-evaluation performance](../003.%20Policy%20Language/06-quality-and-performance-requirements.md#perf-002--dependency-aware-partial-evaluation); PERF-002.
 
 ### PERF-004 — Database source of truth on every operation
 
@@ -57,8 +59,10 @@ Authorization Snapshots
 
 A request-scoped snapshot or request-scoped materialization of the Statements just read from the database is allowed and SHALL be discarded with the operation.
 
-Verification: Inspect authorization state access and run two sequential operations after a committed policy change, confirming each performs the required database resolution and no cross-request state is consulted.
-Traceability: [Scope](01-introduction.md#12-scope) database source-of-truth semantics; SNAPSHOT-001.
+A derived compiled Policy Language artifact MAY be reused only under POLICY-004 and SHALL NOT substitute for the database Statement lookup.
+
+Verification: Inspect authorization state access and run two sequential operations after a committed policy change, confirming each performs the required database resolution and no cross-request authorization state is consulted.
+Traceability: [Scope](01-introduction.md#12-scope) database source-of-truth semantics; SNAPSHOT-001; POLICY-004.
 
 ### PERF-005 — No distributed-cache correctness dependency
 
@@ -78,4 +82,4 @@ Traceability: [Integration and Consistency](02-overall-description.md#225-integr
 
 ## 6.4 Other Quality Attributes
 
-Reliability, availability, usability, maintainability, portability, and safety are Not applicable to this authorization capability because no measurable criteria for them are defined by the source contract.
+Reliability, availability, usability, maintainability, portability, and safety are Not applicable to this authorization capability because no additional measurable criteria for them are defined by the source contract.
