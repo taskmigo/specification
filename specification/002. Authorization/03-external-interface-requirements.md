@@ -16,9 +16,7 @@ target:
     path: <full-match path regex>
 
 policy: |
-  export default function policy() {
-    return principal.enabled && request.method == "GET";
-  }
+  export default () => principal.enabled && request.method == "GET";
 ```
 
 The canonical Statement SHALL contain the fields and nesting shown above.
@@ -39,30 +37,28 @@ Traceability: [Policy Language Contract](02-overall-description.md#223-policy-la
 
 ### STMT-003 — Required default export
 
-Every policy SHALL satisfy the [TPL source contract](../003.%20Policy%20Language/03-external-interface-requirements.md#31-source-contract), including exactly one `export default function` entry point whose reachable paths return static `Bool` values.
+Every policy SHALL satisfy the [TPL source contract](../003.%20Policy%20Language/03-external-interface-requirements.md#31-source-contract), including exactly one supported `export default` policy function whose result has static type `Bool`.
 
-Examples:
+Supported examples include:
 
 ```text
-export default function policy() {
+export default function() {
   return true;
 }
 ```
 
 ```text
-export default function policy() {
-  return principal.username == "admin";
-}
+export default () => principal.username == "admin";
 ```
 
 A policy that fails TPL parsing, export validation, binding, function-call validation, type checking, scope validation, or applicable queryability validation SHALL be rejected before the Statement becomes active.
 
-Verification: Compile valid default exports and invalid missing/multiple default exports, non-boolean return paths, unavailable roots, and unsupported residual operations.
+Verification: Compile every supported default-export form and invalid missing/multiple defaults, non-boolean results, unavailable roots, and unsupported residual operations.
 Traceability: [Policy Language Contract](02-overall-description.md#223-policy-language-contract); POLICY-001 through POLICY-003.
 
 ### STMT-004 — Boolean decision contract
 
-A valid active Statement policy SHALL have a default-exported function whose reachable paths return static type `Bool`.
+A valid active Statement policy SHALL have a supported default export whose result satisfies the TPL static `Bool` contract.
 
 During authorization:
 
@@ -73,7 +69,7 @@ During authorization:
 
 An evaluation failure or invalid residual contract SHALL raise an authorization exception and fail closed.
 
-Verification: Compile non-boolean/fall-through default functions and confirm activation is rejected; inject typed-input or function-evaluation failures and confirm authorization fails closed.
+Verification: Compile non-boolean/fall-through default functions and non-boolean concise arrows and confirm activation is rejected; inject typed-input or function-evaluation failures and confirm authorization fails closed.
 Traceability: [TPL boolean policy result](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#lang-002--boolean-default-policy-result); TECH-004; REQ-001.
 
 ### STMT-005 — Effect semantics
@@ -85,12 +81,10 @@ policy == true  -> apply effect
 policy == false -> Statement does not match
 ```
 
-An unconditional Statement SHALL be authored explicitly:
+An unconditional Statement SHALL be authored explicitly, for example:
 
 ```text
-export default function policy() {
-  return true;
-}
+export default () => true;
 ```
 
 Verification: Evaluate matching allow and deny Statements with true and false policy results and confirm that only true results apply the declared effect.
@@ -190,7 +184,7 @@ TPL and the Authorization consumer SHALL NOT provide a built-in `resource(...)` 
 An undeclared call to `resource(...)` SHALL be rejected by TPL. A source-declared zero-argument function named `resource` SHALL have no privileged behavior and SHALL NOT gain access to repositories or resource adapters.
 
 Verification: Reject undeclared `resource(...)` calls and confirm a locally declared `resource()` cannot access business-resource loading facilities.
-Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); [TPL source-declared functions](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#func-001--source-declared-functions-only).
+Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); [TPL source-declared functions](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#func-001--source-declared-named-helper-functions).
 
 ### RES-003 — No resource resolution
 

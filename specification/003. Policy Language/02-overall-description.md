@@ -36,11 +36,24 @@ The TPL subsystem provides:
 
 ### 2.2.1 Policy Model
 
-A TPL source is a policy unit containing top-level function declarations. Function declarations MAY use `export`, and exactly one function SHALL use `export default` as the policy entry point.
+A TPL source is a policy unit containing top-level function declarations and exactly one default export.
 
-Functions in the initial language take no parameters, may read values exposed through the Environment Schema, may declare immutable local `const` bindings, and may call other source-declared functions.
+The default export SHALL be one of these forms:
 
-Every reachable path of the default-exported function SHALL return a value of static type `Bool`. TPL has no implicit return, truthiness conversion, automatic semicolon insertion, or ECMAScript module execution semantics.
+```text
+export default function policy() { ... }
+export default function() { ... }
+export default () => { ... };
+export default () => expression;
+```
+
+Named helper functions use `function <name>() { ... }` and MAY use `export function <name>() { ... }`. Named exports do not create cross-policy imports in this version.
+
+Functions in the initial language take no parameters, may read values exposed through the Environment Schema, may declare immutable local `const` bindings, and may call other source-declared named functions.
+
+Every reachable path of a block-bodied default export SHALL return a value of static type `Bool`. A concise arrow default export SHALL have an expression of static type `Bool`.
+
+TPL has no truthiness conversion, automatic semicolon insertion, or ECMAScript module execution semantics.
 
 ### 2.2.2 Known and Unknown Inputs
 
@@ -66,9 +79,9 @@ TPL is consumed by policy authors, authorization components, schema providers, q
 
 The following scenarios are supporting context, not additional normative requirements:
 
-1. A Request policy is compiled once for an exact policy revision and its default-exported function is evaluated repeatedly with known `principal` and `request` values.
+1. A Request policy is compiled once for an exact policy revision and its default-exported policy function is evaluated repeatedly with known `principal` and `request` values.
 2. An Object policy is compiled, then partially evaluated with known request/principal values while `object` remains symbolic.
-3. A named helper function encapsulates an object predicate and is statically resolved from the default-exported function.
+3. A named helper function encapsulates an object predicate and is statically resolved from the default export.
 4. An Object policy whose known branch resolves to `true` produces no residual object restriction.
 5. An Object policy whose residual expression references a queryable object field is lowered by the Authorization consumer into its persistence-neutral filter representation.
 

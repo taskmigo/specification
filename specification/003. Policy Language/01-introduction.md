@@ -11,9 +11,11 @@ This document is tailored to the software-requirements information-item guidance
 TPL SHALL provide a bounded, statically typed, side-effect-free policy language with these capabilities:
 
 - Compile policy source into Taskmigo-owned typed Policy IR.
-- Use JavaScript-like declaration and control-flow surface syntax without adopting ECMAScript runtime semantics.
+- Use JavaScript-like declaration, export, control-flow, parenthesis, and arrow-function surface syntax without adopting ECMAScript runtime semantics.
 - Support top-level named function declarations and exactly one default-exported policy function.
-- Support immutable local `const` bindings, `return`, parenthesized `if` conditions with block bodies, boolean logic, comparisons, arithmetic, list membership, and property paths.
+- Support a named or unnamed `function` declaration as the default export.
+- Support a zero-parameter arrow function as the default export, with either a block body or concise expression body.
+- Support immutable local `const` bindings, `return`, `if`, boolean logic, comparisons, arithmetic, list membership, and property paths.
 - Evaluate policies whose required inputs are known.
 - Partially evaluate policies when selected inputs are unknown.
 - Preserve unknown-dependent predicates as residual typed expressions.
@@ -26,6 +28,7 @@ The following capabilities are outside the scope of this SRS:
 
 - General-purpose scripting.
 - Function parameters, recursion, loops, mutable variables, nested functions, closures, exceptions, asynchronous execution, or I/O.
+- Arrow functions outside the default-export form specified by this version.
 - Built-in or registered utility functions such as `startsWith`, `endsWith`, `contains`, `lower`, or equivalent helpers.
 - Dynamic property names, reflection, arbitrary method invocation, or host-language object access.
 - Cross-policy imports or module linking.

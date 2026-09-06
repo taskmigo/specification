@@ -4,7 +4,7 @@
 
 The examples in this section are supporting material and do not add requirements beyond the normative sections.
 
-### Request Predicate
+### Named Default Function
 
 ```text
 function canRead() {
@@ -18,7 +18,34 @@ export default function policy() {
 }
 ```
 
-### Object Predicate
+### Unnamed Default Function
+
+```text
+export default function() {
+  if (principal.admin) {
+    return true;
+  }
+
+  return principal.enabled;
+}
+```
+
+### Block Arrow Default
+
+```text
+export default () => {
+  const readable = request.method == "GET";
+  return principal.enabled && readable;
+};
+```
+
+### Concise Arrow Default
+
+```text
+export default () => principal.enabled && request.method == "GET";
+```
+
+### Object Predicate with Helper Functions
 
 ```text
 function isOwner() {
@@ -30,20 +57,8 @@ function hasDepartmentAccess() {
     && object.classification != "SECRET";
 }
 
-export default function policy() {
+export default function() {
   return principal.admin || isOwner() || hasDepartmentAccess();
-}
-```
-
-### Conditional Predicate
-
-```text
-export default function policy() {
-  if (principal.admin) {
-    return true;
-  } else {
-    return object.ownerId == principal.id;
-  }
 }
 ```
 
@@ -54,9 +69,7 @@ export function isOwner() {
   return object.ownerId == principal.id;
 }
 
-export default function policy() {
-  return isOwner();
-}
+export default () => isOwner();
 ```
 
 The named export does not create a cross-policy import facility in this version.
@@ -79,10 +92,8 @@ function isOwner() {
   return object.ownerId == principal.id;
 }
 
-export default function policy() {
-  return principal.admin
-    || (isOwner() && request.method == "GET");
-}
+export default () =>
+  principal.admin || (isOwner() && request.method == "GET");
 ```
 
 SHALL specialize to a residual predicate equivalent to:

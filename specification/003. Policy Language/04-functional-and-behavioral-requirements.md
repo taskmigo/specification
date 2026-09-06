@@ -13,11 +13,13 @@ Traceability: [Product Perspective](02-overall-description.md#21-product-perspec
 
 ### LANG-002 — Boolean default-policy result
 
-Every reachable path of the default-exported function SHALL return a value of static type `Bool`.
+Every reachable path of a block-bodied default export SHALL return a value of static type `Bool`.
 
-A default-exported function with a non-boolean return path or a reachable path that falls through without `return` SHALL be rejected during compilation. Runtime truthy/falsy conversion SHALL NOT exist.
+A concise arrow default export SHALL have an expression of static type `Bool`.
 
-Verification: Compile default functions whose paths return boolean, string, number, null, list, or no value and accept only complete boolean-returning cases.
+A block-bodied default export with a non-boolean return path or a reachable path that falls through without `return` SHALL be rejected during compilation. Runtime truthy/falsy conversion SHALL NOT exist.
+
+Verification: Compile named/unnamed default functions and block/concise arrow defaults whose results are boolean, string, number, null, list, or fall-through and accept only complete boolean-result cases.
 Traceability: [Policy Model](02-overall-description.md#221-policy-model); TYPE-001.
 
 ### LANG-003 — Immutable local bindings
@@ -33,57 +35,77 @@ Traceability: SYNTAX-001; [Language Restrictions](07-constraints.md#72-language-
 
 ### LANG-004 — Conditional statement
 
-`if (<condition>) { ... }` SHALL require a `Bool` condition. Parentheses and braces SHALL be required by the source contract.
+`if (<condition>) { ... }` SHALL require a `Bool` condition and the parenthesized form specified by SYNTAX-003.
 
 Only the selected branch SHALL be evaluated when the condition is concrete.
 
-During partial evaluation, a concrete condition SHALL select one branch. An unknown condition SHALL preserve the branch-dependent boolean semantics in residual Policy IR when required to determine the default function result.
+During partial evaluation, a concrete condition SHALL select one branch. An unknown condition SHALL preserve the branch-dependent boolean semantics in residual Policy IR when required to determine the default-export result.
 
 Verification: Test direct and partial evaluation with true, false, and unknown conditions, including `else if` and `else` paths.
 Traceability: TYPE-001; PARTIAL-001; QUERY-001.
 
+### LANG-005 — Return statement
+
+A block-bodied function SHALL support `return <expression>;` and SHALL terminate the current function invocation when the statement executes.
+
+Statements lexically following an unconditional `return` in the same block SHALL be unreachable and SHALL NOT affect evaluation, partial evaluation, dependency analysis, or queryability.
+
+A concise arrow default export SHALL return its expression without requiring a `return` token.
+
+Verification: Test early return, branch-specific return, unreachable statements after return, and equivalence between a concise arrow and a block arrow returning the same expression.
+Traceability: SYNTAX-002; EVAL-001; PARTIAL-001.
+
 ## 4.2 Functions and Exports
 
-### FUNC-001 — Source-declared functions only
+### FUNC-001 — Source-declared named helper functions
 
-A function call SHALL resolve at compile time to a top-level function declared in the same policy source.
+A helper-function call SHALL resolve at compile time to a top-level named function declared in the same policy source.
 
-The initial language SHALL support only zero-argument functions and zero-argument calls. Functions MAY read Environment Schema roots and previously visible local values within their own body; functions SHALL NOT capture caller-local variables.
+The initial language SHALL support only zero-argument helper functions and zero-argument calls. Helper functions MAY read Environment Schema roots and local values declared within their own body; helper functions SHALL NOT capture caller-local variables.
 
 An undeclared call, including a call to a utility-style name such as `startsWith`, `endsWith`, `contains`, `lower`, or `resource`, SHALL be rejected during compilation.
 
-Verification: Compile calls to declared functions, reject undeclared utility-style calls, and reject function parameters or call arguments.
+Verification: Compile calls to declared helpers, reject undeclared utility-style calls, and reject function parameters or call arguments.
 Traceability: SYNTAX-002; ENV-001.
 
 ### FUNC-002 — Function return typing
 
-Every callable source-declared function SHALL return a value on every reachable path. All reachable return values of one function SHALL have one compatible static type.
+Every callable source-declared named helper SHALL return a value on every reachable path. All reachable return values of one helper SHALL have one compatible static type.
 
-The compiler SHALL infer the function return type from its return expressions after binding and type checking. Falling through a reachable function path SHALL be a compile-time error rather than an `undefined` result.
+The compiler SHALL infer the helper return type from its return expressions after binding and type checking. Falling through a reachable helper path SHALL be a compile-time error rather than an `undefined` result.
 
 Verification: Compile helper functions with consistent and inconsistent return paths/types and reject reachable fall-through.
-Traceability: TYPE-001; [Strict Semantics](07-constraints.md#73-strict-semantics).
+Traceability: TYPE-001; LANG-005; [Strict Semantics](07-constraints.md#73-strict-semantics).
 
 ### FUNC-003 — Acyclic call graph
 
 Direct and indirect recursion SHALL be rejected during compilation.
 
-The compiler SHALL construct or otherwise validate a finite acyclic call graph for all functions reachable from the default-exported function.
+The compiler SHALL construct or otherwise validate a finite acyclic call graph for all named helper functions reachable from the default export.
 
-Source-declared function calls SHALL be represented or lowered so that evaluation, partial evaluation, dependency analysis, and residual queryability are derived from the called function body without arbitrary host-language dispatch.
+Source-declared helper calls SHALL be represented or lowered so that evaluation, partial evaluation, dependency analysis, and residual queryability are derived from the called function body without arbitrary host-language dispatch.
 
 Verification: Accept an acyclic helper chain, reject direct recursion and a multi-function cycle, and inspect residual queryability through a helper function referencing `object`.
 Traceability: PARTIAL-004; QUERY-001; QUAL-002.
 
 ### FUNC-004 — Export contract
 
-Exactly one top-level function SHALL be declared with `export default` and SHALL serve as the only policy entry point.
+Exactly one top-level `export default` SHALL serve as the policy entry point.
+
+The default export SHALL accept these forms:
+
+```text
+export default function <name>() { ... }
+export default function() { ... }
+export default () => { ... };
+export default () => <expression>;
+```
 
 A non-default `export function <name>() { ... }` SHALL be permitted. Named exports SHALL NOT create a cross-policy import or linking mechanism in this version.
 
-Duplicate exported names, multiple default exports, or a default export that is not a function declaration SHALL be rejected.
+Duplicate exported names, multiple default exports, a default-exported construct outside the supported function forms, or an arrow function outside the default-export position SHALL be rejected.
 
-Verification: Test valid named/default exports and each invalid export form.
+Verification: Test each supported default-export form, valid named exports, and every listed invalid export/function form.
 Traceability: SYNTAX-001; LANG-002.
 
 ## 4.3 Type System and Operators
@@ -150,7 +172,7 @@ Traceability: TYPE-001; SYNTAX-003.
 
 ### REF-001 — Static reference resolution
 
-Every value reference SHALL resolve at compile time to either a previously declared local `const` binding or an Environment Schema root/path. Every call SHALL resolve according to FUNC-001.
+Every value reference SHALL resolve at compile time to either a previously declared local `const` binding or an Environment Schema root/path. Every helper call SHALL resolve according to FUNC-001.
 
 An unknown root, unknown path, unavailable scope-specific path, dynamic path, or unknown call target SHALL be rejected before activation.
 
@@ -161,12 +183,12 @@ Traceability: ENV-001; SYNTAX-004; FUNC-001.
 
 ### EVAL-001 — Known-input evaluation
 
-When every dependency required by the selected execution path is known, TPL SHALL evaluate the default-exported function to exactly one `Bool` or an evaluation failure.
+When every dependency required by the selected execution path is known, TPL SHALL evaluate the default export to exactly one `Bool` or an evaluation failure.
 
-Evaluation SHALL preserve `&&`, `||`, `if`, and function return semantics so that an unreachable failing expression does not fail the evaluation.
+Evaluation SHALL preserve `&&`, `||`, `if`, `return`, and helper-call semantics so that an unreachable failing expression does not fail the evaluation.
 
-Verification: Evaluate representative policies with known inputs, including unreachable divide-by-zero branches and helper-function calls.
-Traceability: TYPE-002; LANG-004; EVAL-IF-002.
+Verification: Evaluate representative named/unnamed function and arrow default exports with known inputs, including unreachable divide-by-zero branches and helper-function calls.
+Traceability: TYPE-002; LANG-004; LANG-005; EVAL-IF-002.
 
 ### EVAL-002 — Deterministic values
 
@@ -183,7 +205,7 @@ Partial evaluation SHALL evaluate any expression or function path whose value ca
 
 A result that still depends on an unknown input SHALL remain as typed residual Policy IR unless boolean simplification eliminates that dependency.
 
-Verification: Partially evaluate policies that mix known and unknown roots, including helper functions, and inspect the residual typed IR.
+Verification: Partially evaluate policies that mix known and unknown roots, including helper functions and supported default-export forms, and inspect the residual typed IR.
 Traceability: [Known and Unknown Inputs](02-overall-description.md#222-known-and-unknown-inputs).
 
 ### PARTIAL-002 — Constant folding and boolean simplification
@@ -201,14 +223,14 @@ false || X  -> X
 !false      -> true
 ```
 
-A simplification SHALL NOT evaluate a branch that direct evaluation would skip because of short-circuit or `if` semantics.
+A simplification SHALL NOT evaluate a branch that direct evaluation would skip because of short-circuit, `if`, or `return` semantics.
 
 Verification: Test each identity and a skipped failing branch.
 Traceability: TYPE-002; EVAL-001.
 
 ### PARTIAL-003 — Residual boolean contract
 
-A successful partial evaluation of the default-exported policy SHALL produce a concrete `Bool` or a residual expression whose static type is `Bool`.
+A successful partial evaluation of the default export SHALL produce a concrete `Bool` or a residual expression whose static type is `Bool`.
 
 A residual expression of another type SHALL be impossible for a valid compiled policy. If internal corruption produces such a result, evaluation SHALL fail closed at the consumer boundary.
 
@@ -217,11 +239,11 @@ Traceability: LANG-002; EVAL-IF-002.
 
 ### PARTIAL-004 — Dependency metadata
 
-Compiled Policy IR SHALL record the set of environment roots on which each expression and reachable source-declared function depends, or equivalent metadata that permits the partial evaluator to determine whether an expression can be evaluated without recursively rediscovering its root dependencies.
+Compiled Policy IR SHALL record the set of environment roots on which each expression and reachable source-declared helper depends, or equivalent metadata that permits the partial evaluator to determine whether an expression can be evaluated without recursively rediscovering its root dependencies.
 
-Dependency metadata SHALL be preserved or recomputed correctly after constant folding, function-call lowering, and residual rewriting.
+Dependency metadata SHALL be preserved or recomputed correctly after constant folding, helper-call lowering, default-export normalization, and residual rewriting.
 
-Verification: Inspect dependency sets before and after simplification for constant, single-root, multi-root, and helper-function expressions.
+Verification: Inspect dependency sets before and after simplification for constant, single-root, multi-root, arrow-default, and helper-function expressions.
 Traceability: [Known and Unknown Inputs](02-overall-description.md#222-known-and-unknown-inputs); PERF-002.
 
 ## 4.7 Query-Lowering Capability
@@ -230,7 +252,7 @@ Traceability: [Known and Unknown Inputs](02-overall-description.md#222-known-and
 
 A consumer that requires database-side evaluation of an unknown root SHALL validate, before policy activation for that consumer mapping, that every possible residual unknown-dependent operation is query-lowerable under the selected Environment Schema.
 
-Source-declared function boundaries SHALL NOT hide residual operations from queryability analysis. Queryability SHALL be determined from the function body semantics reachable from the default-exported function.
+Source-declared helper boundaries SHALL NOT hide residual operations from queryability analysis. Queryability SHALL be determined from the helper body semantics reachable from the default export.
 
 A consumer SHALL NOT defer a known queryability incompatibility until unrestricted business rows have been loaded.
 
@@ -241,7 +263,7 @@ Traceability: [Query-Lowering Boundary](02-overall-description.md#223-query-lowe
 
 The initial language SHALL NOT provide built-in or registered utility functions for runtime evaluation or query lowering.
 
-Calls such as the following SHALL be rejected unless the source itself declares a zero-argument function with that exact name:
+Calls such as the following SHALL be rejected unless the source itself declares a zero-argument named helper with that exact name:
 
 ```text
 startsWith(...)

@@ -37,12 +37,12 @@ arbitrary host method calls
 built-in or registered utility functions
 ```
 
-Top-level zero-argument source-declared functions are explicitly permitted by FUNC-001 through FUNC-004 and SHALL remain subject to the acyclic-call and purity constraints.
+Top-level zero-argument named helper functions and the default-export function forms defined by FUNC-004 are explicitly permitted. Arrow functions outside the default-export position are not part of this version.
 
 A future language revision SHALL require an explicit specification change before adding one of the excluded capabilities.
 
 Verification: Confirm the grammar excludes each construct and rejection tests cover representative syntax.
-Traceability: [Scope](01-introduction.md#12-scope); QUAL-002; FUNC-003.
+Traceability: [Scope](01-introduction.md#12-scope); QUAL-002; FUNC-003; FUNC-004.
 
 ## 7.3 Strict Semantics
 
@@ -63,7 +63,7 @@ Policy source SHALL be treated as untrusted compiler input.
 
 TPL SHALL NOT expose repositories, dependency-injection containers, persistence entities, filesystems, networks, processes, reflection, class loaders, arbitrary Java objects, or host methods to policy expressions.
 
-A call expression SHALL invoke only a source-declared function resolved according to FUNC-001. A function name SHALL NOT become privileged merely because it matches a host or utility function name.
+A helper-call expression SHALL invoke only a source-declared named function resolved according to FUNC-001. A function name SHALL NOT become privileged merely because it matches a host or utility function name.
 
 Verification: Attempt to reference forbidden host facilities and call undeclared utility/host functions and confirm they are unreachable.
 Traceability: FUNC-001; DATA-001.

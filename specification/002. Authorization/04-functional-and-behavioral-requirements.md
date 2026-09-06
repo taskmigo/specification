@@ -21,16 +21,16 @@ For `scope: request`, the Environment Schema SHALL expose `principal` and `reque
 
 For `scope: object`, the Environment Schema SHALL expose `principal`, `request`, and symbolic/query-bound `object`.
 
-Verification: Compile the same TPL function/export syntax in both scopes and confirm only the Environment Schema/queryability differences change acceptance.
+Verification: Compile supported named/unnamed function and arrow default-export forms in both scopes and confirm only the Environment Schema/queryability differences change acceptance.
 Traceability: [Authorization inputs](03-external-interface-requirements.md#32-authorization-inputs-and-operation-snapshot); [TPL Environment Schema](../003.%20Policy%20Language/03-external-interface-requirements.md#env-001--environment-schema).
 
 ### POLICY-003 — Static validation
 
 Before a Statement becomes active, compilation SHALL validate:
 
-- TPL syntax and exactly one default export.
-- Source-declared function binding and acyclic call graph.
-- Static types, including complete `Bool` return paths for the default-exported function.
+- TPL syntax and exactly one supported default export.
+- Source-declared named helper binding and acyclic call graph.
+- Static types, including complete `Bool` results for the default export.
 - Supported roots and fields for the Statement scope.
 - Compiler complexity limits.
 - Applicable Object residual queryability for the selected Filter Schema mapping.
@@ -64,23 +64,17 @@ Traceability: [Policy Language Contract](02-overall-description.md#223-policy-la
 
 Constant policy results and constant subexpressions SHALL be folded when TPL semantics are unchanged.
 
-At minimum:
+At minimum, policies equivalent to these forms SHALL be represented as constant policy results:
 
 ```text
-export default function policy() {
+export default function() {
   return true;
 }
 ```
 
-and:
-
 ```text
-export default function policy() {
-  return false;
-}
+export default () => false;
 ```
-
-SHALL be represented as constant policy results.
 
 Verification: Compile the true and false constant examples and inspect Policy IR for constant representations; evaluate equivalent constant subexpressions.
 Traceability: [TPL constant folding](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#partial-002--constant-folding-and-boolean-simplification); OBJ-005.
@@ -142,7 +136,7 @@ A concrete `true` SHALL lower to `ALL`; a concrete `false` SHALL lower to `NONE`
 
 An evaluation failure or invalid residual contract SHALL raise an authorization exception and fail closed.
 
-Verification: Partially evaluate constant, symbolic, helper-function, and failing object policies and confirm concrete booleans and residual predicates become valid filters while failures deny.
+Verification: Partially evaluate constant, symbolic, helper-function, function-declaration-default, arrow-default, and failing object policies and confirm concrete booleans and residual predicates become valid filters while failures deny.
 Traceability: [Shared Object Filter](02-overall-description.md#222-shared-object-filter); STMT-004.
 
 ### OBJ-002 — Initial Filter Schema scope
