@@ -1,7 +1,7 @@
 ---
 metadata:
-  version: 0.3.0
-  changelog: Replaced the restricted ECMAScript policy source contract with Taskmigo Policy Language and delegated language semantics to the Policy Language specification.
+  version: 0.3.1
+  changelog: Updated Authorization to consume Embedded Language while preserving the existing Statement and authorization semantics.
 ---
 
 <!-- markdownlint-disable MD041 -->

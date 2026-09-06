@@ -4,7 +4,7 @@
 
 The examples in this section are supporting material and do not add requirements beyond the normative sections. Each example assumes the shown root names are declared by the consumer-provided Environment Schema.
 
-### Direct Predicate
+### Direct Program
 
 ```text
 const enabled = record.enabled == true;
@@ -13,7 +13,7 @@ const aboveThreshold = record.score >= context.minimumScore;
 return enabled && aboveThreshold;
 ```
 
-### Conditional Predicate
+### Conditional Program
 
 ```text
 if (context.override) {
@@ -23,7 +23,7 @@ if (context.override) {
 return record.enabled == true;
 ```
 
-### Nested Conditional Predicate
+### Nested Conditional Program
 
 ```text
 if (context.override) {
@@ -45,7 +45,7 @@ context.minimumScore = 10
 record = unknown
 ```
 
-The policy:
+The program:
 
 ```text
 return context.override || record.score >= context.minimumScore;
@@ -57,7 +57,7 @@ SHALL specialize to a residual predicate equivalent to:
 record.score >= 10
 ```
 
-The exact internal Policy IR shape is implementation-private as long as the control-flow, residual semantics, and query-lowering contract are preserved.
+The exact internal Language IR shape is implementation-private as long as the control-flow, residual semantics, and query-lowering contract are preserved.
 
 ## 11.3 Callable and Utility Functions (non-normative)
 
@@ -77,4 +77,4 @@ A future language revision may define callable or utility functions only after s
 
 ## 11.4 Source-Language Migration Note (non-normative)
 
-A migration tool from a previous restricted ECMAScript policy source may compile legacy source into its semantic IR and print equivalent canonical Policy Language source. Source-to-source text rewriting is not required by this SRS.
+A migration tool from a previous restricted ECMAScript source may compile legacy source into its semantic IR and print equivalent canonical Embedded Language source. Source-to-source text rewriting is not required by this SRS.
