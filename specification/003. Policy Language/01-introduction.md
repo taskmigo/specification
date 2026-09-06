@@ -10,28 +10,24 @@ This document is tailored to the software-requirements information-item guidance
 
 TPL SHALL provide a bounded, statically typed, side-effect-free policy language with these capabilities:
 
-- Compile policy source into Taskmigo-owned typed Policy IR.
-- Use JavaScript-like declaration, export, control-flow, parenthesis, and arrow-function surface syntax without adopting ECMAScript runtime semantics.
-- Support top-level named function declarations and exactly one default-exported policy function.
-- Support a named or unnamed `function` declaration as the default export.
-- Support a zero-parameter arrow function as the default export, with either a block body or concise expression body.
-- Support immutable local `const` bindings, `return`, `if`, boolean logic, comparisons, arithmetic, list membership, and property paths.
+- Compile one policy body into Taskmigo-owned typed Policy IR.
+- Use JavaScript-like `const`, `return`, `if (...)`, block, expression-grouping, and boolean-operator syntax without adopting ECMAScript runtime semantics.
 - Evaluate policies whose required inputs are known.
 - Partially evaluate policies when selected inputs are unknown.
 - Preserve unknown-dependent predicates as residual typed expressions.
 - Determine whether residual predicates can be lowered by a consumer-provided query-lowering capability.
-- Reject source that depends on dynamic language behavior, arbitrary host APIs, utility functions not declared by the policy source, or unbounded computation.
+- Support immutable local bindings, conditional control flow, boolean logic, comparisons, arithmetic, list membership, and static property paths.
+- Reject source that depends on dynamic language behavior, arbitrary host APIs, callable constructs, or unbounded computation.
 
 TPL SHALL NOT define Statement `effect`, authorization target matching, Role/Group assignment, authorization snapshot resolution, allow/deny composition, or persistence-specific query execution. Those behaviors are defined by the [Authorization feature](../002.%20Authorization/README.md).
 
 The following capabilities are outside the scope of this SRS:
 
 - General-purpose scripting.
-- Function parameters, recursion, loops, mutable variables, nested functions, closures, exceptions, asynchronous execution, or I/O.
-- Arrow functions outside the default-export form specified by this version.
+- `export`, modules, imports, or cross-Statement reuse.
+- User-defined functions, arrow functions, function calls, function parameters, recursion, loops, mutable variables, closures, exceptions, asynchronous execution, or I/O.
 - Built-in or registered utility functions such as `startsWith`, `endsWith`, `contains`, `lower`, or equivalent helpers.
 - Dynamic property names, reflection, arbitrary method invocation, or host-language object access.
-- Cross-policy imports or module linking.
 - A persistence API such as JPA Criteria or JPA Specification.
 - Client-facing query syntax unrelated to policy source.
 

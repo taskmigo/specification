@@ -5,8 +5,7 @@
 - The [Authorization feature](../002.%20Authorization/README.md) is the initial TPL consumer and defines Request/Object Authorization behavior outside the language.
 - Consumers provide Environment Schemas that define roots, fields, nullability, scalar semantics, and query capabilities.
 - Consumers that require database-side residual evaluation provide a persistence-neutral query-lowering boundary.
-- Source-declared function semantics are compiled and analyzed entirely within the TPL subsystem.
-- The initial language provides no built-in or registered utility-function library.
+- The initial language provides no export/module system, user-defined functions, arrow functions, call expressions, or utility-function library.
 - The parser frontend depends on the ANTLR Java runtime as constrained by TECH-001.
 - TPL does not depend on an ECMAScript parser or JavaScript runtime.
 
@@ -14,9 +13,9 @@
 
 | Responsibility                                      | TPL subsystem | Authorization consumer |
 | --------------------------------------------------- | ------------- | ---------------------- |
-| Parse canonical policy source                       | SHALL         | SHALL NOT              |
-| Validate exports and source-declared function calls | SHALL         | SHALL NOT              |
-| Bind and type-check expressions                     | SHALL         | SHALL NOT              |
+| Parse canonical policy body                         | SHALL         | SHALL NOT              |
+| Bind and type-check statements/expressions          | SHALL         | SHALL NOT              |
+| Validate complete boolean return control flow       | SHALL         | SHALL NOT              |
 | Produce typed Policy IR                             | SHALL         | SHALL NOT              |
 | Evaluate known policy inputs                        | SHALL         | MAY invoke             |
 | Partially evaluate known/unknown inputs             | SHALL         | MAY invoke             |

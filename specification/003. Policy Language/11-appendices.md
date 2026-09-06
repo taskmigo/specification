@@ -4,75 +4,47 @@
 
 The examples in this section are supporting material and do not add requirements beyond the normative sections.
 
-### Named Default Function
+### Request Predicate
 
 ```text
-function canRead() {
-  const readable = request.method == "GET";
-  const enabled = principal.enabled == true;
-  return readable && enabled;
+const readable = request.method == "GET";
+const enabled = principal.enabled == true;
+
+return readable && enabled;
+```
+
+### Object Predicate
+
+```text
+const owner = object.ownerId == principal.id;
+const departmentAccess =
+  object.departmentId in principal.departmentIds
+  && object.classification != "SECRET";
+
+return principal.admin || owner || departmentAccess;
+```
+
+### Conditional Predicate
+
+```text
+if (principal.admin) {
+  return true;
 }
 
-export default function policy() {
-  return canRead();
-}
+return object.ownerId == principal.id;
 ```
 
-### Unnamed Default Function
+### Nested Conditional Predicate
 
 ```text
-export default function() {
-  if (principal.admin) {
-    return true;
-  }
-
-  return principal.enabled;
-}
-```
-
-### Block Arrow Default
-
-```text
-export default () => {
-  const readable = request.method == "GET";
-  return principal.enabled && readable;
-};
-```
-
-### Concise Arrow Default
-
-```text
-export default () => principal.enabled && request.method == "GET";
-```
-
-### Object Predicate with Helper Functions
-
-```text
-function isOwner() {
+if (principal.admin) {
+  return true;
+} else if (request.method == "GET") {
   return object.ownerId == principal.id;
-}
-
-function hasDepartmentAccess() {
-  return object.departmentId in principal.departmentIds
-    && object.classification != "SECRET";
-}
-
-export default function() {
-  return principal.admin || isOwner() || hasDepartmentAccess();
+} else {
+  return false;
 }
 ```
-
-### Named Export
-
-```text
-export function isOwner() {
-  return object.ownerId == principal.id;
-}
-
-export default () => isOwner();
-```
-
-The named export does not create a cross-policy import facility in this version.
 
 ## 11.2 Partial Evaluation Example
 
@@ -88,12 +60,8 @@ object = unknown
 The policy:
 
 ```text
-function isOwner() {
-  return object.ownerId == principal.id;
-}
-
-export default () =>
-  principal.admin || (isOwner() && request.method == "GET");
+return principal.admin
+  || (object.ownerId == principal.id && request.method == "GET");
 ```
 
 SHALL specialize to a residual predicate equivalent to:
@@ -102,22 +70,24 @@ SHALL specialize to a residual predicate equivalent to:
 object.ownerId == "u-123"
 ```
 
-The exact internal Policy IR shape is implementation-private as long as the function-body semantics, residual semantics, and query-lowering contract are preserved.
+The exact internal Policy IR shape is implementation-private as long as the control-flow, residual semantics, and query-lowering contract are preserved.
 
-## 11.3 Utility Functions (non-normative)
+## 11.3 Callable and Utility Functions (non-normative)
 
-Utility functions are intentionally absent from the initial language contract.
+Callable syntax is intentionally absent from the initial language contract.
 
-The following undeclared calls are examples of syntax that SHALL NOT compile in this version:
+The following examples SHALL NOT compile in this version:
 
 ```text
-startsWith(object.name)
+function isOwner() { return true; }
+export default () => true;
+startsWith(object.name, "task-")
 lower(object.email)
-contains(principal.roles)
+contains(principal.roles, "admin")
 ```
 
-A future language revision may define utility functions only after specifying their static types, runtime behavior, partial-evaluation behavior, and query-lowering semantics.
+A future language revision may define callable or utility functions only after specifying their syntax, static types, runtime behavior, partial-evaluation behavior, query-lowering semantics, and reuse boundary.
 
 ## 11.4 Source-Language Migration Note (non-normative)
 
-A migration tool from the previous restricted ECMAScript policy source may compile legacy source into its existing semantic IR and print equivalent canonical TPL source. Source-to-source text rewriting is not required by this SRS.
+A migration tool from the previous restricted ECMAScript policy source may compile legacy source into its existing semantic IR and print equivalent canonical TPL policy-body source. Source-to-source text rewriting is not required by this SRS.

@@ -13,7 +13,7 @@ Traceability: [Policy Language Contract](02-overall-description.md#223-policy-la
 
 ### POLICY-002 — Supported policy language
 
-The source syntax, export/function semantics, type system, operator semantics, evaluation semantics, partial evaluation, and queryability rules SHALL be defined by the [Policy Language feature](../003.%20Policy%20Language/README.md).
+The policy-body syntax, type system, control-flow semantics, operator semantics, evaluation semantics, partial evaluation, and queryability rules SHALL be defined by the [Policy Language feature](../003.%20Policy%20Language/README.md).
 
 Authorization SHALL NOT extend TPL with authorization-only syntax or utility functions. Authorization-specific behavior SHALL be expressed through the scope-dependent Environment Schema, Statement effect, and Object query-lowering mapping.
 
@@ -21,16 +21,15 @@ For `scope: request`, the Environment Schema SHALL expose `principal` and `reque
 
 For `scope: object`, the Environment Schema SHALL expose `principal`, `request`, and symbolic/query-bound `object`.
 
-Verification: Compile supported named/unnamed function and arrow default-export forms in both scopes and confirm only the Environment Schema/queryability differences change acceptance.
+Verification: Compile the same direct TPL policy-body syntax in both scopes and confirm only the Environment Schema/queryability differences change acceptance.
 Traceability: [Authorization inputs](03-external-interface-requirements.md#32-authorization-inputs-and-operation-snapshot); [TPL Environment Schema](../003.%20Policy%20Language/03-external-interface-requirements.md#env-001--environment-schema).
 
 ### POLICY-003 — Static validation
 
 Before a Statement becomes active, compilation SHALL validate:
 
-- TPL syntax and exactly one supported default export.
-- Source-declared named helper binding and acyclic call graph.
-- Static types, including complete `Bool` results for the default export.
+- TPL syntax.
+- Binding and static types, including complete `Bool` return paths.
 - Supported roots and fields for the Statement scope.
 - Compiler complexity limits.
 - Applicable Object residual queryability for the selected Filter Schema mapping.
@@ -64,17 +63,19 @@ Traceability: [Policy Language Contract](02-overall-description.md#223-policy-la
 
 Constant policy results and constant subexpressions SHALL be folded when TPL semantics are unchanged.
 
-At minimum, policies equivalent to these forms SHALL be represented as constant policy results:
+At minimum:
 
 ```text
-export default function() {
-  return true;
-}
+return true;
 ```
 
+and:
+
 ```text
-export default () => false;
+return false;
 ```
+
+SHALL be represented as constant policy results.
 
 Verification: Compile the true and false constant examples and inspect Policy IR for constant representations; evaluate equivalent constant subexpressions.
 Traceability: [TPL constant folding](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#partial-002--constant-folding-and-boolean-simplification); OBJ-005.
@@ -91,7 +92,7 @@ ELSE ALLOW if any target-matching ALLOW Statement evaluates true
 ELSE DENY
 ```
 
-Each active Request policy SHALL already satisfy the TPL static `Bool` default-export contract.
+Each active Request policy SHALL already satisfy the TPL static complete-`Bool` return contract.
 
 Failures in policy evaluation or required `principal`/`request` input resolution SHALL fail closed.
 
@@ -117,11 +118,11 @@ For `scope: request`, authorization SHALL evaluate the policy using only the `pr
 
 Request Authorization SHALL NOT load business resources, invoke resource adapters, or make resource data available through `object`.
 
-A Request policy that references `object`, `resources`, or attempts to call an undeclared resource-loading utility function SHALL be rejected before the Statement becomes active. No compatibility fallback SHALL ignore these constructs.
+A Request policy that references `object`, `resources`, or uses call syntax SHALL be rejected before the Statement becomes active. No compatibility fallback SHALL ignore these constructs.
 
 Statement database resolution and creation of the operation-scoped Authorization Snapshot SHALL remain part of authorization and SHALL not be interpreted as business-resource loading.
 
-Verification: Accept Request policies using the supported `principal` and `request` fields; reject `object`, `resources`, and undeclared `resource(...)`; verify the resource exclusions and no resource lookup specified by RES-001–RES-003; inject missing required request inputs and confirm denial.
+Verification: Accept Request policies using the supported `principal` and `request` fields; reject `object`, `resources`, and `resource(...)`; verify the resource exclusions and no resource lookup specified by RES-001–RES-003; inject missing required request inputs and confirm denial.
 Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); INPUT-001 through INPUT-003; RES-001 through RES-003; [Fail-Closed Behavior](07-constraints.md#74-fail-closed-behavior).
 
 ## 4.3 Object Authorization and Shared Filter AST
@@ -130,13 +131,13 @@ Traceability: [Request Authorization Input Boundary](02-overall-description.md#2
 
 For `scope: object`, Taskmigo SHALL partially evaluate the TPL policy with known `principal` and `request` values while retaining `object.*` as symbolic values.
 
-Partial evaluation SHALL follow the [TPL Partial Evaluation requirements](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#46-partial-evaluation).
+Partial evaluation SHALL follow the [TPL Partial Evaluation requirements](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#45-partial-evaluation).
 
 A concrete `true` SHALL lower to `ALL`; a concrete `false` SHALL lower to `NONE`. A residual boolean Policy IR predicate SHALL be lowered to Filter AST.
 
 An evaluation failure or invalid residual contract SHALL raise an authorization exception and fail closed.
 
-Verification: Partially evaluate constant, symbolic, helper-function, function-declaration-default, arrow-default, and failing object policies and confirm concrete booleans and residual predicates become valid filters while failures deny.
+Verification: Partially evaluate constant, symbolic, conditional, early-return, and failing Object policies and confirm concrete booleans and residual predicates become valid filters while failures deny.
 Traceability: [Shared Object Filter](02-overall-description.md#222-shared-object-filter); STMT-004.
 
 ### OBJ-002 — Initial Filter Schema scope
@@ -172,11 +173,11 @@ Authorization filtering SHALL execute before pagination. The authorization syste
 
 An Object policy that can produce a residual expression not representable by the selected Filter Schema / Filter AST SHALL not be active for that Object Authorization mapping.
 
-Source-declared helper functions SHALL NOT hide residual object fields or operators from activation-time queryability validation.
+Control-flow constructs SHALL NOT hide residual fields or operators from activation-time queryability validation.
 
 The activation validation SHALL satisfy the [TPL residual queryability](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#query-001--residual-queryability) requirement.
 
-Verification: Activate policies using supported and unsupported residual fields/operators directly and through helper functions and confirm mapping validation rejects unsupported cases before activation; verify authorized rows are filtered in the database before pagination.
+Verification: Activate policies using supported and unsupported residual fields/operators across conditional/return paths and confirm mapping validation rejects unsupported cases before activation; verify authorized rows are filtered in the database before pagination.
 Traceability: [Shared Object Filter](02-overall-description.md#222-shared-object-filter); POLICY-003.
 
 ### OBJ-005 — Composition
@@ -198,7 +199,7 @@ ALL OR X             -> ALL
 NONE OR X            -> X
 ALL AND X             -> X
 NONE AND X           -> NONE
-NOT ALL               -> NONE
+NOT ALL              -> NONE
 NOT NONE              -> ALL
 ```
 

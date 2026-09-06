@@ -16,7 +16,8 @@ target:
     path: <full-match path regex>
 
 policy: |
-  export default () => principal.enabled && request.method == "GET";
+  const readable = request.method == "GET";
+  return principal.enabled && readable;
 ```
 
 The canonical Statement SHALL contain the fields and nesting shown above.
@@ -35,30 +36,34 @@ The Statement SHALL be invalid when `policy` is missing, `null`, empty, or white
 Verification: Test create and update requests for each invalid value and confirm that no invalid Statement becomes active.
 Traceability: [Policy Language Contract](02-overall-description.md#223-policy-language-contract); POLICY-001.
 
-### STMT-003 — Required default export
+### STMT-003 — Required TPL policy body
 
-Every policy SHALL satisfy the [TPL source contract](../003.%20Policy%20Language/03-external-interface-requirements.md#31-source-contract), including exactly one supported `export default` policy function whose result has static type `Bool`.
+Every policy SHALL satisfy the [TPL source contract](../003.%20Policy%20Language/03-external-interface-requirements.md#31-source-contract) and every reachable control-flow path SHALL return static type `Bool`.
 
-Supported examples include:
+Authorization SHALL NOT require or permit an `export`, function, arrow-function, module, or entry-point wrapper in the Statement policy contract.
+
+Examples:
 
 ```text
-export default function() {
+return true;
+```
+
+```text
+if (principal.username == "admin") {
   return true;
 }
+
+return false;
 ```
 
-```text
-export default () => principal.username == "admin";
-```
+A policy that fails TPL parsing, binding, control-flow validation, type checking, scope validation, or applicable queryability validation SHALL be rejected before the Statement becomes active.
 
-A policy that fails TPL parsing, export validation, binding, function-call validation, type checking, scope validation, or applicable queryability validation SHALL be rejected before the Statement becomes active.
-
-Verification: Compile every supported default-export form and invalid missing/multiple defaults, non-boolean results, unavailable roots, and unsupported residual operations.
+Verification: Compile valid policy bodies and invalid export/function/arrow/call syntax, non-boolean/fall-through paths, unavailable roots, and unsupported residual operations.
 Traceability: [Policy Language Contract](02-overall-description.md#223-policy-language-contract); POLICY-001 through POLICY-003.
 
 ### STMT-004 — Boolean decision contract
 
-A valid active Statement policy SHALL have a supported default export whose result satisfies the TPL static `Bool` contract.
+A valid active Statement policy SHALL satisfy the TPL static complete-`Bool` return contract.
 
 During authorization:
 
@@ -69,8 +74,8 @@ During authorization:
 
 An evaluation failure or invalid residual contract SHALL raise an authorization exception and fail closed.
 
-Verification: Compile non-boolean/fall-through default functions and non-boolean concise arrows and confirm activation is rejected; inject typed-input or function-evaluation failures and confirm authorization fails closed.
-Traceability: [TPL boolean policy result](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#lang-002--boolean-default-policy-result); TECH-004; REQ-001.
+Verification: Compile non-boolean/fall-through policy bodies and confirm activation is rejected; inject typed-input/evaluation failures and confirm authorization fails closed.
+Traceability: [TPL boolean policy result](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#lang-002--boolean-policy-result); TECH-004; REQ-001.
 
 ### STMT-005 — Effect semantics
 
@@ -81,10 +86,10 @@ policy == true  -> apply effect
 policy == false -> Statement does not match
 ```
 
-An unconditional Statement SHALL be authored explicitly, for example:
+An unconditional Statement SHALL be authored explicitly:
 
 ```text
-export default () => true;
+return true;
 ```
 
 Verification: Evaluate matching allow and deny Statements with true and false policy results and confirm that only true results apply the declared effect.
@@ -177,14 +182,14 @@ The `resources` root SHALL not be part of the Authorization TPL Environment Sche
 Verification: Attempt to activate Request and Object policies referencing `resources` and confirm both are rejected before activation.
 Traceability: INPUT-001; [TPL static reference resolution](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#ref-001--static-reference-resolution).
 
-### RES-002 — No resource-loading utility function
+### RES-002 — No resource-loading call syntax
 
 TPL and the Authorization consumer SHALL NOT provide a built-in `resource(...)` function or another privileged utility function for loading business resources.
 
-An undeclared call to `resource(...)` SHALL be rejected by TPL. A source-declared zero-argument function named `resource` SHALL have no privileged behavior and SHALL NOT gain access to repositories or resource adapters.
+Because call expressions are outside the initial TPL grammar, `resource(...)` and equivalent call syntax SHALL be rejected before activation.
 
-Verification: Reject undeclared `resource(...)` calls and confirm a locally declared `resource()` cannot access business-resource loading facilities.
-Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); [TPL source-declared functions](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#func-001--source-declared-named-helper-functions).
+Verification: Attempt to activate a policy invoking `resource(...)` and confirm it is rejected before activation.
+Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); [TPL callable exclusion](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#query-002--initial-callable-exclusion).
 
 ### RES-003 — No resource resolution
 

@@ -31,14 +31,14 @@ At minimum, the identity SHALL cover:
 - The policy source content or a collision-resistant source fingerprint.
 - The TPL language version.
 - The Environment Schema identity or compatible revision fingerprint.
-- The compiler contract required to preserve the parsed function/export semantics and typed Policy IR.
+- The compiler contract required to preserve the parsed control-flow and typed Policy IR semantics.
 
 Verification: Change each identity input independently and confirm a stale artifact cannot be treated as an exact match.
 Traceability: [Compilation Reuse](06-quality-and-performance-requirements.md#63-compilation-reuse).
 
 ### DATA-004 — Source locations
 
-Policy IR or associated diagnostic metadata SHALL preserve source spans sufficient to report the location of parse, binding, export, function-call, type, and queryability errors to a policy author.
+Policy IR or associated diagnostic metadata SHALL preserve source spans sufficient to report the location of parse, binding, control-flow, type, complexity, and queryability errors to a policy author.
 
 Verification: Produce one error in each category and confirm diagnostics identify the relevant source range.
 Traceability: DIAG-001.

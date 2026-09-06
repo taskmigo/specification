@@ -43,18 +43,16 @@ Policy source is untrusted compiler input.
 
 The Authorization consumer SHALL satisfy the [TPL isolation and compiler constraints](../003.%20Policy%20Language/07-constraints.md).
 
-The Authorization Environment Schema SHALL NOT expose repositories, Spring/ApplicationContext objects, JPA entities, filesystem/network/process access, reflection, arbitrary Java objects, or host methods.
+The authorization Environment Schema SHALL NOT expose repositories, Spring/ApplicationContext objects, JPA entities, filesystem/network/process access, reflection, arbitrary Java objects, host methods, or callable utility surfaces.
 
-Authorization SHALL NOT register or expose utility functions outside the TPL source-declared function contract.
-
-Verification: Inspect the Authorization TPL Environment Schema and execute policies attempting forbidden host access or undeclared utility calls and policies exceeding complexity limits; confirm rejection or isolation.
+Verification: Inspect the Authorization TPL Environment Schema and execute policies attempting forbidden host access or call syntax; confirm rejection or isolation.
 Traceability: [Policy Language Contract](02-overall-description.md#223-policy-language-contract); POLICY-001 through POLICY-003.
 
 ## 7.4 Fail-Closed Behavior
 
 ### TECH-004 — Fail-closed authorization
 
-Policy parse, export, binding, function, type, complexity, scope, or queryability errors SHALL prevent activation.
+Policy parse, binding, control-flow, type, complexity, scope, or queryability errors SHALL prevent activation.
 
 Runtime authorization failures SHALL not grant access.
 

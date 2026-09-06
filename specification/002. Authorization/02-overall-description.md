@@ -63,8 +63,9 @@ The authorization system SHALL:
 
 - Use `scope` instead of `target.type` and required `policy` instead of `conditions[]`.
 - Compile `policy` using the [Policy Language feature](../003.%20Policy%20Language/README.md).
+- Treat the Statement `policy` string itself as the TPL executable body without an export/function/module wrapper.
 - Supply the scope-dependent typed Environment Schema required by TPL.
-- Enforce the TPL default-exported boolean policy contract.
+- Enforce the TPL complete boolean-return contract.
 - Keep database-loaded Statement state authoritative for every operation.
 - Permit compiled Policy IR reuse only as a derived optimization that cannot bypass database resolution.
 - Evaluate Request policies using known `principal` and `request` values.
@@ -79,7 +80,7 @@ The authorization system SHALL:
 
 - Provide `request.pathVariables` as authorization input.
 - Make only `principal` and `request` available to `scope: request` policies.
-- Reject Request policies that reference unavailable roots such as `object` or `resources`, or attempt to call an undeclared resource-loading utility function, before activation.
+- Reject Request policies that reference unavailable roots such as `object` or `resources`, or use call syntax, before activation.
 - Perform Request Authorization without loading business resources or invoking resource adapters.
 
 ### 2.2.5 Integration and Consistency
@@ -95,7 +96,7 @@ The authorization capability is consumed by policy authors, authorization-aware 
 The following scenarios are supporting context, not additional normative requirements:
 
 1. A request operation resolves effective authorization state from the database, creates one immutable snapshot, matches the request target, and evaluates applicable Request Statements.
-2. A Request policy evaluates the available `principal` and `request` inputs through the default-exported TPL function without loading business resources.
+2. A Request policy evaluates the available `principal` and `request` inputs through its TPL policy body without loading business resources.
 3. An Object policy partially evaluates known inputs through TPL, lowers the residual predicate to Filter AST, and applies authorization before pagination.
 4. A committed authorization change is observed by the next operation while the current operation continues with its existing snapshot.
 

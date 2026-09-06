@@ -4,38 +4,24 @@
 
 ### SYNTAX-001 — Canonical policy shape
 
-A TPL source SHALL contain top-level named function declarations and exactly one `export default` declaration that defines the policy entry point.
+A TPL source SHALL be one policy body containing statements directly at the source root.
 
-The default export SHALL accept a named function declaration, an unnamed function declaration, a block-bodied zero-parameter arrow function, or a concise zero-parameter arrow function.
-
-Examples:
+Example:
 
 ```text
-export default function policy() {
-  return principal.enabled && request.method == "GET";
+const owner = object.ownerId == principal.id;
+const readable = request.method == "GET";
+
+if (principal.admin) {
+  return true;
 }
+
+return readable && owner;
 ```
 
-```text
-export default function() {
-  return principal.enabled && request.method == "GET";
-}
-```
+The source SHALL NOT require or permit an `export`, module, function, arrow-function, or entry-point wrapper declaration.
 
-```text
-export default () => {
-  const readable = request.method == "GET";
-  return principal.enabled && readable;
-};
-```
-
-```text
-export default () => principal.enabled && request.method == "GET";
-```
-
-A top-level named helper MAY be declared with `function <name>() { ... }` or `export function <name>() { ... }`. Named export syntax SHALL NOT imply cross-policy import or module-linking support in this version.
-
-Verification: Parse each default-export form, named helpers, and named exports, then reject sources with zero or multiple default exports.
+Verification: Parse the example and equivalent single-return policies, then reject source containing `export`, `function`, arrow syntax, or a callable declaration.
 Traceability: [Policy Model](02-overall-description.md#221-policy-model).
 
 ### SYNTAX-002 — Canonical grammar
@@ -43,71 +29,52 @@ Traceability: [Policy Model](02-overall-description.md#221-policy-model).
 The parser SHALL implement language behavior equivalent to this grammar:
 
 ```ebnf
-policy            ::= topLevelDecl* EOF ;
+policy       ::= statement* EOF ;
 
-topLevelDecl      ::= functionDecl
-                    | "export" functionDecl
-                    | defaultExport ;
+statement    ::= constDecl | ifStmt | returnStmt ;
+block        ::= "{" statement* "}" ;
+constDecl    ::= "const" IDENT "=" expression ";" ;
+returnStmt   ::= "return" expression ";" ;
+ifStmt       ::= "if" "(" expression ")" block
+                 ( "else" ( ifStmt | block ) )? ;
 
-functionDecl      ::= "function" IDENT "(" ")" block ;
-defaultExport     ::= "export" "default" defaultFunction ;
-defaultFunction   ::= "function" IDENT? "(" ")" block
-                    | arrowFunction ";" ;
-arrowFunction     ::= "(" ")" "=>" ( block | expression ) ;
+expression   ::= orExpr ;
+orExpr       ::= andExpr ( "||" andExpr )* ;
+andExpr      ::= equalityExpr ( "&&" equalityExpr )* ;
+equalityExpr ::= compareExpr ( ( "==" | "!=" ) compareExpr )* ;
+compareExpr  ::= inExpr ( ( "<" | "<=" | ">" | ">=" ) inExpr )* ;
+inExpr       ::= additiveExpr ( "in" additiveExpr )? ;
+additiveExpr ::= multiplyExpr ( ( "+" | "-" ) multiplyExpr )* ;
+multiplyExpr ::= unaryExpr ( ( "*" | "/" | "%" ) unaryExpr )* ;
+unaryExpr    ::= ( "!" | "+" | "-" ) unaryExpr
+               | primary ;
 
-block             ::= "{" statement* "}" ;
-statement         ::= constDecl | ifStmt | returnStmt ;
-constDecl         ::= "const" IDENT "=" expression ";" ;
-returnStmt        ::= "return" expression ";" ;
-ifStmt            ::= "if" "(" expression ")" block
-                      ( "else" ( ifStmt | block ) )? ;
+primary      ::= literal
+               | listLiteral
+               | reference
+               | "(" expression ")" ;
 
-expression        ::= orExpr ;
-orExpr            ::= andExpr ( "||" andExpr )* ;
-andExpr           ::= equalityExpr ( "&&" equalityExpr )* ;
-equalityExpr      ::= compareExpr ( ( "==" | "!=" ) compareExpr )* ;
-compareExpr       ::= inExpr ( ( "<" | "<=" | ">" | ">=" ) inExpr )* ;
-inExpr            ::= additiveExpr ( "in" additiveExpr )? ;
-additiveExpr      ::= multiplyExpr ( ( "+" | "-" ) multiplyExpr )* ;
-multiplyExpr      ::= unaryExpr ( ( "*" | "/" | "%" ) unaryExpr )* ;
-unaryExpr         ::= ( "!" | "+" | "-" ) unaryExpr
-                    | primary ;
-
-primary           ::= literal
-                    | listLiteral
-                    | reference
-                    | call
-                    | "(" expression ")" ;
-
-reference         ::= IDENT ( "." IDENT )* ;
-call              ::= IDENT "(" ")" ;
-listLiteral       ::= "[" ( expression ( "," expression )* )? "]" ;
-
-literal           ::= "true" | "false" | "null" | NUMBER | STRING ;
+reference    ::= IDENT ( "." IDENT )* ;
+listLiteral  ::= "[" ( expression ( "," expression )* )? "]" ;
+literal      ::= "true" | "false" | "null" | NUMBER | STRING ;
 ```
 
-`function`, `export`, `default`, `const`, `if`, `else`, `return`, `in`, `true`, `false`, and `null` SHALL be reserved keywords.
+`const`, `if`, `else`, `return`, `in`, `true`, `false`, and `null` SHALL be reserved keywords.
 
-The source SHALL contain exactly one `defaultExport`.
+`export`, `function`, `=>`, and call-expression syntax SHALL NOT be part of the language grammar in this version.
 
-Function parameters and call arguments SHALL NOT be supported in this version; zero-parameter function declarations, calls, and arrow functions therefore use `()`.
-
-Verification: Generate parser tests covering every production and precedence boundary, including named/unnamed default functions, block/concise arrows, declarations, `return`, parenthesized `if`, boolean operators, comparison, membership, arithmetic, calls, and grouping expressions.
+Verification: Generate parser tests covering each production and precedence boundary and rejection tests for excluded export/function/arrow/call forms.
 Traceability: SYNTAX-001; [Parser Frontend](07-constraints.md#71-parser-frontend).
 
-### SYNTAX-003 — Parentheses and delimiters
+### SYNTAX-003 — JavaScript-like delimiters, identifiers, and literals
 
-TPL SHALL follow the JavaScript-like parenthesis placement defined by the supported grammar:
+Parentheses around every `if` condition SHALL be mandatory, matching the supported JavaScript-style control-flow form `if (<expression>)`.
 
-- `if` SHALL require parentheses around its condition: `if (<expression>)`.
-- Zero-parameter function declarations and calls SHALL use `()`.
-- A zero-parameter arrow function SHALL use `() =>`.
-- Parentheses MAY group an expression and SHALL affect precedence in the same syntactic position as a JavaScript grouping expression.
-- `return` and `const` expressions SHALL NOT require an additional pair of parentheses.
+Parentheses MAY group expressions wherever the grammar permits and SHALL NOT be required around a `return` expression or `const` initializer when JavaScript would not require them.
 
-Braces SHALL remain mandatory around `if` and `else` bodies in this version, except that `else if (...) { ... }` MAY use the nested `if` form defined by SYNTAX-002.
+Braces around every `if` and `else` body SHALL be mandatory except that `else if (...) { ... }` MAY use the nested `if` form defined by SYNTAX-002.
 
-Semicolons SHALL be mandatory after `const`, `return`, and an arrow-function default export; TPL SHALL NOT provide automatic semicolon insertion.
+Semicolons SHALL be mandatory after `const` and `return`; TPL SHALL NOT provide automatic semicolon insertion.
 
 Identifiers SHALL begin with an ASCII letter or `_` and SHALL continue with ASCII letters, decimal digits, or `_`.
 
@@ -117,12 +84,12 @@ Number literals SHALL represent finite base-10 values without `NaN` or infinity 
 
 List literals SHALL preserve source order.
 
-Verification: Test each required/optional parenthesis position, required braces/semicolons, valid and invalid identifiers, string escapes, finite number literals, unary signs, and list literal ordering.
+Verification: Test required `if` parentheses/braces/semicolons, optional expression grouping, valid and invalid identifiers, string escapes, finite number literals, unary signs, and list literal ordering.
 Traceability: SYNTAX-002; TYPE-001 through TYPE-004.
 
-### SYNTAX-004 — No dynamic member or method syntax
+### SYNTAX-004 — No dynamic member, method, or call syntax
 
-Property paths SHALL use static dot-separated identifiers. Computed member syntax, method-call syntax, optional-chaining syntax, and calls through property paths SHALL be rejected.
+Property paths SHALL use static dot-separated identifiers. Computed member syntax, method-call syntax, optional-chaining syntax, and function-call syntax SHALL be rejected.
 
 The following forms are outside the language:
 
@@ -130,6 +97,7 @@ The following forms are outside the language:
 object[field]
 object.getOwner()
 object?.ownerId
+startsWith(object.name, "task-")
 ```
 
 Verification: Reject each excluded form and accept an equivalent statically declared property path when the Environment Schema contains it.
@@ -147,12 +115,12 @@ Compilation SHALL receive an Environment Schema that defines every available roo
 - Whether the path may remain symbolic during partial evaluation.
 - Whether the path can participate in consumer query lowering when it remains symbolic.
 
-A reference that is neither a local `const` binding, a source-declared function call, nor a schema root/path SHALL be rejected before activation.
+A reference that is neither a visible local `const` binding nor a schema root/path SHALL be rejected before activation.
 
-No built-in or registered utility-function namespace SHALL be available in this language version.
+No built-in, registered, or source-declared callable namespace SHALL be available in this language version.
 
-Verification: Compile the same source against schemas that add/remove a root or path, call declared and undeclared function names, and confirm deterministic acceptance or rejection.
-Traceability: REF-001; FUNC-001; QUERY-001.
+Verification: Compile the same source against schemas that add/remove a root or path and confirm deterministic acceptance or rejection; reject representative call expressions.
+Traceability: REF-001; QUERY-001.
 
 ### ENV-002 — Authorization roots
 
@@ -185,7 +153,7 @@ Traceability: TYPE-001; [Strict Semantics](07-constraints.md#73-strict-semantics
 
 ### EVAL-IF-002 — Result forms
 
-Direct evaluation of the default export SHALL return exactly one `Bool` result or an evaluation failure.
+Direct evaluation of a valid policy body SHALL return exactly one `Bool` result or an evaluation failure.
 
 Partial evaluation SHALL return either:
 
@@ -195,5 +163,5 @@ Partial evaluation SHALL return either:
 
 No other result form SHALL be interpreted as an authorization decision.
 
-Verification: Exercise concrete true/false, residual, and invalid-result scenarios for function-declaration and arrow default exports.
+Verification: Exercise concrete true/false, residual, and invalid-result scenarios.
 Traceability: EVAL-001; PARTIAL-001; PARTIAL-003.
