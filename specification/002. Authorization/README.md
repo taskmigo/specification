@@ -1,6 +1,6 @@
 ---
 name: Authorization feature
-version: 0.2.0
+version: 0.3.0
 ---
 
 <!-- markdownlint-disable MD041 -->
@@ -27,7 +27,8 @@ Read the documents in section-number order from 1 through 11. Use the section li
 
 ## History
 
-| Version | Short summary of changes                                                                                                     |
-| ------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| 0.2.0   | Restricted Request Authorization to principal/request inputs and removed request-time business-resource loading.             |
-| 0.1.0   | Defined the ECMAScript policy authorization model, shared query filtering, operation snapshots, and verification boundaries. |
+| Version | Short summary of changes                                                                                                                                                                                                   |
+| ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 0.3.0   | <ul><li>Replaced the restricted ECMAScript policy source contract with Taskmigo Policy Language.</li><li>Delegated language typing, evaluation, partial evaluation, and queryability semantics to the Policy Language SRS.</li></ul> |
+| 0.2.0   | <ul><li>Restricted Request Authorization to principal/request inputs.</li><li>Removed request-time business-resource loading.</li></ul>                                                                                   |
+| 0.1.0   | <ul><li>Defined the initial policy authorization model, shared query filtering, operation snapshots, and verification boundaries.</li></ul>                                                                               |

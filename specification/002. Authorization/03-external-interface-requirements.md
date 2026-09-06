@@ -16,9 +16,7 @@ target:
     path: <full-match path regex>
 
 policy: |
-  export default ({ request, principal }) => {
-    return true;
-  };
+  principal.enabled and request.method == "GET"
 ```
 
 The canonical Statement SHALL contain the fields and nesting shown above.
@@ -26,59 +24,53 @@ The canonical Statement SHALL contain the fields and nesting shown above.
 `scope` controls how the policy is evaluated. `target.api` is the only target shape specified by this SRS.
 
 Verification: Inspect the persisted Statement schema and API representation against the contract, then run a serialization contract test.
-Traceability: [Scope](01-introduction.md#12-scope); [ECMAScript Policy Contract](02-overall-description.md#223-ecmascript-policy-contract).
+Traceability: [Scope](01-introduction.md#12-scope); [Policy Language Contract](02-overall-description.md#223-policy-language-contract).
 
 ### STMT-002 — Required policy
 
-`policy` SHALL be a required, non-null, non-blank string.
+`policy` SHALL be a required, non-null, non-blank TPL source string.
 
 The Statement SHALL be invalid when `policy` is missing, `null`, empty, or whitespace-only.
 
 Verification: Test create and update requests for each invalid value and confirm that no invalid Statement becomes active.
-Traceability: [ECMAScript Policy Contract](02-overall-description.md#223-ecmascript-policy-contract); TECH-004.
+Traceability: [Policy Language Contract](02-overall-description.md#223-policy-language-contract); POLICY-001.
 
-### STMT-003 — Required entry point
+### STMT-003 — Required boolean policy expression
 
-Every policy SHALL define a supported `export default` function or arrow function.
+Every policy SHALL satisfy the [TPL source contract](../003.%20Policy%20Language/03-external-interface-requirements.md#31-source-contract) and compile to a final expression of static type `Bool`.
 
-The decision function MAY declare no arguments or one object-pattern argument selecting supported roots. `principal` and `request` are supported for Request and Object Authorization; `object` is supported only for Object Authorization.
+Authorization SHALL NOT require an `export default` wrapper, JavaScript function, module entry point, or implicit return.
 
 Examples:
 
-```js
-export default () => true;
+```text
+true
 ```
 
-```js
-export default ({ principal }) => {
-  return principal.username === "admin";
-};
+```text
+principal.username == "admin"
 ```
 
-A module with no supported default-exported decision function SHALL be rejected before the Statement becomes active.
+A policy that fails TPL parsing, binding, type checking, scope validation, or applicable queryability validation SHALL be rejected before the Statement becomes active.
 
-Verification: Compile policies with a missing, named-only, and unsupported default export and confirm activation is rejected.
-Traceability: [ECMAScript Policy Contract](02-overall-description.md#223-ecmascript-policy-contract); POLICY-001.
+Verification: Compile valid boolean expressions and invalid syntax, non-boolean result expressions, unavailable roots, and unsupported residual operations.
+Traceability: [Policy Language Contract](02-overall-description.md#223-policy-language-contract); POLICY-001 through POLICY-003.
 
 ### STMT-004 — Boolean decision contract
 
-The runtime result of the default-exported decision function SHALL be a boolean.
-
-Taskmigo SHALL NOT require compile-time control-flow/type analysis to prove that every reachable execution path returns a boolean.
+A valid active Statement policy SHALL have static result type `Bool`.
 
 During authorization:
 
-- a concrete decision result that is `true` or `false` is valid;
-- a concrete result of `null`, `undefined`, string, number, object, or any other non-boolean value SHALL raise an authorization exception;
-- falling through without a return is equivalent to `undefined` and SHALL raise an authorization exception;
-- runtime truthy/falsy coercion SHALL NOT be used.
+- A direct TPL evaluation SHALL return `true` or `false`, or an evaluation failure.
+- A concrete non-boolean result SHALL NOT be accepted as a decision.
+- Runtime truthy/falsy coercion SHALL NOT be used.
+- An Object policy partial evaluation SHALL return a concrete boolean or a residual boolean Policy IR predicate.
 
-Authorization exceptions caused by an invalid policy result SHALL fail closed.
+An evaluation failure or invalid residual contract SHALL raise an authorization exception and fail closed.
 
-For Object Authorization, partial evaluation SHALL produce a boolean residual predicate. If the evaluated/residual result cannot represent a boolean authorization predicate, authorization SHALL raise an exception and fail closed.
-
-Verification: Execute request and object policies returning each listed non-boolean value, including fall-through, and confirm an authorization exception and denial.
-Traceability: [ECMAScript Policy Contract](02-overall-description.md#223-ecmascript-policy-contract); TECH-004.
+Verification: Compile non-boolean policy results and confirm activation is rejected; inject typed-input or intrinsic evaluation failures and confirm authorization fails closed.
+Traceability: [TPL boolean policy result](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#lang-002--boolean-policy-result); TECH-004; REQ-001.
 
 ### STMT-005 — Effect semantics
 
@@ -91,8 +83,8 @@ policy == false -> Statement does not match
 
 An unconditional Statement SHALL be authored explicitly:
 
-```js
-export default () => true;
+```text
+true
 ```
 
 Verification: Evaluate matching allow and deny Statements with true and false policy results and confirm that only true results apply the declared effect.
@@ -123,16 +115,16 @@ target.api.path
 policy
 ```
 
-`target_type`, `conditions[]`, and `statement_conditions` SHALL be removed from the final model. No compatibility execution path for legacy conditions is required.
+`target_type`, `conditions[]`, and `statement_conditions` SHALL be removed from the final model. No compatibility execution path for legacy conditions or ECMAScript policy source is required.
 
-Verification: Inspect the schema, API models, bootstrap data, and authorization execution path for the canonical fields and absence of legacy-condition execution.
-Traceability: [Product Perspective](02-overall-description.md#21-product-perspective-and-baseline); [ECMAScript Policy Contract](02-overall-description.md#223-ecmascript-policy-contract).
+Verification: Inspect the schema, API models, bootstrap data, and authorization execution path for the canonical fields and absence of legacy-condition/ECMAScript execution.
+Traceability: [Product Perspective](02-overall-description.md#21-product-perspective-and-baseline); [Policy Language Contract](02-overall-description.md#223-policy-language-contract).
 
 ## 3.2 Authorization Inputs and Operation Snapshot
 
 ### INPUT-001 — Policy roots
 
-The decision function SHALL use these scope-dependent roots:
+The Authorization TPL Environment Schema SHALL expose these scope-dependent roots:
 
 ```text
 principal
@@ -159,16 +151,16 @@ principal.username
 
 Additional principal attributes require an explicit typed authorization contract.
 
-Verification: Provide a request with path variables and the minimum principal fields and confirm the policy input shape; reject or separately specify unsupported principal attributes.
-Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); [Product Perspective](02-overall-description.md#21-product-perspective-and-baseline).
+Verification: Provide a request with path variables and the minimum principal fields and confirm the TPL Environment Schema/input shape; reject or separately specify unsupported principal attributes.
+Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); [TPL Environment Schema](../003.%20Policy%20Language/03-external-interface-requirements.md#32-compilation-environment).
 
 ### INPUT-002 — Object root and Request boundary
 
-For `scope: request`, the `object` root SHALL be unavailable. A Request policy that declares, destructures, or references `object` SHALL be rejected before activation.
+For `scope: request`, the `object` root SHALL be absent from the TPL Environment Schema. A Request policy that references `object` SHALL be rejected before activation.
 
-For `scope: object`, `object.*` remains symbolic during partial evaluation and is validated through the selected Filter Schema.
+For `scope: object`, `object.*` remains symbolic during partial evaluation and is validated through the selected Filter Schema and TPL queryability contract.
 
-Verification: Compile Request policies that use `principal` and `request` and confirm they are accepted; reject direct, destructured, and property-based `object` references. Partially evaluate an Object policy with symbolic object fields and confirm that Object input remains supported.
+Verification: Compile Request policies that use `principal` and `request` and confirm they are accepted; reject `object` references. Partially evaluate an Object policy with symbolic object fields and confirm that Object input remains supported.
 Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); [Shared Object Filter](02-overall-description.md#222-shared-object-filter); OBJ-001.
 
 ### INPUT-003 — Request input availability
@@ -178,19 +170,19 @@ For `scope: request`, Taskmigo SHALL supply only the `principal` and `request` v
 Verification: Evaluate a Request policy using the supported `principal` and `request` fields with no business-resource lookup and confirm the supplied values are the complete policy input.
 Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); REQ-003.
 
-### RES-001 — Resource export exclusion
+### RES-001 — Resource root exclusion
 
-The named export `resources` SHALL not be part of the policy contract for either authorization scope. A policy that declares `resources` SHALL be rejected before activation.
+The `resources` root SHALL not be part of the Authorization TPL Environment Schema for either authorization scope. A policy that references `resources` SHALL be rejected before activation.
 
-Verification: Attempt to activate Request and Object policies declaring `resources` and confirm both are rejected before activation.
-Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); STMT-003.
+Verification: Attempt to activate Request and Object policies referencing `resources` and confirm both are rejected before activation.
+Traceability: INPUT-001; [TPL static reference resolution](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#ref-001--static-reference-resolution).
 
 ### RES-002 — Resource intrinsic exclusion
 
-The `resource(type, key)` compiler intrinsic SHALL not be part of the policy contract. A policy that invokes `resource(...)` SHALL be rejected before activation.
+The `resource(type, key)` intrinsic SHALL not be registered by the Authorization TPL consumer. A policy that invokes `resource(...)` SHALL be rejected before activation.
 
 Verification: Attempt to activate a policy invoking `resource(...)` and confirm it is rejected before activation.
-Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); POLICY-002.
+Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); [TPL registered intrinsics](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#intr-001--registered-pure-intrinsics).
 
 ### RES-003 — No resource resolution
 
