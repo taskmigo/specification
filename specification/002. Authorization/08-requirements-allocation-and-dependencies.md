@@ -2,7 +2,7 @@
 
 ## 8.1 Assumptions and Dependencies
 
-- The [Policy Language feature](../003.%20Policy%20Language/README.md) defines TPL syntax, typing, evaluation, partial evaluation, diagnostics, and queryability contracts.
+- The [Policy Language feature](../003.%20Policy%20Language/README.md) defines policy syntax, typing, evaluation, partial evaluation, diagnostics, and generic queryability contracts.
 - `target.api` is the only target shape defined by this SRS.
 - The database is the authoritative source for effective authorization state.
 - Request and Object Authorization share one operation-scoped snapshot.
@@ -13,6 +13,6 @@
 
 ## 8.2 Requirements Allocation
 
-TPL owns policy-language semantics through the dependency above. This Authorization SRS owns Statement effects, target matching, effective authorization resolution, Authorization Snapshots, scope-dependent TPL Environment Schemas, residual Filter AST lowering, and persistence-side authorization filtering.
+The Policy Language owns language syntax, typing, control flow, evaluation, partial evaluation, and generic queryability semantics. This Authorization SRS owns `principal`, `request`, and `object` root contracts, Statement effects, scope rules, target matching, effective authorization resolution, Authorization Snapshots, residual Filter AST lowering, and persistence-side authorization filtering.
 
 No other requirements allocation across products or future releases is specified.

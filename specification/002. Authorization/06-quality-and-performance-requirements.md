@@ -4,7 +4,7 @@
 
 Security requirements are specified by [security and failure constraints](07-constraints.md#73-security-and-failure-constraints), [Statement validation](03-external-interface-requirements.md#31-statement-contract), [Request input boundary](03-external-interface-requirements.md#32-authorization-inputs-and-operation-snapshot), [policy compilation](04-functional-and-behavioral-requirements.md#41-policy-language-compilation), and [request authorization](04-functional-and-behavioral-requirements.md#42-request-authorization).
 
-The TPL compiler/evaluator security boundary is additionally governed by the [Policy Language constraints](../003.%20Policy%20Language/07-constraints.md).
+The Policy Language compiler/evaluator security boundary is additionally governed by the [Policy Language constraints](../003.%20Policy%20Language/07-constraints.md).
 
 ## 6.2 Consistency
 
@@ -38,10 +38,10 @@ Traceability: [Resolution and Operation Snapshot](02-overall-description.md#221-
 
 ### PERF-003 — Stress case
 
-The authorization system SHALL support a principal with approximately 500 effective Statements targeting the same API, including a case where no early constant result can terminate evaluation. This behavior SHALL use bounded database round trips and SHALL exercise target matching plus TPL evaluation/partial evaluation.
+The authorization system SHALL support a principal with approximately 500 effective Statements targeting the same API, including a case where no early constant result can terminate evaluation. This behavior SHALL use bounded database round trips and SHALL exercise target matching plus Policy Language evaluation/partial evaluation.
 
 Verification: Run the approximately 500-Statement stress scenario with query-count instrumentation and verify target matching plus Request evaluation and Object partial evaluation.
-Traceability: [Resolution and Operation Snapshot](02-overall-description.md#221-resolution-and-operation-snapshot); [TPL partial-evaluation performance](../003.%20Policy%20Language/06-quality-and-performance-requirements.md#perf-002--dependency-aware-partial-evaluation); PERF-002.
+Traceability: [Resolution and Operation Snapshot](02-overall-description.md#221-resolution-and-operation-snapshot); [Policy Language partial-evaluation performance](../003.%20Policy%20Language/06-quality-and-performance-requirements.md#perf-002--dependency-aware-partial-evaluation); PERF-002.
 
 ### PERF-004 — Database source of truth on every operation
 
@@ -59,7 +59,7 @@ Authorization Snapshots
 
 A request-scoped snapshot or request-scoped materialization of the Statements just read from the database is allowed and SHALL be discarded with the operation.
 
-A derived compiled TPL artifact MAY be reused only under POLICY-004 and SHALL NOT substitute for the database Statement lookup.
+A derived compiled Policy Language artifact MAY be reused only under POLICY-004 and SHALL NOT substitute for the database Statement lookup.
 
 Verification: Inspect authorization state access and run two sequential operations after a committed policy change, confirming each performs the required database resolution and no cross-request authorization state is consulted.
 Traceability: [Scope](01-introduction.md#12-scope) database source-of-truth semantics; SNAPSHOT-001; POLICY-004.

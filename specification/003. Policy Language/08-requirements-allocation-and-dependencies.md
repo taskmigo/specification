@@ -2,27 +2,29 @@
 
 ## 8.1 Assumptions and Dependencies
 
-- The [Authorization feature](../002.%20Authorization/README.md) is the initial TPL consumer and defines Request/Object Authorization behavior outside the language.
-- Consumers provide Environment Schemas that define roots, fields, nullability, scalar semantics, and query capabilities.
-- Consumers that require database-side residual evaluation provide a persistence-neutral query-lowering boundary.
+- Consumers provide Environment Schemas that define root names, fields, nullability, scalar semantics, and optional query capabilities.
+- Consumers determine which required roots are known or unknown for each evaluation operation.
+- Consumers that require residual query lowering provide a persistence-neutral query-lowering capability contract.
+- Consumer-domain policy semantics, scope names, effects, targets, and lifecycle rules are outside the Policy Language.
 - The initial language provides no export/module system, user-defined functions, arrow functions, call expressions, or utility-function library.
 - The parser frontend depends on the ANTLR Java runtime as constrained by TECH-001.
-- TPL does not depend on an ECMAScript parser or JavaScript runtime.
+- The Policy Language does not depend on an ECMAScript parser or JavaScript runtime.
 
 ## 8.2 Requirements Allocation
 
-| Responsibility                                      | TPL subsystem | Authorization consumer |
-| --------------------------------------------------- | ------------- | ---------------------- |
-| Parse canonical policy body                         | SHALL         | SHALL NOT              |
-| Bind and type-check statements/expressions          | SHALL         | SHALL NOT              |
-| Validate complete boolean return control flow       | SHALL         | SHALL NOT              |
-| Produce typed Policy IR                             | SHALL         | SHALL NOT              |
-| Evaluate known policy inputs                        | SHALL         | MAY invoke             |
-| Partially evaluate known/unknown inputs             | SHALL         | MAY invoke             |
-| Define `principal`, `request`, and `object` schemas | SHALL NOT     | SHALL                  |
-| Define Statement effects and target matching        | SHALL NOT     | SHALL                  |
-| Validate residual queryability                      | SHALL expose  | SHALL provide mapping  |
-| Lower residual predicates to persistence filter     | SHALL NOT     | SHALL                  |
-| Execute JPA/database query                          | SHALL NOT     | SHALL                  |
+| Responsibility                                 | Policy Language | Consumer |
+| ---------------------------------------------- | --------------- | -------- |
+| Parse canonical policy body                    | SHALL           | SHALL NOT |
+| Bind and type-check statements/expressions     | SHALL           | SHALL NOT |
+| Validate complete boolean return control flow  | SHALL           | SHALL NOT |
+| Produce typed Policy IR                        | SHALL           | SHALL NOT |
+| Evaluate known policy inputs                   | SHALL           | MAY invoke |
+| Partially evaluate known/unknown inputs        | SHALL           | MAY invoke |
+| Define domain root names and field contracts   | SHALL NOT       | SHALL |
+| Determine known/unknown roots per operation    | SHALL NOT       | SHALL |
+| Define domain scope/effect/target semantics    | SHALL NOT       | SHALL |
+| Validate residual queryability                 | SHALL           | SHALL provide capability contract |
+| Lower residual predicates to consumer query IR | SHALL NOT       | MAY |
+| Execute persistence/business operations        | SHALL NOT       | SHALL |
 
-The "SHALL expose" allocation means TPL SHALL expose the typed residual and capability information necessary for the consumer to perform the validation required by QUERY-001.
+The Policy Language SHALL expose the typed residual and queryability result necessary for a consumer to enforce its own execution contract without importing consumer-domain semantics into the language subsystem.

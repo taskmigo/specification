@@ -4,7 +4,7 @@
 
 Each normative requirement has a stable identifier and observable verification objective. The requirement-to-verification index is maintained in the [verification and conformance matrix](09-verification-validation-and-acceptance.md#91-verification-and-conformance-matrix).
 
-The [Authorization feature](../002.%20Authorization/README.md) owns authorization effects, target matching, effective Statement resolution, Object filter composition, and persistence execution. TPL owns the direct policy-body source language, typing, control-flow, and evaluation semantics used by that feature.
+The Policy Language owns only the source-language, typing, control-flow, evaluation, partial-evaluation, and generic queryability semantics defined by this SRS. Consuming features own their domain root names, scopes, effects, targets, decision composition, resource access, persistence behavior, and execution lifecycle.
 
 ## 10.2 Unresolved Issues
 

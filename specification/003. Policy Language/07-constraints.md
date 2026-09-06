@@ -4,11 +4,11 @@
 
 ### TECH-001 — ANTLR-generated parser
 
-The TPL lexer and parser SHALL be generated from the canonical TPL grammar using [ANTLR](https://www.antlr.org/).
+The Policy Language lexer and parser SHALL be generated from the canonical grammar using [ANTLR](https://www.antlr.org/).
 
-For the Taskmigo Java server implementation, the generated frontend SHALL use the ANTLR Java target/runtime and SHALL NOT require JNI or a native parser library.
+The generated frontend SHALL use the ANTLR Java target/runtime and SHALL NOT require JNI or a native parser library.
 
-The generated parse tree SHALL be converted into Taskmigo-owned AST/Policy IR before semantic evaluation.
+The generated parse tree SHALL be converted into language-owned AST/Policy IR before semantic evaluation.
 
 Verification: Inspect build dependencies and generated parser sources, confirm the Java ANTLR runtime is used without JNI/native parser dependencies, and inspect the parse-tree conversion boundary.
 Traceability: SYNTAX-002; LANG-001.
@@ -17,7 +17,7 @@ Traceability: SYNTAX-002; LANG-001.
 
 ### TECH-002 — No general-purpose scripting or callable constructs
 
-TPL SHALL NOT provide:
+The Policy Language SHALL NOT provide:
 
 ```text
 export or module syntax
@@ -49,9 +49,9 @@ Traceability: [Scope](01-introduction.md#12-scope); QUAL-002; QUERY-002.
 
 ### TECH-003 — No ECMAScript coercion model
 
-TPL SHALL NOT implement ECMAScript truthiness, `undefined`, loose equality, prototype lookup, JavaScript number edge cases, automatic semicolon insertion, or implicit string/number/boolean coercion.
+The Policy Language SHALL NOT implement ECMAScript truthiness, `undefined`, loose equality, prototype lookup, JavaScript number edge cases, automatic semicolon insertion, or implicit string/number/boolean coercion.
 
-JavaScript-like tokens and control-flow forms specified by TPL SHALL follow TPL's own type, binding, control-flow, and evaluation rules.
+JavaScript-like tokens and control-flow forms specified by the Policy Language SHALL follow the language's own type, binding, control-flow, and evaluation rules.
 
 Verification: Attempt policies that depend on truthiness, `undefined`, loose equality, implicit coercion, or omitted required semicolons and confirm rejection.
 Traceability: TYPE-001 through TYPE-004; SYNTAX-003.
@@ -62,7 +62,7 @@ Traceability: TYPE-001 through TYPE-004; SYNTAX-003.
 
 Policy source SHALL be treated as untrusted compiler input.
 
-TPL SHALL NOT expose repositories, dependency-injection containers, persistence entities, filesystems, networks, processes, reflection, class loaders, arbitrary Java objects, or host methods to policy expressions.
+The Policy Language SHALL NOT expose repositories, dependency-injection containers, persistence entities, filesystems, networks, processes, reflection, class loaders, arbitrary host objects, or host methods to policy expressions.
 
 Because call expressions are absent from this language version, policy source SHALL NOT invoke host or utility functions through another callable boundary.
 

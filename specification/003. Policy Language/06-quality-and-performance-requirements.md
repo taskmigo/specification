@@ -11,7 +11,7 @@ Traceability: EVAL-002; PARTIAL-001.
 
 ### QUAL-002 — Guaranteed termination
 
-Every valid TPL policy SHALL terminate without relying on runtime instruction quotas for loops or recursion because the language SHALL provide neither loops nor callable constructs.
+Every valid policy SHALL terminate without relying on runtime instruction quotas for loops or recursion because the language SHALL provide neither loops nor callable constructs.
 
 Verification: Inspect the grammar and test deeply nested but valid bounded control flow under compiler limits.
 Traceability: [Language Restrictions](07-constraints.md#72-language-restrictions); TECH-002.
@@ -22,7 +22,7 @@ Traceability: [Language Restrictions](07-constraints.md#72-language-restrictions
 
 The compiler SHALL enforce finite configurable upper bounds for policy source size, token count, syntax-tree depth, Policy IR node count, block nesting depth, and list literal size.
 
-A policy exceeding any configured bound SHALL be rejected before activation with a diagnostic identifying the exceeded category.
+A policy exceeding any configured bound SHALL be rejected before execution with a diagnostic identifying the exceeded category.
 
 Verification: Exercise each configured boundary at, below, and above its limit.
 Traceability: [Compiler Limits](07-constraints.md#75-compiler-limits); DIAG-001.
@@ -38,11 +38,11 @@ Traceability: PARTIAL-004.
 
 ### PERF-003 — Compile before execution
 
-A policy SHALL pass parsing, binding, control-flow validation, type checking, complexity validation, and applicable queryability validation before it becomes executable for a consumer mapping.
+A policy SHALL pass parsing, binding, control-flow validation, type checking, complexity validation, and applicable queryability validation before it becomes executable for a consumer contract.
 
-A consumer MAY reuse an exact compiled artifact instead of recompiling the same source on every authorization operation when the identity requirements in DATA-002 and DATA-003 are satisfied.
+A consumer MAY reuse an exact compiled artifact instead of recompiling the same source on every operation when the identity requirements in DATA-002 and DATA-003 are satisfied.
 
-Verification: Execute repeated operations against one unchanged policy revision and confirm exact compiled-artifact reuse is possible; change the source/schema contract and confirm recompilation or rejection.
+Verification: Execute repeated operations against one unchanged source/schema contract and confirm exact compiled-artifact reuse is possible; change the source/schema contract and confirm recompilation or rejection.
 Traceability: DATA-002; DATA-003.
 
 ## 6.4 Diagnostics and Maintainability
@@ -67,7 +67,7 @@ Traceability: DATA-004.
 
 ### QUAL-003 — Frontend replacement boundary
 
-Core TPL semantics SHALL depend on Taskmigo-owned AST/Policy IR contracts rather than generated parser node types so that parser-generator upgrades or frontend replacement do not require rewriting evaluation and query semantics.
+Core Policy Language semantics SHALL depend on language-owned AST/Policy IR contracts rather than generated parser node types so that parser-generator upgrades or frontend replacement do not require rewriting evaluation and query semantics.
 
 Verification: Inspect dependency direction between syntax, semantic, evaluation, and query-lowering components.
 Traceability: LANG-001; [Parser Frontend](07-constraints.md#71-parser-frontend).

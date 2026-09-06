@@ -10,7 +10,7 @@ The following behavior was recorded from the `next` baseline described in the [r
 | Persistence                    | `statements.target_type` plus `statement_conditions`                                                                                                                                |
 | Statement API                  | Create accepts nullable `conditions`; missing conditions become an empty list                                                                                                       |
 | Target matching                | Method is exact or `*`; path is a full-match Java regular expression; `Pattern.compile(...)` currently occurs during matching                                                       |
-| Condition compiler             | Restricted SpEL is parsed into Taskmigo's own expression tree                                                                                                                       |
+| Condition compiler             | Restricted SpEL is parsed into an implementation-owned expression tree                                                                                                              |
 | Request Authorization          | Resolves effective Statements, compiles conditions during authorization, evaluates `principal` and `request`, DENY overrides ALLOW                                                  |
 | Request input                  | `principal.id`, `principal.username`, `request.method`, `request.path`; no route/path-variable map                                                                                  |
 | Object Authorization           | Resolves effective Statements again, compiles conditions again, specializes `principal.*` / `request.*`, retains `object.*`, and translates the residual expression to JPA Criteria |
@@ -29,7 +29,7 @@ The authorization system provides:
 - Direct and inherited User, Group, Role, and Statement semantics.
 - Database resolution of effective Statements for every authorization operation.
 - One immutable authorization snapshot shared across Request and Object Authorization.
-- TPL policy evaluation and partial evaluation through the Policy Language subsystem.
+- Policy evaluation and partial evaluation through the Policy Language subsystem.
 - Persistence-neutral Filter AST generation for Object policies.
 - Bounded authorization-state resolution without complete in-memory hierarchy loading.
 - Fail-closed handling for invalid policies and required-input failures.
@@ -52,7 +52,7 @@ The authorization system SHALL:
 
 - Represent Object Authorization with ALL, NONE, and the Filter AST operators required by the existing behavior.
 - Use Filter Schema for direct one-segment object fields.
-- Translate residual TPL Policy IR predicates into Filter AST and then into the persistence query predicate.
+- Translate residual Policy IR predicates into Filter AST and then into the persistence query predicate.
 - Constant-fold before persistence translation.
 - Compose authorization filtering with the business predicate before pagination.
 - Avoid JVM row filtering.
@@ -63,9 +63,9 @@ The authorization system SHALL:
 
 - Use `scope` instead of `target.type` and required `policy` instead of `conditions[]`.
 - Compile `policy` using the [Policy Language feature](../003.%20Policy%20Language/README.md).
-- Treat the Statement `policy` string itself as the TPL executable body without an export/function/module wrapper.
-- Supply the scope-dependent typed Environment Schema required by TPL.
-- Enforce the TPL complete boolean-return contract.
+- Treat the Statement `policy` string itself as the executable Policy Language body without an export/function/module wrapper.
+- Supply the scope-dependent typed Environment Schema required by the Policy Language.
+- Enforce the Policy Language complete boolean-return contract.
 - Keep database-loaded Statement state authoritative for every operation.
 - Permit compiled Policy IR reuse only as a derived optimization that cannot bypass database resolution.
 - Evaluate Request policies using known `principal` and `request` values.
@@ -96,8 +96,8 @@ The authorization capability is consumed by policy authors, authorization-aware 
 The following scenarios are supporting context, not additional normative requirements:
 
 1. A request operation resolves effective authorization state from the database, creates one immutable snapshot, matches the request target, and evaluates applicable Request Statements.
-2. A Request policy evaluates the available `principal` and `request` inputs through its TPL policy body without loading business resources.
-3. An Object policy partially evaluates known inputs through TPL, lowers the residual predicate to Filter AST, and applies authorization before pagination.
+2. A Request policy evaluates the available `principal` and `request` inputs through its Policy Language body without loading business resources.
+3. An Object policy partially evaluates known inputs through the Policy Language, lowers the residual predicate to Filter AST, and applies authorization before pagination.
 4. A committed authorization change is observed by the next operation while the current operation continues with its existing snapshot.
 
 ## 2.5 Out of Scope

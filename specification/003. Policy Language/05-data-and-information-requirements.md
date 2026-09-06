@@ -6,7 +6,7 @@
 
 Values supplied to evaluation SHALL be treated as immutable for the duration of the evaluation operation.
 
-TPL SHALL NOT expose mutable host objects directly to policy expressions. Consumer-provided values SHALL be represented through the typed value boundary defined by the Environment Schema.
+The Policy Language SHALL NOT expose mutable host objects directly to policy expressions. Consumer-provided values SHALL be represented through the typed value boundary defined by the Environment Schema.
 
 Verification: Supply mutable host data through an adapter, mutate the host object during a test, and confirm the policy-visible value does not gain mutation capabilities.
 Traceability: EVAL-IF-001; [Isolation and Host Access](07-constraints.md#74-isolation-and-host-access).
@@ -29,7 +29,7 @@ A compiled policy artifact SHALL contain or be associated with enough immutable 
 At minimum, the identity SHALL cover:
 
 - The policy source content or a collision-resistant source fingerprint.
-- The TPL language version.
+- The Policy Language version.
 - The Environment Schema identity or compatible revision fingerprint.
 - The compiler contract required to preserve the parsed control-flow and typed Policy IR semantics.
 
@@ -45,8 +45,8 @@ Traceability: DIAG-001.
 
 ## 5.3 Lifecycle and Persistence
 
-TPL does not prescribe where policy source or compiled artifacts are persisted.
+The Policy Language does not prescribe where policy source or compiled artifacts are persisted.
 
-A consumer MAY cache compiled artifacts as derived data when the artifact identity satisfies DATA-002 and DATA-003. Such caching SHALL NOT make policy source or authorization state less authoritative than the consuming feature's source-of-truth requirements.
+A consumer MAY cache compiled artifacts as derived data when the artifact identity satisfies DATA-002 and DATA-003. Such caching SHALL NOT make policy source or consumer state less authoritative than the consuming feature's source-of-truth requirements.
 
-Retention, deletion, and regulatory requirements are Not applicable because no independent TPL persistence store is specified.
+Retention, deletion, and regulatory requirements are Not applicable because no independent Policy Language persistence store is specified.

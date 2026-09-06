@@ -29,16 +29,16 @@ Traceability: [Scope](01-introduction.md#12-scope); [Policy Language Contract](0
 
 ### STMT-002 — Required policy
 
-`policy` SHALL be a required, non-null, non-blank TPL source string.
+`policy` SHALL be a required, non-null, non-blank Policy Language source string.
 
 The Statement SHALL be invalid when `policy` is missing, `null`, empty, or whitespace-only.
 
 Verification: Test create and update requests for each invalid value and confirm that no invalid Statement becomes active.
 Traceability: [Policy Language Contract](02-overall-description.md#223-policy-language-contract); POLICY-001.
 
-### STMT-003 — Required TPL policy body
+### STMT-003 — Required policy body
 
-Every policy SHALL satisfy the [TPL source contract](../003.%20Policy%20Language/03-external-interface-requirements.md#31-source-contract) and every reachable control-flow path SHALL return static type `Bool`.
+Every policy SHALL satisfy the [Policy Language source contract](../003.%20Policy%20Language/03-external-interface-requirements.md#31-source-contract) and every reachable control-flow path SHALL return static type `Bool`.
 
 Authorization SHALL NOT require or permit an `export`, function, arrow-function, module, or entry-point wrapper in the Statement policy contract.
 
@@ -56,18 +56,18 @@ if (principal.username == "admin") {
 return false;
 ```
 
-A policy that fails TPL parsing, binding, control-flow validation, type checking, scope validation, or applicable queryability validation SHALL be rejected before the Statement becomes active.
+A policy that fails Policy Language parsing, binding, control-flow validation, type checking, authorization-scope validation, or applicable queryability validation SHALL be rejected before the Statement becomes active.
 
-Verification: Compile valid policy bodies and invalid export/function/arrow/call syntax, non-boolean/fall-through paths, unavailable roots, and unsupported residual operations.
+Verification: Compile valid policy bodies and invalid export/function/arrow/call syntax, non-boolean/fall-through paths, unavailable authorization roots, and unsupported residual operations.
 Traceability: [Policy Language Contract](02-overall-description.md#223-policy-language-contract); POLICY-001 through POLICY-003.
 
 ### STMT-004 — Boolean decision contract
 
-A valid active Statement policy SHALL satisfy the TPL static complete-`Bool` return contract.
+A valid active Statement policy SHALL satisfy the Policy Language static complete-`Bool` return contract.
 
 During authorization:
 
-- A direct TPL evaluation SHALL return `true` or `false`, or an evaluation failure.
+- A direct Policy Language evaluation SHALL return `true` or `false`, or an evaluation failure.
 - A concrete non-boolean result SHALL NOT be accepted as a decision.
 - Runtime truthy/falsy coercion SHALL NOT be used.
 - An Object policy partial evaluation SHALL return a concrete boolean or a residual boolean Policy IR predicate.
@@ -75,7 +75,7 @@ During authorization:
 An evaluation failure or invalid residual contract SHALL raise an authorization exception and fail closed.
 
 Verification: Compile non-boolean/fall-through policy bodies and confirm activation is rejected; inject typed-input/evaluation failures and confirm authorization fails closed.
-Traceability: [TPL boolean policy result](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#lang-002--boolean-policy-result); TECH-004; REQ-001.
+Traceability: [Policy Language boolean policy result](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#lang-002--boolean-policy-result); TECH-004; REQ-001.
 
 ### STMT-005 — Effect semantics
 
@@ -129,7 +129,7 @@ Traceability: [Product Perspective](02-overall-description.md#21-product-perspec
 
 ### INPUT-001 — Policy roots
 
-The Authorization TPL Environment Schema SHALL expose these scope-dependent roots:
+The Authorization Environment Schema SHALL expose these scope-dependent roots:
 
 ```text
 principal
@@ -156,40 +156,40 @@ principal.username
 
 Additional principal attributes require an explicit typed authorization contract.
 
-Verification: Provide a request with path variables and the minimum principal fields and confirm the TPL Environment Schema/input shape; reject or separately specify unsupported principal attributes.
-Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); [TPL Environment Schema](../003.%20Policy%20Language/03-external-interface-requirements.md#32-compilation-environment).
+Verification: Provide a request with path variables and the minimum principal fields and confirm the Policy Language Environment Schema/input shape; reject or separately specify unsupported principal attributes.
+Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); [Policy Language Environment Schema](../003.%20Policy%20Language/03-external-interface-requirements.md#32-compilation-environment).
 
 ### INPUT-002 — Object root and Request boundary
 
-For `scope: request`, the `object` root SHALL be absent from the TPL Environment Schema. A Request policy that references `object` SHALL be rejected before activation.
+For `scope: request`, the `object` root SHALL be absent from the Authorization Environment Schema. A Request policy that references `object` SHALL be rejected before activation.
 
-For `scope: object`, `object.*` remains symbolic during partial evaluation and is validated through the selected Filter Schema and TPL queryability contract.
+For `scope: object`, `object.*` remains symbolic during partial evaluation and is validated through the selected Filter Schema and Policy Language queryability contract.
 
 Verification: Compile Request policies that use `principal` and `request` and confirm they are accepted; reject `object` references. Partially evaluate an Object policy with symbolic object fields and confirm that Object input remains supported.
 Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); [Shared Object Filter](02-overall-description.md#222-shared-object-filter); OBJ-001.
 
 ### INPUT-003 — Request input availability
 
-For `scope: request`, Taskmigo SHALL supply only the `principal` and `request` values already available at the time of authorization. Request Authorization SHALL NOT obtain additional business data to complete those inputs.
+For `scope: request`, the authorization system SHALL supply only the `principal` and `request` values already available at the time of authorization. Request Authorization SHALL NOT obtain additional business data to complete those inputs.
 
 Verification: Evaluate a Request policy using the supported `principal` and `request` fields with no business-resource lookup and confirm the supplied values are the complete policy input.
 Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); REQ-003.
 
 ### RES-001 — Resource root exclusion
 
-The `resources` root SHALL not be part of the Authorization TPL Environment Schema for either authorization scope. A policy that references `resources` SHALL be rejected before activation.
+The `resources` root SHALL not be part of the Authorization Environment Schema for either authorization scope. A policy that references `resources` SHALL be rejected before activation.
 
 Verification: Attempt to activate Request and Object policies referencing `resources` and confirm both are rejected before activation.
-Traceability: INPUT-001; [TPL static reference resolution](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#ref-001--static-reference-resolution).
+Traceability: INPUT-001; [Policy Language static reference resolution](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#ref-001--static-reference-resolution).
 
 ### RES-002 — No resource-loading call syntax
 
-TPL and the Authorization consumer SHALL NOT provide a built-in `resource(...)` function or another privileged utility function for loading business resources.
+The Authorization feature SHALL NOT provide a built-in `resource(...)` function or another privileged utility function for loading business resources.
 
-Because call expressions are outside the initial TPL grammar, `resource(...)` and equivalent call syntax SHALL be rejected before activation.
+Because call expressions are outside the initial Policy Language grammar, `resource(...)` and equivalent call syntax SHALL be rejected before activation.
 
 Verification: Attempt to activate a policy invoking `resource(...)` and confirm it is rejected before activation.
-Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); [TPL callable exclusion](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#query-002--initial-callable-exclusion).
+Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); [Policy Language callable exclusion](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#query-002--initial-callable-exclusion).
 
 ### RES-003 — No resource resolution
 
@@ -200,7 +200,7 @@ Traceability: [Request Authorization Input Boundary](02-overall-description.md#2
 
 ### SNAPSHOT-001 — One snapshot per operation
 
-Taskmigo SHALL establish exactly one immutable Authorization Snapshot for each request/authorization operation after resolving the relevant effective Statement state from the database.
+The authorization system SHALL establish exactly one immutable Authorization Snapshot for each request/authorization operation after resolving the relevant effective Statement state from the database.
 
 The snapshot SHALL represent the effective authorization state required by that operation without prescribing a `List<Statement>` representation.
 

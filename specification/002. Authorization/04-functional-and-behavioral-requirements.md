@@ -4,46 +4,46 @@
 
 ### POLICY-001 — Compilation model
 
-Taskmigo SHALL compile Statement `policy` source through the [Taskmigo Policy Language](../003.%20Policy%20Language/README.md) compiler into Taskmigo-owned typed Policy IR.
+The authorization system SHALL compile Statement `policy` source through the [Policy Language](../003.%20Policy%20Language/README.md) compiler into typed Policy IR.
 
 Authorization execution SHALL evaluate or partially evaluate Policy IR; it SHALL NOT invoke a general-purpose JavaScript runtime or evaluate policy source directly.
 
 Verification: Inspect the compiler and execution boundary and run policy evaluation tests that confirm execution uses typed Policy IR without invoking a JavaScript runtime.
-Traceability: [Policy Language Contract](02-overall-description.md#223-policy-language-contract); [TPL Taskmigo-owned semantic representation](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#lang-001--taskmigo-owned-semantic-representation).
+Traceability: [Policy Language Contract](02-overall-description.md#223-policy-language-contract); [Policy Language semantic representation](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#lang-001--language-owned-semantic-representation).
 
 ### POLICY-002 — Supported policy language
 
-The policy-body syntax, type system, control-flow semantics, operator semantics, evaluation semantics, partial evaluation, and queryability rules SHALL be defined by the [Policy Language feature](../003.%20Policy%20Language/README.md).
+The policy-body syntax, type system, control-flow semantics, operator semantics, evaluation semantics, partial evaluation, and generic queryability rules SHALL be defined by the [Policy Language feature](../003.%20Policy%20Language/README.md).
 
-Authorization SHALL NOT extend TPL with authorization-only syntax or utility functions. Authorization-specific behavior SHALL be expressed through the scope-dependent Environment Schema, Statement effect, and Object query-lowering mapping.
+Authorization SHALL NOT extend the Policy Language with authorization-only syntax or utility functions. Authorization-specific behavior SHALL be expressed through the scope-dependent Environment Schema, Statement effect, and Object query-lowering mapping.
 
-For `scope: request`, the Environment Schema SHALL expose `principal` and `request` and SHALL not expose `object`.
+For `scope: request`, the Authorization Environment Schema SHALL expose `principal` and `request` and SHALL not expose `object`.
 
-For `scope: object`, the Environment Schema SHALL expose `principal`, `request`, and symbolic/query-bound `object`.
+For `scope: object`, the Authorization Environment Schema SHALL expose `principal`, `request`, and symbolic/query-bound `object`.
 
-Verification: Compile the same direct TPL policy-body syntax in both scopes and confirm only the Environment Schema/queryability differences change acceptance.
-Traceability: [Authorization inputs](03-external-interface-requirements.md#32-authorization-inputs-and-operation-snapshot); [TPL Environment Schema](../003.%20Policy%20Language/03-external-interface-requirements.md#env-001--environment-schema).
+Verification: Compile the same direct policy-body syntax in both scopes and confirm only the Authorization Environment Schema/queryability differences change acceptance.
+Traceability: [Authorization inputs](03-external-interface-requirements.md#32-authorization-inputs-and-operation-snapshot); [Policy Language Environment Schema](../003.%20Policy%20Language/03-external-interface-requirements.md#env-001--environment-schema).
 
 ### POLICY-003 — Static validation
 
 Before a Statement becomes active, compilation SHALL validate:
 
-- TPL syntax.
+- Policy Language syntax.
 - Binding and static types, including complete `Bool` return paths.
-- Supported roots and fields for the Statement scope.
+- Supported authorization roots and fields for the Statement scope.
 - Compiler complexity limits.
 - Applicable Object residual queryability for the selected Filter Schema mapping.
 
 A policy failing any required validation SHALL NOT become active.
 
-Verification: Attempt activation with one failure in each category and confirm rejection with the corresponding TPL diagnostic category.
-Traceability: [TPL diagnostics](../003.%20Policy%20Language/06-quality-and-performance-requirements.md#diag-001--actionable-diagnostics); OBJ-004.
+Verification: Attempt activation with one failure in each category and confirm rejection with the corresponding Policy Language diagnostic category.
+Traceability: [Policy Language diagnostics](../003.%20Policy%20Language/06-quality-and-performance-requirements.md#diag-001--actionable-diagnostics); OBJ-004.
 
 ### POLICY-004 — DB-authoritative Statement state and compiled-artifact reuse
 
 Every authorization operation SHALL obtain the current relevant effective Statement state from the database before policy evaluation.
 
-Taskmigo SHALL NOT use an in-memory or distributed cache of Statement records, effective Statement sets, Statement ids, or authorization snapshots to bypass that database lookup.
+The authorization system SHALL NOT use an in-memory or distributed cache of Statement records, effective Statement sets, Statement ids, or authorization snapshots to bypass that database lookup.
 
 Policy IR MAY be reused across operations only as a derived compiled artifact after the current Statement has been loaded from the database. Any such reuse SHALL be keyed by an immutable fingerprint of the exact policy/Statement state loaded for the current operation and SHALL also satisfy the compiled-artifact identity requirements of the Policy Language feature.
 
@@ -54,14 +54,14 @@ A compiled-artifact cache:
 - SHALL NOT make authorization correctness depend on cache invalidation, TTL, or cross-node synchronization.
 - SHALL be treated as an optimization only.
 
-If a safe compiled artifact cannot be matched to the exact database-loaded Statement state and TPL compilation contract, Taskmigo SHALL compile from that loaded policy source.
+If a safe compiled artifact cannot be matched to the exact database-loaded Statement state and Policy Language compilation contract, the authorization system SHALL compile from that loaded policy source.
 
-Verification: Change policy, Statement metadata, or a relevant TPL compilation contract between operations and confirm a stale compiled artifact is not used.
-Traceability: [Policy Language Contract](02-overall-description.md#223-policy-language-contract); [TPL compiled artifact metadata](../003.%20Policy%20Language/05-data-and-information-requirements.md#data-003--compiled-artifact-metadata); PERF-004.
+Verification: Change policy, Statement metadata, or a relevant Policy Language compilation contract between operations and confirm a stale compiled artifact is not used.
+Traceability: [Policy Language Contract](02-overall-description.md#223-policy-language-contract); [Policy Language compiled artifact metadata](../003.%20Policy%20Language/05-data-and-information-requirements.md#data-003--compiled-artifact-metadata); PERF-004.
 
 ### POLICY-005 — Constant folding
 
-Constant policy results and constant subexpressions SHALL be folded when TPL semantics are unchanged.
+Constant policy results and constant subexpressions SHALL be folded when Policy Language semantics are unchanged.
 
 At minimum:
 
@@ -78,7 +78,7 @@ return false;
 SHALL be represented as constant policy results.
 
 Verification: Compile the true and false constant examples and inspect Policy IR for constant representations; evaluate equivalent constant subexpressions.
-Traceability: [TPL constant folding](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#partial-002--constant-folding-and-boolean-simplification); OBJ-005.
+Traceability: [Policy Language constant folding](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#partial-002--constant-folding-and-boolean-simplification); OBJ-005.
 
 ## 4.2 Request Authorization
 
@@ -92,7 +92,7 @@ ELSE ALLOW if any target-matching ALLOW Statement evaluates true
 ELSE DENY
 ```
 
-Each active Request policy SHALL already satisfy the TPL static complete-`Bool` return contract.
+Each active Request policy SHALL already satisfy the Policy Language static complete-`Bool` return contract.
 
 Failures in policy evaluation or required `principal`/`request` input resolution SHALL fail closed.
 
@@ -129,9 +129,9 @@ Traceability: [Request Authorization Input Boundary](02-overall-description.md#2
 
 ### OBJ-001 — Partial evaluation
 
-For `scope: object`, Taskmigo SHALL partially evaluate the TPL policy with known `principal` and `request` values while retaining `object.*` as symbolic values.
+For `scope: object`, the authorization system SHALL partially evaluate the Policy Language policy with known `principal` and `request` values while retaining `object.*` as symbolic values.
 
-Partial evaluation SHALL follow the [TPL Partial Evaluation requirements](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#45-partial-evaluation).
+Partial evaluation SHALL follow the [Policy Language Partial Evaluation requirements](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#45-partial-evaluation).
 
 A concrete `true` SHALL lower to `ALL`; a concrete `false` SHALL lower to `NONE`. A residual boolean Policy IR predicate SHALL be lowered to Filter AST.
 
@@ -142,7 +142,7 @@ Traceability: [Shared Object Filter](02-overall-description.md#222-shared-object
 
 ### OBJ-002 — Initial Filter Schema scope
 
-Filter Schema SHALL map policy-visible object fields to persisted fields/types for a registered Object Authorization mapping and SHALL provide the object Environment Schema/query capabilities required by TPL.
+Filter Schema SHALL map policy-visible object fields to persisted fields/types for a registered Object Authorization mapping and SHALL provide the `object` Environment Schema/query capabilities required by the Policy Language consumer contract.
 
 The authorization system SHALL preserve direct one-segment object fields. Nested paths, joins, and relationship predicates remain outside the current scope.
 
@@ -160,9 +160,9 @@ EQ NE GT GE LT LE
 numeric ADD SUBTRACT MULTIPLY DIVIDE NEGATE
 ```
 
-Filter AST is independent of TPL source syntax and persistence APIs.
+Filter AST is independent of Policy Language source syntax and persistence APIs.
 
-Verification: Inspect the Filter AST API and translate equivalent predicates from residual TPL Policy IR and a future client-filter producer without exposing persistence types in the AST.
+Verification: Inspect the Filter AST API and translate equivalent predicates from residual Policy IR and a future client-filter producer without exposing persistence types in the AST.
 Traceability: [Scope](01-introduction.md#12-scope); [Appendix B](11-appendices.md#111-future-extensions-non-normative) `filterBy` extension.
 
 ### OBJ-004 — Database execution and queryability
@@ -175,7 +175,7 @@ An Object policy that can produce a residual expression not representable by the
 
 Control-flow constructs SHALL NOT hide residual fields or operators from activation-time queryability validation.
 
-The activation validation SHALL satisfy the [TPL residual queryability](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#query-001--residual-queryability) requirement.
+The activation validation SHALL satisfy the [Policy Language residual queryability](../003.%20Policy%20Language/04-functional-and-behavioral-requirements.md#query-001--residual-queryability) requirement under the Authorization-provided query capability contract.
 
 Verification: Activate policies using supported and unsupported residual fields/operators across conditional/return paths and confirm mapping validation rejects unsupported cases before activation; verify authorized rows are filtered in the database before pagination.
 Traceability: [Shared Object Filter](02-overall-description.md#222-shared-object-filter); POLICY-003.

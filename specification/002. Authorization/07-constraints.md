@@ -41,11 +41,11 @@ Traceability: [Product Functions](02-overall-description.md#22-product-functions
 
 Policy source is untrusted compiler input.
 
-The Authorization consumer SHALL satisfy the [TPL isolation and compiler constraints](../003.%20Policy%20Language/07-constraints.md).
+The Authorization consumer SHALL satisfy the [Policy Language isolation and compiler constraints](../003.%20Policy%20Language/07-constraints.md).
 
-The authorization Environment Schema SHALL NOT expose repositories, Spring/ApplicationContext objects, JPA entities, filesystem/network/process access, reflection, arbitrary Java objects, host methods, or callable utility surfaces.
+The Authorization Environment Schema SHALL NOT expose repositories, Spring/ApplicationContext objects, JPA entities, filesystem/network/process access, reflection, arbitrary Java objects, host methods, or callable utility surfaces.
 
-Verification: Inspect the Authorization TPL Environment Schema and execute policies attempting forbidden host access or call syntax; confirm rejection or isolation.
+Verification: Inspect the Authorization Environment Schema and execute policies attempting forbidden host access or call syntax; confirm rejection or isolation.
 Traceability: [Policy Language Contract](02-overall-description.md#223-policy-language-contract); POLICY-001 through POLICY-003.
 
 ## 7.4 Fail-Closed Behavior

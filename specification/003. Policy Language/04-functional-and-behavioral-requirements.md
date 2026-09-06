@@ -2,13 +2,13 @@
 
 ## 4.1 Compilation and Typed Policy IR
 
-### LANG-001 — Taskmigo-owned semantic representation
+### LANG-001 — Language-owned semantic representation
 
-TPL source SHALL compile through the parser frontend into Taskmigo-owned typed Policy IR.
+Policy Language source SHALL compile through the parser frontend into language-owned typed Policy IR.
 
-Policy IR SHALL be independent of ANTLR parse-tree classes, ECMAScript semantics, callable/module semantics, and persistence APIs.
+Policy IR SHALL be independent of ANTLR parse-tree classes, ECMAScript semantics, callable/module semantics, consumer-domain semantics, and persistence APIs.
 
-Verification: Inspect public/core policy types and confirm evaluator, partial evaluator, and query-lowering code do not consume ANTLR parse-tree or persistence types.
+Verification: Inspect public/core policy types and confirm evaluator, partial evaluator, and query-lowering code do not consume ANTLR parse-tree, consumer-domain, or persistence types.
 Traceability: [Product Perspective](02-overall-description.md#21-product-perspective); [Parser Frontend](07-constraints.md#71-parser-frontend).
 
 ### LANG-002 — Boolean policy result
@@ -46,7 +46,7 @@ Traceability: TYPE-001; PARTIAL-001; QUERY-001.
 
 ### TYPE-001 — Static types and no implicit coercion
 
-TPL SHALL statically type every expression and reachable return before producing executable Policy IR.
+The Policy Language SHALL statically type every expression and reachable return before producing executable Policy IR.
 
 The initial language SHALL support these value categories:
 
@@ -60,7 +60,7 @@ List<T>
 
 Environment Schema paths MAY additionally carry consumer-defined scalar types when their supported operators and equality semantics are declared by the schema.
 
-TPL SHALL NOT implicitly convert between booleans, strings, numbers, lists, null, or consumer-defined scalar types.
+The Policy Language SHALL NOT implicitly convert between booleans, strings, numbers, lists, null, or consumer-defined scalar types.
 
 Verification: Compile valid same-type operations and reject mixed-type arithmetic, boolean coercion, string-to-number coercion, and list-to-scalar coercion.
 Traceability: [Strict Semantics](07-constraints.md#73-strict-semantics).
@@ -84,7 +84,7 @@ Traceability: LANG-002; EVAL-001.
 
 Numeric results SHALL be finite and deterministic. Division or modulo by zero, numeric overflow outside the implementation's supported finite range, or another invalid numeric operation SHALL be an evaluation failure.
 
-Verification: Test valid numeric arithmetic/comparison and reject or fail closed for incompatible operands, divide-by-zero, modulo-by-zero, and non-finite results.
+Verification: Test valid numeric arithmetic/comparison and reject or fail for incompatible operands, divide-by-zero, modulo-by-zero, and non-finite results.
 Traceability: [Determinism](06-quality-and-performance-requirements.md#61-determinism).
 
 ### TYPE-004 — Null, lists, and membership
@@ -108,7 +108,7 @@ Traceability: TYPE-001; SYNTAX-003.
 
 Every value reference SHALL resolve at compile time to either a previously declared visible local `const` binding or an Environment Schema root/path.
 
-An unknown root, unknown path, unavailable scope-specific path, dynamic path, method call, or call expression SHALL be rejected before activation.
+An unknown root, unknown path, unavailable schema path, dynamic path, method call, or call expression SHALL be rejected during compilation.
 
 Verification: Compile valid and invalid roots/paths against multiple schemas and reject representative dynamic/call syntax.
 Traceability: ENV-001; SYNTAX-004.
@@ -117,7 +117,7 @@ Traceability: ENV-001; SYNTAX-004.
 
 ### EVAL-001 — Known-input evaluation
 
-When every dependency required by the selected execution path is known, TPL SHALL evaluate the policy body to exactly one `Bool` or an evaluation failure.
+When every dependency required by the selected execution path is known, the Policy Language SHALL evaluate the policy body to exactly one `Bool` or an evaluation failure.
 
 Evaluation SHALL preserve `&&`, `||`, `if`, and `return` semantics so that unreachable failing expressions or statements do not fail the evaluation.
 
@@ -144,7 +144,7 @@ Traceability: [Known and Unknown Inputs](02-overall-description.md#222-known-and
 
 ### PARTIAL-002 — Constant folding and boolean simplification
 
-Compilation and partial evaluation SHALL fold constants when TPL semantics are unchanged.
+Compilation and partial evaluation SHALL fold constants when Policy Language semantics are unchanged.
 
 At minimum, simplification SHALL preserve these identities:
 
@@ -166,14 +166,14 @@ Traceability: TYPE-002; EVAL-001.
 
 A successful partial evaluation SHALL produce a concrete `Bool` or a residual expression whose static type is `Bool`.
 
-A residual expression of another type SHALL be impossible for a valid compiled policy. If internal corruption produces such a result, evaluation SHALL fail closed at the consumer boundary.
+A residual expression of another type SHALL be impossible for a valid compiled policy. If internal corruption produces such a result, evaluation SHALL fail at the consumer boundary rather than reinterpret the result.
 
 Verification: Inspect residual types for representative policies and inject an invalid internal result in a test boundary.
 Traceability: LANG-002; EVAL-IF-002.
 
 ### PARTIAL-004 — Dependency metadata
 
-Compiled Policy IR SHALL record the set of environment roots on which each relevant expression depends, or equivalent metadata that permits the partial evaluator to determine whether a subtree can be evaluated without recursively rediscovering its root dependencies.
+Compiled Policy IR SHALL record the set of Environment Schema roots on which each relevant expression depends, or equivalent metadata that permits the partial evaluator to determine whether a subtree can be evaluated without recursively rediscovering its root dependencies.
 
 Dependency metadata SHALL be preserved or recomputed correctly after control-flow normalization, constant folding, and residual rewriting.
 
@@ -184,14 +184,14 @@ Traceability: [Known and Unknown Inputs](02-overall-description.md#222-known-and
 
 ### QUERY-001 — Residual queryability
 
-A consumer that requires database-side evaluation of an unknown root SHALL validate, before policy activation for that consumer mapping, that every possible residual unknown-dependent operation is query-lowerable under the selected Environment Schema.
+When a consumer contract marks an unknown root as query-bound, the Policy Language SHALL determine whether every possible residual operation that depends on that root is query-lowerable under the selected Environment Schema and query capability contract.
 
 Control-flow constructs SHALL NOT hide residual operations from queryability analysis. Queryability SHALL be determined from the residual boolean semantics produced from the policy body.
 
-A consumer SHALL NOT defer a known queryability incompatibility until unrestricted business rows have been loaded.
+Compilation for that consumer contract SHALL fail with `QueryabilityError` when a possible residual operation is not representable by the selected query-lowering capability.
 
-Verification: Activate policies containing supported and unsupported residual fields/operators across `if`/return paths and confirm unsupported policies are rejected before use.
-Traceability: [Query-Lowering Boundary](02-overall-description.md#223-query-lowering-boundary); [Authorization Object filtering](../002.%20Authorization/04-functional-and-behavioral-requirements.md#43-object-authorization-and-shared-filter-ast).
+Verification: Compile policies containing supported and unsupported residual fields/operators across `if`/return paths under multiple query capability contracts and confirm deterministic acceptance or `QueryabilityError`.
+Traceability: [Query-Lowering Boundary](02-overall-description.md#223-query-lowering-boundary); ENV-001.
 
 ### QUERY-002 — Initial callable exclusion
 
@@ -200,20 +200,20 @@ The initial language SHALL NOT provide built-in, registered, or source-declared 
 Calls such as the following SHALL be rejected:
 
 ```text
-startsWith(object.name, "task-")
-contains(principal.roles, "admin")
-lower(object.email)
-resource("project", object.id)
+startsWith(record.name, "task-")
+contains(context.tags, "admin")
+lower(record.email)
+lookup(record.id)
 ```
 
 A future callable/utility-function contract SHALL require an explicit language-specification revision defining syntax, type, runtime, partial-evaluation, and query-lowering semantics before such calls become valid.
 
-Verification: Reject representative call expressions in Request and Object policies.
+Verification: Reject representative call expressions under multiple consumer schemas.
 Traceability: SYNTAX-004; [Scope](01-introduction.md#12-scope).
 
 ### QUERY-003 — Persistence independence
 
-Policy IR and TPL evaluation SHALL NOT reference JPA Criteria, JPA Specification, SQL syntax, database entities, or another persistence-specific API.
+Policy IR and Policy Language evaluation SHALL NOT reference JPA Criteria, JPA Specification, SQL syntax, database entities, or another persistence-specific API.
 
 Persistence-specific lowering SHALL occur behind the consumer query-lowering boundary.
 
