@@ -27,7 +27,7 @@ When working in a repository, inspect the current branch/worktree, existing spec
 
 The canonical entry point for a split SRS SHALL be `README.md`. It SHALL contain:
 
-- YAML frontmatter containing only the feature `name` and document `version`;
+- YAML frontmatter containing only nested `metadata.version` and `metadata.changelog` fields;
 - a Markdown `Table of contents`;
 - a `Read order` section;
 - a Markdown table of contents with section number, title, purpose, and relative document link.
@@ -83,7 +83,7 @@ Write for both HUMAN and AGENT readers:
 ## Review checklist
 
 - README is the only canonical start point, its body contains only the table of contents and read order, and every navigation link resolves.
-- README frontmatter contains only the feature `name` and document `version`; README has no duplicate History table; and `MD041` is disabled for the intentionally heading-less body.
+- README frontmatter contains only nested `metadata.version` and `metadata.changelog` fields; README has no duplicate History table; and `MD041` is disabled for the intentionally heading-less body.
 - Markdown table cells use the Unicode bullet character • for in-cell bullet items, and every literal `|` inside a table cell is escaped or encoded so it cannot become a column separator.
 - The files follow the tailored standard section structure and contain no stale duplicate document.
 - The SRS contains project-specific knowledge only, omits self-evident facts and elementary background information, and is useful to both HUMAN reviewers and AGENT retrieval/execution.
