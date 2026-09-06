@@ -29,8 +29,8 @@ The following capabilities are outside the scope of this SRS:
 
 ## 1.3 Definitions, Acronyms, and Abbreviations
 
-| Term                   | Definition                                                                                               |
-| ---------------------- | -------------------------------------------------------------------------------------------------------- |
+| Term                   | Definition                                                                                              |
+| ---------------------- | ------------------------------------------------------------------------------------------------------- |
 | Authorization Snapshot | Immutable authorization state used for one request or authorization operation.                          |
 | Filter AST             | Persistence-neutral boolean predicate representation used for Object Authorization and query filtering. |
 | Policy IR              | Typed intermediate representation defined by the Policy Language feature.                               |
@@ -47,4 +47,4 @@ The following capabilities are outside the scope of this SRS:
 
 ## 1.5 Overview
 
-Sections 2–8 define the authorization context, interfaces, behavior, data, quality attributes, constraints, and dependencies. Section 9 defines verification and acceptance evidence; Section 10 defines traceability and unresolved issues; Section 11 provides supporting examples and extension guidance.
+Sections [2](02-overall-description.md)–[8](08-requirements-allocation-and-dependencies.md) define the authorization context, interfaces, behavior, data, quality attributes, constraints, and dependencies. [Section 9](09-verification-validation-and-acceptance.md) defines verification and acceptance evidence; [Section 10](10-traceability-and-unresolved-issues.md) defines traceability and unresolved issues; [Section 11](11-appendices.md) provides supporting examples and extension guidance.

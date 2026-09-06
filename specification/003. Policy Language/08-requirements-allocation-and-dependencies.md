@@ -12,19 +12,19 @@
 
 ## 8.2 Requirements Allocation
 
-| Responsibility                                 | Policy Language | Consumer |
-| ---------------------------------------------- | --------------- | -------- |
-| Parse canonical policy body                    | SHALL           | SHALL NOT |
-| Bind and type-check statements/expressions     | SHALL           | SHALL NOT |
-| Validate complete boolean return control flow  | SHALL           | SHALL NOT |
-| Produce typed Policy IR                        | SHALL           | SHALL NOT |
-| Evaluate known policy inputs                   | SHALL           | MAY invoke |
-| Partially evaluate known/unknown inputs        | SHALL           | MAY invoke |
-| Define domain root names and field contracts   | SHALL NOT       | SHALL |
-| Determine known/unknown roots per operation    | SHALL NOT       | SHALL |
-| Define domain scope/effect/target semantics    | SHALL NOT       | SHALL |
+| Responsibility                                 | Policy Language | Consumer                          |
+| ---------------------------------------------- | --------------- | --------------------------------- |
+| Parse canonical policy body                    | SHALL           | SHALL NOT                         |
+| Bind and type-check statements/expressions     | SHALL           | SHALL NOT                         |
+| Validate complete boolean return control flow  | SHALL           | SHALL NOT                         |
+| Produce typed Policy IR                        | SHALL           | SHALL NOT                         |
+| Evaluate known policy inputs                   | SHALL           | MAY invoke                        |
+| Partially evaluate known/unknown inputs        | SHALL           | MAY invoke                        |
+| Define domain root names and field contracts   | SHALL NOT       | SHALL                             |
+| Determine known/unknown roots per operation    | SHALL NOT       | SHALL                             |
+| Define domain scope/effect/target semantics    | SHALL NOT       | SHALL                             |
 | Validate residual queryability                 | SHALL           | SHALL provide capability contract |
-| Lower residual predicates to consumer query IR | SHALL NOT       | MAY |
-| Execute persistence/business operations        | SHALL NOT       | SHALL |
+| Lower residual predicates to consumer query IR | SHALL NOT       | MAY                               |
+| Execute persistence/business operations        | SHALL NOT       | SHALL                             |
 
 The Policy Language SHALL expose the typed residual and queryability result necessary for a consumer to enforce its own execution contract without importing consumer-domain semantics into the language subsystem.

@@ -30,12 +30,11 @@ The canonical entry point for a split SRS SHALL be `README.md`. It SHALL contain
 - YAML frontmatter containing only the feature `name` and document `version`;
 - a Markdown `Table of contents`;
 - a `Read order` section;
-- a `History` table with exactly `Version` and `Short summary of changes` columns;
 - a Markdown table of contents with section number, title, purpose, and relative document link.
 
-The README body SHALL contain only navigation metadata: the table of contents, read order, and history. It SHALL not repeat the SRS purpose, scope, requirements, or common knowledge. Because the README body intentionally has no level-one heading, it SHALL include `<!-- markdownlint-disable MD041 -->` immediately before the first heading.
+The README body SHALL contain only navigation metadata: the table of contents and read order. It SHALL not repeat the SRS purpose, scope, requirements, history, or common knowledge. Because the README body intentionally has no level-one heading, it SHALL include `<!-- markdownlint-disable MD041 -->` immediately before the first heading.
 
-Each `History` summary cell SHALL describe the changes in that version as bullet points so reviewers can identify each change quickly. Keep the table at exactly two columns; use HTML list markup such as `<ul><li>...</li></ul>` inside the summary cell when a multi-item Markdown list would break the table layout.
+The README SHALL not contain a `History` table, release notes, or duplicated change descriptions.
 
 Use Markdown links for all internal navigation and traceability. Replace bare section notation such as `2.2.2` with a link to the relevant file and anchor, for example [Shared Object Filter](../../specification/002.%20Authorization/02-overall-description.md#222-shared-object-filter). Do not leave unlinked section notation in the SRS. Whenever prose refers to another Markdown file, verify that the relative target path exists and that any fragment identifies a heading in the target file; repair or remove broken links before finalizing. Check links again after restructuring, renaming, or moving files. Validate internal links with the repository's link checker when available, or perform an equivalent local path-and-anchor check when it is not.
 
@@ -76,15 +75,16 @@ Write for both HUMAN and AGENT readers:
 
 - Use concise domain language, intention-revealing headings, short requirement blocks, examples, and tables that help a human review decisions quickly.
 - Use stable requirement IDs, predictable section/file names, explicit normative keywords, machine-retrievable anchors, and Markdown links for agent navigation and traceability.
-- Begin every prose sentence, bullet-point item, table-cell sentence, and history-summary bullet with an uppercase letter. Preserve the spelling and case of code identifiers, requirement IDs, URLs, file names, and other literal values.
+- Begin every prose sentence, bullet-point item, and table-cell sentence with an uppercase letter. Preserve the spelling and case of code identifiers, requirement IDs, URLs, file names, and other literal values.
 - No Common Knowledge: Omit self-evident facts, elementary background information, generic tutorials, textbook definitions, and explanations that do not change a project decision. Include only project-specific needs, decisions, constraints, interfaces, behavior, quality criteria, verification, and traceability.
 - No Repeated Information: Do not re-explain a point that is already stated. Cross-reference the existing content with a verified Markdown link, such as [Review checklist](#review-checklist) for a same-file reference, or a relative file-and-anchor link for content in another Markdown file.
 - If a term is necessary for unambiguous interpretation, define it briefly in the document glossary; do not add general educational material.
 
 ## Review checklist
 
-- README is the only canonical start point, its body contains only the table of contents, read order, and history, and every table link resolves.
-- README frontmatter contains only the feature `name` and document `version`; its History table has exactly `Version` and `Short summary of changes` columns, every summary cell presents changes as bullet points, and `MD041` is disabled for the intentionally heading-less body.
+- README is the only canonical start point, its body contains only the table of contents and read order, and every navigation link resolves.
+- README frontmatter contains only the feature `name` and document `version`; README has no duplicate History table; and `MD041` is disabled for the intentionally heading-less body.
+- Markdown table cells use the Unicode bullet character • for in-cell bullet items, and every literal `|` inside a table cell is escaped or encoded so it cannot become a column separator.
 - The files follow the tailored standard section structure and contain no stale duplicate document.
 - The SRS contains project-specific knowledge only, omits self-evident facts and elementary background information, and is useful to both HUMAN reviewers and AGENT retrieval/execution.
 - The SRS does not repeat information; repeated points are replaced with verified Markdown cross-references to the existing section or requirement.
@@ -95,5 +95,5 @@ Write for both HUMAN and AGENT readers:
 - Normative language is consistent and non-normative rationale is distinguishable.
 - Public interfaces, persistence effects, authorization/security rules, failure modes, freshness/consistency, and performance limits are not ambiguous.
 - All internal references use Markdown links rather than unlinked section notation. Every relative link to another Markdown file resolves to an existing file and valid anchor, including after restructuring. Each external issue, pull request, and artifact has one canonical descriptive Markdown link per document, with later mentions using the established short name where context remains clear. No stale duplicate document, broken anchor, unexplained acronym, or development-only phrase remains.
-- Every prose sentence, bullet-point item, table-cell sentence, and history-summary bullet begins with an uppercase letter, except where a literal value must retain its original case.
+- Every prose sentence, bullet-point item, and table-cell sentence begins with an uppercase letter, except where a literal value must retain its original case.
 - Run the repository’s Markdown lint and link/format checks when available; report actual results separately from checks that could not run.

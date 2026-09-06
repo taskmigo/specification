@@ -33,14 +33,14 @@ The following capabilities are outside the scope of this SRS:
 
 ## 1.3 Definitions, Acronyms, and Abbreviations
 
-| Term               | Definition                                                                                                    |
-| ------------------ | ------------------------------------------------------------------------------------------------------------- |
-| ANTLR              | Parser generator required for the Policy Language lexer/parser frontend.                                      |
+| Term               | Definition                                                                                                   |
+| ------------------ | ------------------------------------------------------------------------------------------------------------ |
+| ANTLR              | Parser generator required for the Policy Language lexer/parser frontend.                                     |
 | Environment Schema | Consumer-provided typed definition of roots, paths, nullability, and query capabilities available to policy. |
 | Partial Evaluation | Evaluation that resolves known-dependent subexpressions while preserving unknown-dependent subexpressions.   |
-| Policy IR          | Typed intermediate representation independent of the parser frontend and consumer APIs.                       |
+| Policy IR          | Typed intermediate representation independent of the parser frontend and consumer APIs.                      |
 | Query Lowering     | Conversion of a residual Policy IR predicate into a consumer-owned persistence-neutral query representation. |
-| Residual Predicate | Boolean Policy IR remaining after partial evaluation because it depends on one or more unknown values.        |
+| Residual Predicate | Boolean Policy IR remaining after partial evaluation because it depends on one or more unknown values.       |
 
 ## 1.4 References and Baseline
 
@@ -49,4 +49,4 @@ The following capabilities are outside the scope of this SRS:
 
 ## 1.5 Overview
 
-Sections 2–8 define the Policy Language context, interfaces, behavior, data, quality attributes, constraints, and dependencies. Section 9 defines verification and acceptance evidence; Section 10 defines traceability and unresolved issues; Section 11 provides examples and extension guidance.
+Sections [2](02-overall-description.md)–[8](08-requirements-allocation-and-dependencies.md) define the Policy Language context, interfaces, behavior, data, quality attributes, constraints, and dependencies. [Section 9](09-verification-validation-and-acceptance.md) defines verification and acceptance evidence; [Section 10](10-traceability-and-unresolved-issues.md) defines traceability and unresolved issues; [Section 11](11-appendices.md) provides examples and extension guidance.
