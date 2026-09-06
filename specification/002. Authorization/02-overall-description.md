@@ -29,7 +29,7 @@ The authorization system provides:
 - Direct and inherited User, Group, Role, and Statement semantics.
 - Database resolution of effective Statements for every authorization operation.
 - One immutable authorization snapshot shared across Request and Object Authorization.
-- Policy evaluation and partial evaluation through the Policy Language subsystem.
+- Statement policy evaluation and partial evaluation through the Embedded Language subsystem.
 - Persistence-neutral Filter AST generation for Object policies.
 - Bounded authorization-state resolution without complete in-memory hierarchy loading.
 - Fail-closed handling for invalid policies and required-input failures.
@@ -52,22 +52,22 @@ The authorization system SHALL:
 
 - Represent Object Authorization with ALL, NONE, and the Filter AST operators required by the existing behavior.
 - Use Filter Schema for direct one-segment object fields.
-- Translate residual Policy IR predicates into Filter AST and then into the persistence query predicate.
+- Translate residual Language IR predicates into Filter AST and then into the persistence query predicate.
 - Constant-fold before persistence translation.
 - Compose authorization filtering with the business predicate before pagination.
 - Avoid JVM row filtering.
 
-### 2.2.3 Policy Language Contract
+### 2.2.3 Embedded Language Contract
 
 The authorization system SHALL:
 
 - Use `scope` instead of `target.type` and required `policy` instead of `conditions[]`.
-- Compile `policy` using the [Policy Language feature](../003.%20Policy%20Language/README.md).
-- Treat the Statement `policy` string itself as the executable Policy Language body without an export/function/module wrapper.
-- Supply the scope-dependent typed Environment Schema required by the Policy Language.
-- Enforce the Policy Language complete boolean-return contract.
+- Compile Statement `policy` using the [Embedded Language feature](../003.%20Embedded%20Language/README.md).
+- Treat the Statement `policy` string as an Embedded Language program without an export/function/module wrapper.
+- Supply the scope-dependent typed Environment Schema required by the Embedded Language.
+- Enforce the Embedded Language complete boolean-return contract for Statement policies.
 - Keep database-loaded Statement state authoritative for every operation.
-- Permit compiled Policy IR reuse only as a derived optimization that cannot bypass database resolution.
+- Permit compiled Language IR reuse only as a derived optimization that cannot bypass database resolution.
 - Evaluate Request policies using known `principal` and `request` values.
 - Partially evaluate Object policies with known `principal` and `request` values while `object` remains symbolic.
 - Validate that every residual Object predicate is lowerable to the selected Filter Schema/Filter AST before the policy becomes active for that mapping.
@@ -96,8 +96,8 @@ The authorization capability is consumed by policy authors, authorization-aware 
 The following scenarios are supporting context, not additional normative requirements:
 
 1. A request operation resolves effective authorization state from the database, creates one immutable snapshot, matches the request target, and evaluates applicable Request Statements.
-2. A Request policy evaluates the available `principal` and `request` inputs through its Policy Language body without loading business resources.
-3. An Object policy partially evaluates known inputs through the Policy Language, lowers the residual predicate to Filter AST, and applies authorization before pagination.
+2. A Request Statement evaluates its `policy` Embedded Language program with the available `principal` and `request` inputs without loading business resources.
+3. An Object Statement partially evaluates its `policy` Embedded Language program, lowers the residual predicate to Filter AST, and applies authorization before pagination.
 4. A committed authorization change is observed by the next operation while the current operation continues with its existing snapshot.
 
 ## 2.5 Out of Scope
