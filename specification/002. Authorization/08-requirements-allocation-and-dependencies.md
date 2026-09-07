@@ -2,7 +2,8 @@
 
 ## 8.1 Assumptions and Dependencies
 
-- The [Embedded Language feature](../003.%20Embedded%20Language/README.md) defines program syntax, typing, evaluation, partial evaluation, diagnostics, and generic queryability contracts.
+- The [Embedded Language feature](../003.%20Embedded%20Language/README.md) defines program syntax, typing, evaluation, partial evaluation, diagnostics, and generic queryability contracts without imposing an Authorization-specific result type.
+- Authorization requires every Statement policy to have static Embedded Language result type `Bool`.
 - `target.api` is the only target shape defined by this SRS.
 - The database is the authoritative source for effective authorization state.
 - Request and Object Authorization share one operation-scoped snapshot.
@@ -13,6 +14,8 @@
 
 ## 8.2 Requirements Allocation
 
-The Embedded Language owns language syntax, typing, control flow, evaluation, partial evaluation, and generic queryability semantics. This Authorization SRS owns the Statement `policy` contract, `principal`, `request`, and `object` root contracts, Statement effects, scope rules, target matching, effective authorization resolution, Authorization Snapshots, residual Filter AST lowering, and persistence-side authorization filtering.
+The Embedded Language owns language syntax, typing, control flow, static program-result inference, evaluation, partial evaluation, and generic queryability semantics. This Authorization SRS owns the required `Bool` result contract for Statement policies, the `principal`, `request`, and `object` root contracts, Statement effects, scope rules, target matching, effective authorization resolution, Authorization Snapshots, residual Filter AST lowering, and persistence-side authorization filtering.
+
+A valid non-`Bool` Embedded Language program MAY be consumed by another Taskmigo feature but SHALL NOT satisfy the Authorization Statement policy contract.
 
 No other requirements allocation across products or future releases is specified.

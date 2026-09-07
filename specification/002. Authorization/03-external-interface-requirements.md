@@ -38,7 +38,9 @@ Traceability: [Embedded Language Contract](02-overall-description.md#223-embedde
 
 ### STMT-003 — Required policy program
 
-Every Statement `policy` SHALL satisfy the [Embedded Language source contract](../003.%20Embedded%20Language/03-external-interface-requirements.md#31-source-contract) and every reachable control-flow path SHALL return static type `Bool`.
+Every Statement `policy` SHALL satisfy the [Embedded Language source contract](../003.%20Embedded%20Language/03-external-interface-requirements.md#31-source-contract).
+
+Authorization SHALL additionally require the compiled program result type to be `Bool`. A program that is valid Embedded Language but has another result type SHALL be rejected as an Authorization Statement policy before activation.
 
 Authorization SHALL NOT require or permit an `export`, function, arrow-function, module, or entry-point wrapper around the Embedded Language program stored in `policy`.
 
@@ -56,14 +58,14 @@ if (principal.username == "admin") {
 return false;
 ```
 
-A Statement policy that fails Embedded Language parsing, binding, control-flow validation, type checking, authorization-scope validation, or applicable queryability validation SHALL be rejected before the Statement becomes active.
+A Statement policy that fails Embedded Language parsing, binding, control-flow validation, type checking, Authorization result-type validation, authorization-scope validation, or applicable queryability validation SHALL be rejected before the Statement becomes active.
 
-Verification: Compile valid programs and invalid export/function/arrow/call syntax, non-boolean/fall-through paths, unavailable authorization roots, and unsupported residual operations.
+Verification: Compile valid Boolean programs and valid Embedded Language programs returning `String` or `Number`; accept only the Boolean programs as Statement policies. Also reject export/function/arrow/call syntax, fall-through paths, unavailable authorization roots, and unsupported residual operations.
 Traceability: [Embedded Language Contract](02-overall-description.md#223-embedded-language-contract); POLICY-001 through POLICY-003.
 
 ### STMT-004 — Boolean decision contract
 
-A valid active Statement policy SHALL satisfy the Embedded Language static complete-`Bool` return contract.
+A valid active Statement policy SHALL have static program result type `Bool` under the Authorization consumer contract.
 
 During authorization:
 
@@ -72,10 +74,12 @@ During authorization:
 - Runtime truthy/falsy coercion SHALL NOT be used.
 - An Object policy partial evaluation SHALL return a concrete boolean or a residual boolean Language IR predicate.
 
+The `Bool` restriction in this requirement belongs to Authorization and SHALL NOT be interpreted as a global Embedded Language return-type restriction.
+
 An evaluation failure or invalid residual contract SHALL raise an authorization exception and fail closed.
 
-Verification: Compile non-boolean/fall-through programs and confirm activation is rejected; inject typed-input/evaluation failures and confirm authorization fails closed.
-Traceability: [Embedded Language boolean program result](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#lang-002--boolean-program-result); TECH-004; REQ-001.
+Verification: Confirm valid non-Boolean Embedded Language programs are rejected only at the Authorization policy boundary; inject typed-input/evaluation failures and confirm authorization fails closed.
+Traceability: [Embedded Language typed program result](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#lang-002--typed-program-result); TECH-004; REQ-001.
 
 ### STMT-005 — Effect semantics
 

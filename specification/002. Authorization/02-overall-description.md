@@ -65,7 +65,8 @@ The authorization system SHALL:
 - Compile Statement `policy` using the [Embedded Language feature](../003.%20Embedded%20Language/README.md).
 - Treat the Statement `policy` string as an Embedded Language program without an export/function/module wrapper.
 - Supply the scope-dependent typed Environment Schema required by the Embedded Language.
-- Enforce the Embedded Language complete boolean-return contract for Statement policies.
+- Require Statement policies to have static result type `Bool` as an Authorization-owned consumer contract.
+- Reject a Statement policy whose valid Embedded Language program result type is not `Bool`; the Embedded Language itself SHALL remain free of this authorization-specific result restriction.
 - Keep database-loaded Statement state authoritative for every operation.
 - Permit compiled Language IR reuse only as a derived optimization that cannot bypass database resolution.
 - Evaluate Request policies using known `principal` and `request` values.
@@ -98,7 +99,8 @@ The following scenarios are supporting context, not additional normative require
 1. A request operation resolves effective authorization state from the database, creates one immutable snapshot, matches the request target, and evaluates applicable Request Statements.
 2. A Request Statement evaluates its `policy` Embedded Language program with the available `principal` and `request` inputs without loading business resources.
 3. An Object Statement partially evaluates its `policy` Embedded Language program, lowers the residual predicate to Filter AST, and applies authorization before pagination.
-4. A committed authorization change is observed by the next operation while the current operation continues with its existing snapshot.
+4. A valid non-`Bool` Embedded Language program remains reusable by other Taskmigo features but is rejected when used as a Statement policy because Authorization requires `Bool`.
+5. A committed authorization change is observed by the next operation while the current operation continues with its existing snapshot.
 
 ## 2.5 Out of Scope
 
