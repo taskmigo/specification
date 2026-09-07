@@ -38,7 +38,9 @@ Traceability: [Embedded Language Contract](02-overall-description.md#223-embedde
 
 ### STMT-003 — Required policy program
 
-Every Statement `policy` SHALL satisfy the [Embedded Language source contract](../003.%20Embedded%20Language/03-external-interface-requirements.md#31-source-contract) and every reachable control-flow path SHALL return static type `Bool`.
+Every Statement `policy` SHALL satisfy the [Embedded Language source contract](../003.%20Embedded%20Language/03-external-interface-requirements.md#31-source-contract).
+
+Authorization SHALL NOT require a specific static Embedded Language program result type as a prerequisite for Statement activation. A program that is otherwise valid Embedded Language SHALL NOT be rejected before activation solely because its static result type is not `Bool`.
 
 Authorization SHALL NOT require or permit an `export`, function, arrow-function, module, or entry-point wrapper around the Embedded Language program stored in `policy`.
 
@@ -56,26 +58,30 @@ if (principal.username == "admin") {
 return false;
 ```
 
-A Statement policy that fails Embedded Language parsing, binding, control-flow validation, type checking, authorization-scope validation, or applicable queryability validation SHALL be rejected before the Statement becomes active.
+A Statement policy that fails Embedded Language parsing, binding, control-flow validation, type checking, authorization-scope validation, or applicable field/operator queryability validation SHALL be rejected before the Statement becomes active. Static program result type SHALL NOT be an activation-time rejection criterion.
 
-Verification: Compile valid programs and invalid export/function/arrow/call syntax, non-boolean/fall-through paths, unavailable authorization roots, and unsupported residual operations.
+Verification: Compile and activate valid Embedded Language programs returning `Bool`, `String`, and `Number`; confirm result type alone does not change activation acceptance. Also reject export/function/arrow/call syntax, fall-through paths, unavailable authorization roots, and unsupported residual fields/operators where applicable.
 Traceability: [Embedded Language Contract](02-overall-description.md#223-embedded-language-contract); POLICY-001 through POLICY-003.
 
 ### STMT-004 — Boolean decision contract
 
-A valid active Statement policy SHALL satisfy the Embedded Language static complete-`Bool` return contract.
+Authorization SHALL enforce boolean policy results when a policy is evaluated, not when the policy is compiled or activated.
 
-During authorization:
+During Request Authorization:
 
-- A direct Embedded Language evaluation SHALL return `true` or `false`, or an evaluation failure.
-- A concrete non-boolean result SHALL NOT be accepted as a decision.
-- Runtime truthy/falsy coercion SHALL NOT be used.
-- An Object policy partial evaluation SHALL return a concrete boolean or a residual boolean Language IR predicate.
+- Direct evaluation of the policy Semantic AST SHALL produce `true` or `false` to be accepted as the Statement match result.
+- A concrete result whose runtime type is not `Bool` SHALL raise an authorization runtime exception and SHALL fail closed.
 
-An evaluation failure or invalid residual contract SHALL raise an authorization exception and fail closed.
+During Object Authorization:
 
-Verification: Compile non-boolean/fall-through programs and confirm activation is rejected; inject typed-input/evaluation failures and confirm authorization fails closed.
-Traceability: [Embedded Language boolean program result](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#lang-002--boolean-program-result); TECH-004; REQ-001.
+- A concrete partial-evaluation result of `true` or `false` SHALL be accepted for lowering to `ALL` or `NONE`.
+- A residual Semantic AST expression SHALL be accepted for Filter AST lowering only when its static type is `Bool`.
+- A concrete non-`Bool` result or residual non-`Bool` Semantic AST expression SHALL raise an authorization runtime exception and SHALL fail closed before Filter AST lowering.
+
+Runtime truthy/falsy coercion SHALL NOT be used in either scope.
+
+Verification: Activate valid non-`Bool` Embedded Language programs. Evaluate their Semantic AST through Request Authorization and Object Authorization and confirm the corresponding runtime authorization exception is raised and authorization fails closed; confirm valid concrete and residual `Bool` results continue normally.
+Traceability: [Embedded Language typed program result](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#lang-002--typed-program-result); [Embedded Language semantic representation](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#lang-001--language-owned-semantic-representation); TECH-004; REQ-001; OBJ-001.
 
 ### STMT-005 — Effect semantics
 
@@ -163,10 +169,10 @@ Traceability: [Request Authorization Input Boundary](02-overall-description.md#2
 
 For `scope: request`, the `object` root SHALL be absent from the Authorization Environment Schema. A Request policy that references `object` SHALL be rejected before activation.
 
-For `scope: object`, `object.*` remains symbolic during partial evaluation and is validated through the selected Filter Schema and Embedded Language queryability contract.
+For `scope: object`, `object.*` SHALL remain symbolic during Embedded Language partial evaluation and SHALL be validated against the selected Filter Schema under OBJ-002 and OBJ-004.
 
 Verification: Compile Request policies that use `principal` and `request` and confirm they are accepted; reject `object` references. Partially evaluate an Object policy with symbolic object fields and confirm that Object input remains supported.
-Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); [Shared Object Filter](02-overall-description.md#222-shared-object-filter); OBJ-001.
+Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); [Shared Object Filter](02-overall-description.md#222-shared-object-filter); OBJ-001; OBJ-002; OBJ-004.
 
 ### INPUT-003 — Request input availability
 
@@ -189,7 +195,7 @@ The Authorization feature SHALL NOT provide a built-in `resource(...)` function 
 Because call expressions are outside the initial Embedded Language grammar, `resource(...)` and equivalent call syntax SHALL be rejected before activation.
 
 Verification: Attempt to activate a policy invoking `resource(...)` and confirm it is rejected before activation.
-Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); [Embedded Language callable exclusion](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#query-002--initial-callable-exclusion).
+Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); [Embedded Language call-syntax exclusion](../003.%20Embedded%20Language/03-external-interface-requirements.md#syntax-004--no-dynamic-member-method-or-call-syntax).
 
 ### RES-003 — No resource resolution
 
