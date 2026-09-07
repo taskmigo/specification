@@ -4,6 +4,7 @@
 
 - Consumers provide Environment Schemas that define root names, fields, nullability, scalar semantics, and optional query capabilities.
 - Consumers determine which required roots are known or unknown for each evaluation operation.
+- Consumers MAY require a specific program result type for their feature contract; that requirement is outside the Embedded Language's global type rules.
 - Consumers that require residual query lowering provide a persistence-neutral query-lowering capability contract.
 - Consumer-domain semantics and execution lifecycle are outside the Embedded Language.
 - The initial language provides no export/module system, user-defined functions, arrow functions, call expressions, or utility-function library.
@@ -16,7 +17,10 @@
 | ----------------------------------------------- | ----------------- | --------------------------------- |
 | Parse canonical program                         | SHALL             | SHALL NOT                         |
 | Bind and type-check statements/expressions      | SHALL             | SHALL NOT                         |
-| Validate complete boolean return control flow   | SHALL             | SHALL NOT                         |
+| Validate complete typed return control flow     | SHALL             | SHALL NOT                         |
+| Determine the static program result type        | SHALL             | SHALL NOT                         |
+| Define a consumer-required program result type  | SHALL NOT         | MAY                               |
+| Enforce a consumer-required program result type | SHALL NOT         | SHALL when defined                |
 | Produce typed Language IR                       | SHALL             | SHALL NOT                         |
 | Evaluate known program inputs                   | SHALL             | MAY invoke                        |
 | Partially evaluate known/unknown inputs         | SHALL             | MAY invoke                        |
@@ -24,7 +28,7 @@
 | Determine known/unknown roots per operation     | SHALL NOT         | SHALL                             |
 | Define consumer-domain result-composition rules | SHALL NOT         | SHALL                             |
 | Validate residual queryability                  | SHALL             | SHALL provide capability contract |
-| Lower residual predicates to consumer query IR  | SHALL NOT         | MAY                               |
+| Lower residual expressions to consumer query IR | SHALL NOT         | MAY                               |
 | Execute persistence/business operations         | SHALL NOT         | SHALL                             |
 
-The Embedded Language SHALL expose the typed residual and queryability result necessary for a consumer to enforce its own execution contract without importing consumer-domain semantics into the language subsystem.
+The Embedded Language SHALL expose the static program result type, typed residual result, and queryability result necessary for a consumer to enforce its own execution contract without importing consumer-domain semantics into the language subsystem.

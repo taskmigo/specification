@@ -1,7 +1,7 @@
 ---
 metadata:
-  version: 0.2.0
-  changelog: Renamed Policy Language to Embedded Language and generalized language-owned terminology without changing the current language semantics.
+  version: 0.3.0
+  changelog: Generalized program result types and moved consumer-specific return-type restrictions out of Embedded Language.
 ---
 
 <!-- markdownlint-disable MD041 -->

@@ -15,29 +15,32 @@ Traceability: [Embedded Language Contract](02-overall-description.md#223-embedde
 
 The program syntax, type system, control-flow semantics, operator semantics, evaluation semantics, partial evaluation, and generic queryability rules SHALL be defined by the [Embedded Language feature](../003.%20Embedded%20Language/README.md).
 
-Authorization SHALL NOT extend the Embedded Language with authorization-only syntax or utility functions. Authorization-specific behavior SHALL be expressed through the scope-dependent Environment Schema, Statement effect, and Object query-lowering mapping.
+Authorization SHALL NOT extend the Embedded Language with authorization-only syntax or utility functions. Authorization-specific behavior SHALL be expressed through the scope-dependent Environment Schema, the required `Bool` program result type, Statement effect, and Object query-lowering mapping.
 
 For `scope: request`, the Authorization Environment Schema SHALL expose `principal` and `request` and SHALL not expose `object`.
 
 For `scope: object`, the Authorization Environment Schema SHALL expose `principal`, `request`, and symbolic/query-bound `object`.
 
-Verification: Compile the same Embedded Language program syntax in both scopes and confirm only the Authorization Environment Schema/queryability differences change acceptance.
-Traceability: [Authorization inputs](03-external-interface-requirements.md#32-authorization-inputs-and-operation-snapshot); [Embedded Language Environment Schema](../003.%20Embedded%20Language/03-external-interface-requirements.md#env-001--environment-schema).
+For both scopes, Authorization SHALL require the compiled Embedded Language program result type to be `Bool`. This result-type restriction SHALL be enforced by Authorization and SHALL NOT be treated as a global Embedded Language restriction.
+
+Verification: Compile the same Embedded Language program syntax in both scopes and confirm only the Authorization Environment Schema/queryability differences change scope acceptance. Compile valid Embedded Language programs with `Bool` and non-`Bool` result types and confirm only `Bool` programs satisfy the Authorization consumer contract.
+Traceability: [Authorization inputs](03-external-interface-requirements.md#32-authorization-inputs-and-operation-snapshot); [Boolean decision contract](03-external-interface-requirements.md#stmt-004--boolean-decision-contract); [Embedded Language Environment Schema](../003.%20Embedded%20Language/03-external-interface-requirements.md#env-001--environment-schema); [Embedded Language typed program result](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#lang-002--typed-program-result).
 
 ### POLICY-003 — Static validation
 
 Before a Statement becomes active, compilation SHALL validate:
 
 - Embedded Language syntax.
-- Binding and static types, including complete `Bool` return paths.
+- Binding, static types, and complete return control flow.
+- Authorization-required static program result type `Bool`.
 - Supported authorization roots and fields for the Statement scope.
 - Compiler complexity limits.
 - Applicable Object residual queryability for the selected Filter Schema mapping.
 
 A policy failing any required validation SHALL NOT become active.
 
-Verification: Attempt activation with one failure in each category and confirm rejection with the corresponding Embedded Language diagnostic category.
-Traceability: [Embedded Language diagnostics](../003.%20Embedded%20Language/06-quality-and-performance-requirements.md#diag-001--actionable-diagnostics); OBJ-004.
+Verification: Attempt activation with one failure in each category, including a valid non-`Bool` Embedded Language program, and confirm rejection with the corresponding Embedded Language or Authorization validation category.
+Traceability: [Embedded Language diagnostics](../003.%20Embedded%20Language/06-quality-and-performance-requirements.md#diag-001--actionable-diagnostics); STMT-003; STMT-004; OBJ-004.
 
 ### POLICY-004 — DB-authoritative Statement state and compiled-artifact reuse
 
@@ -92,7 +95,7 @@ ELSE ALLOW if any target-matching ALLOW Statement evaluates true
 ELSE DENY
 ```
 
-Each active Request policy SHALL already satisfy the Embedded Language static complete-`Bool` return contract.
+Each active Request policy SHALL already satisfy the Authorization static complete-`Bool` result contract defined by STMT-003 and STMT-004.
 
 Failures in policy evaluation or required `principal`/`request` input resolution SHALL fail closed.
 
@@ -133,7 +136,7 @@ For `scope: object`, the authorization system SHALL partially evaluate the State
 
 Partial evaluation SHALL follow the [Embedded Language Partial Evaluation requirements](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#45-partial-evaluation).
 
-A concrete `true` SHALL lower to `ALL`; a concrete `false` SHALL lower to `NONE`. A residual boolean Language IR predicate SHALL be lowered to Filter AST.
+Because Authorization requires every Statement policy to have static result type `Bool`, a concrete `true` SHALL lower to `ALL`; a concrete `false` SHALL lower to `NONE`. A residual boolean Language IR predicate SHALL be lowered to Filter AST.
 
 An evaluation failure or invalid residual contract SHALL raise an authorization exception and fail closed.
 
@@ -175,7 +178,7 @@ An Object policy that can produce a residual expression not representable by the
 
 Control-flow constructs SHALL NOT hide residual fields or operators from activation-time queryability validation.
 
-The activation validation SHALL satisfy the [Embedded Language residual queryability](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#query-001--residual-queryability) requirement under the Authorization-provided query capability contract.
+The activation validation SHALL satisfy the [Embedded Language residual queryability](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#query-001--residual-queryability) requirement under the Authorization-provided `Bool` result and query capability contract.
 
 Verification: Activate policies using supported and unsupported residual fields/operators across conditional/return paths and confirm mapping validation rejects unsupported cases before activation; verify authorized rows are filtered in the database before pagination.
 Traceability: [Shared Object Filter](02-overall-description.md#222-shared-object-filter); POLICY-003.

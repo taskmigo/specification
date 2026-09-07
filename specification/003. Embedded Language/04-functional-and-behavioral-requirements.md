@@ -11,13 +11,17 @@ Language IR SHALL be independent of ANTLR parse-tree classes, ECMAScript semanti
 Verification: Inspect public/core language types and confirm evaluator, partial evaluator, and query-lowering code do not consume ANTLR parse-tree, consumer-domain, or persistence types.
 Traceability: [Product Perspective](02-overall-description.md#21-product-perspective); [Parser Frontend](07-constraints.md#71-parser-frontend).
 
-### LANG-002 — Boolean program result
+### LANG-002 — Typed program result
 
-Every reachable control-flow path of the program SHALL execute a `return` whose expression has static type `Bool`.
+Every reachable control-flow path of the program SHALL execute a `return` whose expression has a statically known type.
 
-A program containing a non-boolean return path or a reachable path that falls through end-of-source/end-of-block without reaching a later enclosing return SHALL be rejected during compilation. Runtime truthy/falsy conversion SHALL NOT exist.
+The reachable return expressions SHALL have one statically compatible program result type. A reachable path that falls through end-of-source/end-of-block without reaching a later enclosing return, or a set of reachable return expressions that cannot form one compatible result type, SHALL be rejected during compilation.
 
-Verification: Compile programs whose reachable returns are boolean, string, number, null, list, or absent and accept only complete boolean-returning cases.
+The Embedded Language SHALL NOT require the program result type to be `Bool` or another consumer-specific type. The result type MAY be any value type supported by TYPE-001 and the applicable Environment Schema.
+
+Runtime truthy/falsy conversion or result coercion SHALL NOT exist.
+
+Verification: Compile complete programs returning `Bool`, `String`, `Number`, nullable values, lists, and compatible consumer-defined scalar types; reject fall-through paths and incompatible mixed return types.
 Traceability: [Program Model](02-overall-description.md#221-program-model); TYPE-001.
 
 ### LANG-003 — Immutable local bindings
@@ -37,9 +41,9 @@ A `return <expression>;` SHALL immediately terminate evaluation of the current p
 
 Only the selected `if`/`else` branch SHALL be evaluated when the condition is concrete.
 
-During partial evaluation, a concrete condition SHALL select one branch. An unknown condition SHALL preserve the branch-dependent boolean result in residual Language IR when both outcomes may affect the program result.
+During partial evaluation, a concrete condition SHALL select one branch. An unknown condition SHALL preserve the branch-dependent typed result in residual Language IR when multiple outcomes may affect the program result.
 
-Verification: Test direct and partial evaluation with true, false, and unknown conditions, `else if`, early return, and unreachable failing statements after return.
+Verification: Test direct and partial evaluation with true, false, and unknown conditions, `else if`, early return, multiple compatible result types, and unreachable failing statements after return.
 Traceability: TYPE-001; PARTIAL-001; QUERY-001.
 
 ## 4.2 Type System and Operators
@@ -117,12 +121,12 @@ Traceability: ENV-001; SYNTAX-004.
 
 ### EVAL-001 — Known-input evaluation
 
-When every dependency required by the selected execution path is known, the Embedded Language SHALL evaluate the program to exactly one `Bool` or an evaluation failure.
+When every dependency required by the selected execution path is known, the Embedded Language SHALL evaluate the program to exactly one value conforming to the compiled program result type, or an evaluation failure.
 
 Evaluation SHALL preserve `&&`, `||`, `if`, and `return` semantics so that unreachable failing expressions or statements do not fail the evaluation.
 
-Verification: Evaluate representative programs with known inputs, including unreachable divide-by-zero branches and statements after an executed return.
-Traceability: TYPE-002; LANG-004; EVAL-IF-002.
+Verification: Evaluate representative programs with known inputs and multiple result types, including unreachable divide-by-zero branches and statements after an executed return.
+Traceability: LANG-002; TYPE-002; LANG-004; EVAL-IF-002.
 
 ### EVAL-002 — Deterministic values
 
@@ -137,10 +141,10 @@ Traceability: [Determinism](06-quality-and-performance-requirements.md#61-determ
 
 Partial evaluation SHALL evaluate any statement or expression whose result/control-flow effect can be determined from known inputs without evaluating an unknown-dependent branch.
 
-A program result that still depends on an unknown input SHALL remain as typed residual Language IR unless boolean/control-flow simplification eliminates that dependency.
+A program result that still depends on an unknown input SHALL remain as typed residual Language IR conforming to the compiled program result type unless simplification eliminates that dependency.
 
-Verification: Partially evaluate programs that mix known and unknown roots and inspect the residual typed IR.
-Traceability: [Known and Unknown Inputs](02-overall-description.md#222-known-and-unknown-inputs).
+Verification: Partially evaluate programs that mix known and unknown roots across multiple result types and inspect the residual typed IR.
+Traceability: [Known and Unknown Inputs](02-overall-description.md#222-known-and-unknown-inputs); LANG-002.
 
 ### PARTIAL-002 — Constant folding and boolean simplification
 
@@ -162,13 +166,13 @@ A simplification SHALL NOT evaluate a branch or statement that direct evaluation
 Verification: Test each identity and skipped failing branches/statements.
 Traceability: TYPE-002; EVAL-001.
 
-### PARTIAL-003 — Residual boolean contract
+### PARTIAL-003 — Residual result contract
 
-A successful partial evaluation SHALL produce a concrete `Bool` or a residual expression whose static type is `Bool`.
+A successful partial evaluation SHALL produce a concrete value or a residual expression whose static type conforms to the compiled program result type.
 
-A residual expression of another type SHALL be impossible for a valid compiled program. If internal corruption produces such a result, evaluation SHALL fail at the consumer boundary rather than reinterpret the result.
+If internal corruption produces a result that does not conform to the compiled program result type, evaluation SHALL fail at the consumer boundary rather than reinterpret or coerce the result.
 
-Verification: Inspect residual types for representative programs and inject an invalid internal result in a test boundary.
+Verification: Inspect residual types for representative `Bool`, `String`, and `Number` programs and inject an incompatible internal result at a test boundary.
 Traceability: LANG-002; EVAL-IF-002.
 
 ### PARTIAL-004 — Dependency metadata
@@ -184,14 +188,16 @@ Traceability: [Known and Unknown Inputs](02-overall-description.md#222-known-and
 
 ### QUERY-001 — Residual queryability
 
-When a consumer contract marks an unknown root as query-bound, the Embedded Language SHALL determine whether every possible residual operation that depends on that root is query-lowerable under the selected Environment Schema and query capability contract.
+When a consumer contract marks an unknown root as query-bound and requests query lowering, the Embedded Language SHALL determine whether every possible residual operation that depends on that root is query-lowerable under the selected Environment Schema, program-result contract, and query capability contract.
 
-Control-flow constructs SHALL NOT hide residual operations from queryability analysis. Queryability SHALL be determined from the residual boolean semantics produced from the program.
+Control-flow constructs SHALL NOT hide residual operations from queryability analysis. Queryability SHALL be determined from the residual typed semantics produced from the program.
 
-Compilation for that consumer contract SHALL fail with `QueryabilityError` when a possible residual operation is not representable by the selected query-lowering capability.
+Compilation for that consumer contract SHALL fail with `QueryabilityError` when a possible residual operation or result form required by that consumer cannot be represented by the selected query-lowering capability.
 
-Verification: Compile programs containing supported and unsupported residual fields/operators across `if`/return paths under multiple query capability contracts and confirm deterministic acceptance or `QueryabilityError`.
-Traceability: [Query-Lowering Boundary](02-overall-description.md#223-query-lowering-boundary); ENV-001.
+The Embedded Language SHALL NOT globally require a query-lowered program to return `Bool`; a consumer whose query representation accepts only predicates SHALL declare and enforce `Bool` as its own required program result type.
+
+Verification: Compile programs containing supported and unsupported residual fields/operators and multiple result types under different query capability/result contracts and confirm deterministic acceptance or `QueryabilityError`.
+Traceability: [Query-Lowering Boundary](02-overall-description.md#223-query-lowering-boundary); ENV-001; LANG-002.
 
 ### QUERY-002 — Initial callable exclusion
 

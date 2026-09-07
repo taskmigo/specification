@@ -133,12 +133,12 @@ Traceability: ENV-001; [Known and Unknown Inputs](02-overall-description.md#222-
 
 ### ENV-003 — Compiled program interface
 
-Successful compilation SHALL produce a compiled program artifact containing typed Language IR and the metadata required by [compiled program artifacts](05-data-and-information-requirements.md#52-compiled-program-artifacts).
+Successful compilation SHALL produce a compiled program artifact containing typed Language IR, the statically determined program result type, and the metadata required by [compiled program artifacts](05-data-and-information-requirements.md#52-compiled-program-artifacts).
 
 A parser or static-validation error SHALL produce one or more diagnostics with source location and SHALL NOT produce an executable compiled program.
 
-Verification: Compile valid and invalid source and inspect the compiled artifact/diagnostics boundary.
-Traceability: DIAG-001; DATA-002.
+Verification: Compile valid programs with different result types and invalid source, then inspect the compiled artifact result type and diagnostics boundary.
+Traceability: DIAG-001; DATA-002; LANG-002.
 
 ## 3.3 Evaluation Interface
 
@@ -153,15 +153,15 @@ Traceability: TYPE-001; [Strict Semantics](07-constraints.md#73-strict-semantics
 
 ### EVAL-IF-002 — Result forms
 
-Direct evaluation of a valid program SHALL return exactly one `Bool` result or an evaluation failure.
+Direct evaluation of a valid program SHALL return exactly one value conforming to the compiled program result type, or an evaluation failure.
 
 Partial evaluation SHALL return either:
 
-- A concrete `Bool`.
-- A typed residual `Bool` Language IR expression.
+- A concrete value conforming to the compiled program result type.
+- A typed residual Language IR expression whose type conforms to the compiled program result type.
 - An evaluation/validation failure.
 
-No other result form SHALL be interpreted as a valid program result.
+The Embedded Language SHALL NOT reinterpret a result as another type to satisfy a consumer contract. A consumer that requires a specific result type SHALL enforce that requirement at its integration boundary.
 
-Verification: Exercise concrete true/false, residual, and invalid-result scenarios.
-Traceability: EVAL-001; PARTIAL-001; PARTIAL-003.
+Verification: Exercise concrete and residual `Bool`, `String`, and `Number` result scenarios plus incompatible internal-result scenarios and consumer-specific result-type rejection.
+Traceability: LANG-002; EVAL-001; PARTIAL-001; PARTIAL-003.

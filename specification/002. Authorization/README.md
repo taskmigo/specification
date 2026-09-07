@@ -1,7 +1,7 @@
 ---
 metadata:
-  version: 0.3.1
-  changelog: Updated Authorization to consume Embedded Language while preserving the existing Statement and authorization semantics.
+  version: 0.3.2
+  changelog: Clarified that the Bool policy-result restriction is owned by Authorization rather than Embedded Language.
 ---
 
 <!-- markdownlint-disable MD041 -->
