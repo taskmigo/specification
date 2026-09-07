@@ -4,10 +4,10 @@
 
 ### QUAL-001 — Deterministic semantics
 
-Parsing, static validation, control-flow analysis, direct evaluation, partial evaluation, and constant folding SHALL be deterministic for identical source, language version, Environment Schema, and input values.
+Parsing, static validation, control-flow analysis, Semantic AST construction, direct evaluation, partial evaluation, and constant folding SHALL be deterministic for identical source, language version, Environment Schema, and input values.
 
-Verification: Repeat compilation and evaluation across identical inputs and compare typed IR structure modulo non-semantic metadata, residual predicates, results, and failure classes.
-Traceability: EVAL-002; PARTIAL-001.
+Verification: Repeat compilation and evaluation across identical inputs and compare Semantic AST structure modulo non-semantic metadata, residual expressions, results, and failure classes.
+Traceability: LANG-001; EVAL-002; PARTIAL-001.
 
 ### QUAL-002 — Guaranteed termination
 
@@ -20,7 +20,7 @@ Traceability: [Language Restrictions](07-constraints.md#72-language-restrictions
 
 ### PERF-001 — Bounded source complexity
 
-The compiler SHALL enforce finite configurable upper bounds for program source size, token count, syntax-tree depth, Language IR node count, block nesting depth, and list literal size.
+The compiler SHALL enforce finite configurable upper bounds for program source size, token count, syntax-tree depth, Semantic AST node count, block nesting depth, and list literal size.
 
 A program exceeding any configured bound SHALL be rejected before execution with a diagnostic identifying the exceeded category.
 
@@ -38,18 +38,18 @@ Traceability: PARTIAL-004.
 
 ### PERF-003 — Compile before execution
 
-A program SHALL pass parsing, binding, control-flow validation, type checking, complexity validation, and applicable queryability validation before it becomes executable for a consumer contract.
+A program SHALL pass parsing, binding, control-flow validation, type checking, and complexity validation before its Semantic AST becomes executable.
 
-A consumer MAY reuse an exact compiled artifact instead of recompiling the same source on every operation when the identity requirements in DATA-002 and DATA-003 are satisfied.
+An exact compiled artifact MAY be reused instead of recompiling the same source when the identity requirements in DATA-002 and DATA-003 are satisfied.
 
-Verification: Execute repeated operations against one unchanged source/schema contract and confirm exact compiled-artifact reuse is possible; change the source/schema contract and confirm recompilation or rejection.
+Verification: Execute repeated operations against one unchanged source/schema pair and confirm exact compiled-artifact reuse is possible; change the source/schema pair and confirm recompilation or rejection.
 Traceability: DATA-002; DATA-003.
 
 ## 6.4 Diagnostics and Maintainability
 
 ### DIAG-001 — Actionable diagnostics
 
-Parse, binding, control-flow, type, complexity, and queryability failures SHALL report a stable diagnostic category and source location when a source location exists.
+Parse, binding, control-flow, type, and complexity failures SHALL report a stable diagnostic category and source location when a source location exists.
 
 Diagnostics SHALL distinguish at least:
 
@@ -59,7 +59,6 @@ BindingError
 ControlFlowError
 TypeError
 ComplexityError
-QueryabilityError
 ```
 
 Verification: Trigger one failure in each category and inspect the diagnostic category and source span.
@@ -67,7 +66,7 @@ Traceability: DATA-004.
 
 ### QUAL-003 — Frontend replacement boundary
 
-Core Embedded Language semantics SHALL depend on language-owned AST/Language IR contracts rather than generated parser node types so that parser-generator upgrades or frontend replacement do not require rewriting evaluation and query semantics.
+Core Embedded Language semantics SHALL depend on the language-owned Semantic AST contract rather than generated parser node types so that parser-generator upgrades or frontend replacement do not require rewriting evaluation semantics.
 
-Verification: Inspect dependency direction between syntax, semantic, evaluation, and query-lowering components.
+Verification: Inspect dependency direction between syntax, semantic-analysis, evaluation, and partial-evaluation components.
 Traceability: LANG-001; [Parser Frontend](07-constraints.md#71-parser-frontend).

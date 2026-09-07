@@ -25,7 +25,7 @@ Preferred applications include:
 | ---------------------------------------------------- | ----------------- |
 | Constant/identity authorization behavior             | Null Object       |
 | Request evaluation vs Object partial evaluation      | Strategy          |
-| Language IR and Filter AST boolean trees             | Composite         |
+| Semantic AST and Filter AST boolean trees            | Composite         |
 | Persistence-specific translation boundaries          | Adapter           |
 | Database authorization predicates                    | Specification     |
 | Filter Schemas selected by registered type or target | Registry          |
@@ -41,7 +41,7 @@ Traceability: [Product Functions](02-overall-description.md#22-product-functions
 
 Policy source is untrusted compiler input.
 
-The Authorization consumer SHALL satisfy the [Embedded Language isolation and compiler constraints](../003.%20Embedded%20Language/07-constraints.md).
+Authorization SHALL satisfy the [Embedded Language isolation and compiler constraints](../003.%20Embedded%20Language/07-constraints.md).
 
 The Authorization Environment Schema SHALL NOT expose repositories, Spring/ApplicationContext objects, JPA entities, filesystem/network/process access, reflection, arbitrary Java objects, host methods, or callable utility surfaces.
 

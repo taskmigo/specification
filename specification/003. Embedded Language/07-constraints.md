@@ -8,9 +8,9 @@ The Embedded Language lexer and parser SHALL be generated from the canonical gra
 
 The generated frontend SHALL use the ANTLR Java target/runtime and SHALL NOT require JNI or a native parser library.
 
-The generated parse tree SHALL be converted into language-owned AST/Language IR before semantic evaluation.
+The generated parse tree SHALL be converted into the language-owned Semantic AST before evaluation or partial evaluation.
 
-Verification: Inspect build dependencies and generated parser sources, confirm the Java ANTLR runtime is used without JNI/native parser dependencies, and inspect the parse-tree conversion boundary.
+Verification: Inspect build dependencies and generated parser sources, confirm the Java ANTLR runtime is used without JNI/native parser dependencies, and inspect the parse-tree-to-Semantic-AST boundary.
 Traceability: SYNTAX-002; LANG-001.
 
 ## 7.2 Language Restrictions
@@ -43,7 +43,7 @@ built-in or registered utility functions
 A future language revision SHALL require an explicit specification change before adding one of these capabilities.
 
 Verification: Confirm the grammar excludes each construct and rejection tests cover representative syntax.
-Traceability: [Scope](01-introduction.md#12-scope); QUAL-002; QUERY-002.
+Traceability: [Scope](01-introduction.md#12-scope); QUAL-002.
 
 ## 7.3 Strict Semantics
 

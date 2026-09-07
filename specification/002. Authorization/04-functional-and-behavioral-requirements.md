@@ -4,40 +4,40 @@
 
 ### POLICY-001 — Compilation model
 
-The authorization system SHALL compile Statement `policy` source through the [Embedded Language](../003.%20Embedded%20Language/README.md) compiler into typed Language IR.
+The authorization system SHALL compile Statement `policy` source through the [Embedded Language](../003.%20Embedded%20Language/README.md) compiler into a typed Semantic AST.
 
-Authorization execution SHALL evaluate or partially evaluate Language IR; it SHALL NOT invoke a general-purpose JavaScript runtime or evaluate policy source directly.
+Request Authorization SHALL evaluate the Semantic AST. Object Authorization SHALL partially evaluate the Semantic AST. Authorization SHALL NOT invoke a general-purpose JavaScript runtime or evaluate policy source directly.
 
-Verification: Inspect the compiler and execution boundary and run policy evaluation tests that confirm execution uses typed Language IR without invoking a JavaScript runtime.
+Verification: Inspect the compiler and execution boundary and run Request and Object policy tests that confirm Authorization consumes the Embedded Language Semantic AST rather than ANTLR parse-tree types or policy source.
 Traceability: [Embedded Language Contract](02-overall-description.md#223-embedded-language-contract); [Embedded Language semantic representation](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#lang-001--language-owned-semantic-representation).
 
 ### POLICY-002 — Embedded Language contract
 
-The program syntax, type system, control-flow semantics, operator semantics, evaluation semantics, partial evaluation, and generic queryability rules SHALL be defined by the [Embedded Language feature](../003.%20Embedded%20Language/README.md).
-
-Authorization SHALL NOT extend the Embedded Language with authorization-only syntax or utility functions. Authorization-specific behavior SHALL be expressed through the scope-dependent Environment Schema, Statement effect, and Object query-lowering mapping.
+Program syntax, Semantic AST semantics, type-system semantics, control flow, operators, evaluation, and partial evaluation SHALL follow the [Embedded Language feature](../003.%20Embedded%20Language/README.md).
 
 For `scope: request`, the Authorization Environment Schema SHALL expose `principal` and `request` and SHALL not expose `object`.
 
-For `scope: object`, the Authorization Environment Schema SHALL expose `principal`, `request`, and symbolic/query-bound `object`.
+For `scope: object`, the Authorization Environment Schema SHALL expose `principal`, `request`, and symbolic `object`.
 
-Verification: Compile the same Embedded Language program syntax in both scopes and confirm only the Authorization Environment Schema/queryability differences change acceptance.
-Traceability: [Authorization inputs](03-external-interface-requirements.md#32-authorization-inputs-and-operation-snapshot); [Embedded Language Environment Schema](../003.%20Embedded%20Language/03-external-interface-requirements.md#env-001--environment-schema).
+Policy-result interpretation SHALL follow STMT-004.
+
+Verification: Compile policies in both scopes to Semantic AST against the corresponding Authorization Environment Schema and execute them through the applicable Authorization runtime path.
+Traceability: [Authorization inputs](03-external-interface-requirements.md#32-authorization-inputs-and-operation-snapshot); STMT-004; [Embedded Language Environment Schema](../003.%20Embedded%20Language/03-external-interface-requirements.md#env-001--environment-schema); [Embedded Language semantic representation](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#lang-001--language-owned-semantic-representation).
 
 ### POLICY-003 — Static validation
 
 Before a Statement becomes active, compilation SHALL validate:
 
 - Embedded Language syntax.
-- Binding and static types, including complete `Bool` return paths.
+- Binding, static types, and complete return control flow.
 - Supported authorization roots and fields for the Statement scope.
 - Compiler complexity limits.
-- Applicable Object residual queryability for the selected Filter Schema mapping.
+- Object residual field/operator support for the selected Filter Schema mapping.
 
-A policy failing any required validation SHALL NOT become active.
+A policy failing a required static validation SHALL NOT become active.
 
-Verification: Attempt activation with one failure in each category and confirm rejection with the corresponding Embedded Language diagnostic category.
-Traceability: [Embedded Language diagnostics](../003.%20Embedded%20Language/06-quality-and-performance-requirements.md#diag-001--actionable-diagnostics); OBJ-004.
+Verification: Attempt activation with one failure in each required static-validation category. Also activate valid non-`Bool` Embedded Language programs and verify STMT-004 is enforced only when Authorization evaluates or partially evaluates their Semantic AST.
+Traceability: [Embedded Language diagnostics](../003.%20Embedded%20Language/06-quality-and-performance-requirements.md#diag-001--actionable-diagnostics); STMT-003; STMT-004; OBJ-004.
 
 ### POLICY-004 — DB-authoritative Statement state and compiled-artifact reuse
 
@@ -45,7 +45,7 @@ Every authorization operation SHALL obtain the current relevant effective Statem
 
 The authorization system SHALL NOT use an in-memory or distributed cache of Statement records, effective Statement sets, Statement ids, or authorization snapshots to bypass that database lookup.
 
-Language IR MAY be reused across operations only as a derived compiled artifact after the current Statement has been loaded from the database. Any such reuse SHALL be keyed by an immutable fingerprint of the exact policy/Statement state loaded for the current operation and SHALL also satisfy the compiled-artifact identity requirements of the Embedded Language feature.
+A compiled Semantic AST MAY be reused across operations only as a derived artifact after the current Statement has been loaded from the database. Any such reuse SHALL be keyed by an immutable fingerprint of the exact policy/Statement state loaded for the current operation and SHALL also satisfy the compiled-artifact identity requirements of the Embedded Language feature.
 
 A compiled-artifact cache:
 
@@ -54,9 +54,9 @@ A compiled-artifact cache:
 - SHALL NOT make authorization correctness depend on cache invalidation, TTL, or cross-node synchronization.
 - SHALL be treated as an optimization only.
 
-If a safe compiled artifact cannot be matched to the exact database-loaded Statement state and Embedded Language compilation contract, the authorization system SHALL compile from that loaded policy source.
+If a safe compiled Semantic AST cannot be matched to the exact database-loaded Statement state and Embedded Language compilation contract, the authorization system SHALL compile from that loaded policy source.
 
-Verification: Change policy, Statement metadata, or a relevant Embedded Language compilation contract between operations and confirm a stale compiled artifact is not used.
+Verification: Change policy, Statement metadata, or a relevant Embedded Language compilation contract between operations and confirm a stale Semantic AST is not used.
 Traceability: [Embedded Language Contract](02-overall-description.md#223-embedded-language-contract); [Embedded Language compiled artifact metadata](../003.%20Embedded%20Language/05-data-and-information-requirements.md#data-003--compiled-artifact-metadata); PERF-004.
 
 ### POLICY-005 — Constant folding
@@ -75,9 +75,9 @@ and:
 return false;
 ```
 
-SHALL be represented as constant policy results.
+SHALL be represented as constant Semantic AST results.
 
-Verification: Compile the true and false constant examples and inspect Language IR for constant representations; evaluate equivalent constant subexpressions.
+Verification: Compile the true and false constant examples and inspect the Semantic AST for constant representations; evaluate equivalent constant subexpressions.
 Traceability: [Embedded Language constant folding](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#partial-002--constant-folding-and-boolean-simplification); OBJ-005.
 
 ## 4.2 Request Authorization
@@ -92,11 +92,11 @@ ELSE ALLOW if any target-matching ALLOW Statement evaluates true
 ELSE DENY
 ```
 
-Each active Request policy SHALL already satisfy the Embedded Language static complete-`Bool` return contract.
+For each evaluated Request policy, Authorization SHALL evaluate its Semantic AST and inspect the concrete result. A result whose runtime type is not `Bool` SHALL raise an authorization runtime exception and fail closed before the Statement effect is applied.
 
 Failures in policy evaluation or required `principal`/`request` input resolution SHALL fail closed.
 
-Verification: Evaluate matching allow and deny Statements, including default-deny and deny-overrides cases, and inject evaluator and required-input failures; confirm the result is denial where required.
+Verification: Evaluate matching allow and deny Statements, including default-deny and deny-overrides cases. Evaluate an active non-`Bool` policy Semantic AST and confirm a runtime authorization exception and denial. Inject evaluator and required-input failures and confirm the result is denial where required.
 Traceability: [Fail-Closed Behavior](07-constraints.md#74-fail-closed-behavior); STMT-004.
 
 ### REQ-002 — Constant short-circuit
@@ -114,7 +114,7 @@ Traceability: [Resolution and Operation Snapshot](02-overall-description.md#221-
 
 ### REQ-003 — Request input boundary
 
-For `scope: request`, authorization SHALL evaluate the policy using only the `principal` and `request` values already available at the time of authorization.
+For `scope: request`, authorization SHALL evaluate the policy Semantic AST using only the `principal` and `request` values already available at the time of authorization.
 
 Request Authorization SHALL NOT load business resources, invoke resource adapters, or make resource data available through `object`.
 
@@ -129,20 +129,27 @@ Traceability: [Request Authorization Input Boundary](02-overall-description.md#2
 
 ### OBJ-001 — Partial evaluation
 
-For `scope: object`, the authorization system SHALL partially evaluate the Statement `policy` Embedded Language program with known `principal` and `request` values while retaining `object.*` as symbolic values.
+For `scope: object`, the authorization system SHALL partially evaluate the Statement policy Semantic AST with known `principal` and `request` values while retaining `object.*` as symbolic values.
 
 Partial evaluation SHALL follow the [Embedded Language Partial Evaluation requirements](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#45-partial-evaluation).
 
-A concrete `true` SHALL lower to `ALL`; a concrete `false` SHALL lower to `NONE`. A residual boolean Language IR predicate SHALL be lowered to Filter AST.
+After partial evaluation:
+
+- A concrete `true` SHALL lower to `ALL`.
+- A concrete `false` SHALL lower to `NONE`.
+- A residual Semantic AST expression whose static type is `Bool` SHALL be lowered to Filter AST.
+- A concrete non-`Bool` result or residual non-`Bool` Semantic AST expression SHALL raise an authorization runtime exception and fail closed before Filter AST lowering.
 
 An evaluation failure or invalid residual contract SHALL raise an authorization exception and fail closed.
 
-Verification: Partially evaluate constant, symbolic, conditional, early-return, and failing Object policies and confirm concrete booleans and residual predicates become valid filters while failures deny.
-Traceability: [Shared Object Filter](02-overall-description.md#222-shared-object-filter); STMT-004.
+Verification: Partially evaluate active `Bool` and non-`Bool` policy Semantic ASTs across constant, symbolic, conditional, early-return, and failing cases. Confirm valid concrete booleans and residual boolean Semantic AST expressions become filters, while concrete or residual non-`Bool` results raise a runtime authorization exception and fail closed.
+Traceability: [Shared Object Filter](02-overall-description.md#222-shared-object-filter); STMT-004; [Embedded Language partial evaluation](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#partial-001--unknown-preserving-evaluation).
 
 ### OBJ-002 — Initial Filter Schema scope
 
-Filter Schema SHALL map policy-visible object fields to persisted fields/types for a registered Object Authorization mapping and SHALL provide the `object` Environment Schema/query capabilities required by the Embedded Language consumer contract.
+Filter Schema SHALL map policy-visible object fields to persisted fields/types for a registered Object Authorization mapping and SHALL define which fields and operators can be represented by Filter AST.
+
+The mapped object fields and types SHALL be exposed through the `object` root in the Authorization Environment Schema.
 
 The authorization system SHALL preserve direct one-segment object fields. Nested paths, joins, and relationship predicates remain outside the current scope.
 
@@ -162,7 +169,7 @@ numeric ADD SUBTRACT MULTIPLY DIVIDE NEGATE
 
 Filter AST is independent of Embedded Language source syntax and persistence APIs.
 
-Verification: Inspect the Filter AST API and translate equivalent predicates from residual Language IR and a future client-filter producer without exposing persistence types in the AST.
+Verification: Inspect the Filter AST API and translate equivalent predicates from residual Semantic AST expressions and a future client-filter producer without exposing persistence types in the AST.
 Traceability: [Scope](01-introduction.md#12-scope); [Appendix B](11-appendices.md#111-future-extensions-non-normative) `filterBy` extension.
 
 ### OBJ-004 — Database execution and queryability
@@ -171,11 +178,9 @@ Filter AST SHALL compile to the resource query predicate used by the existing pe
 
 Authorization filtering SHALL execute before pagination. The authorization system SHALL NOT load unrestricted business rows and filter them in JVM memory.
 
-An Object policy that can produce a residual expression not representable by the selected Filter Schema / Filter AST SHALL not be active for that Object Authorization mapping.
+Activation-time Object queryability validation SHALL validate only residual fields and operators that depend on symbolic `object` against the selected Filter Schema / Filter AST mapping.
 
-Control-flow constructs SHALL NOT hide residual fields or operators from activation-time queryability validation.
-
-The activation validation SHALL satisfy the [Embedded Language residual queryability](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#query-001--residual-queryability) requirement under the Authorization-provided query capability contract.
+Control-flow constructs in the Semantic AST SHALL NOT hide residual fields or operators from activation-time queryability validation.
 
 Verification: Activate policies using supported and unsupported residual fields/operators across conditional/return paths and confirm mapping validation rejects unsupported cases before activation; verify authorized rows are filtered in the database before pagination.
 Traceability: [Shared Object Filter](02-overall-description.md#222-shared-object-filter); POLICY-003.

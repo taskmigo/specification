@@ -2,73 +2,64 @@
 
 ## 2.1 Product Perspective
 
-The Embedded Language is a language subsystem between source text and consuming features. The subsystem owns source parsing, binding, static typing, control-flow validation, typed Language IR, direct evaluation, partial evaluation, and query-lowering capability analysis.
+The Embedded Language is a language subsystem between source text and execution inputs. The subsystem owns source parsing, binding, static typing, control-flow validation, Semantic AST construction, direct evaluation, and partial evaluation.
 
 The required compilation and execution boundary is:
 
 ```text
 Program source
   -> ANTLR lexer/parser
-  -> Surface AST
-  -> Binding and type checking
-  -> Control-flow validation
-  -> Typed Language IR
+  -> Parse tree
+  -> Semantic analysis
+  -> Typed Semantic AST
   -> Evaluation or partial evaluation
-  -> Residual Language IR
-  -> Consumer query lowering
+  -> Value or residual Semantic AST
 ```
 
-ANTLR parse-tree types SHALL remain a frontend concern. Evaluation, partial evaluation, and query-lowering consumers SHALL operate on language-owned representations rather than ANTLR parse-tree nodes.
+ANTLR parse-tree types SHALL remain a frontend concern. Evaluation and partial evaluation SHALL operate on the language-owned Semantic AST rather than ANTLR parse-tree nodes.
 
 ## 2.2 Product Functions
 
 The Embedded Language subsystem provides:
 
 - Deterministic parsing of the canonical program syntax.
-- Static root, path, operator, control-flow, and type validation against a consumer-provided Environment Schema.
-- Compilation into typed Language IR with source-location and dependency metadata.
-- Strict boolean program-result enforcement for the current language version.
+- Static root, path, operator, control-flow, and type validation against an Environment Schema.
+- Compilation into a typed Semantic AST with source-location and dependency metadata.
+- Static program-result typing.
 - Direct evaluation against known environment values.
 - Partial evaluation against a known/unknown environment.
-- Constant folding and boolean simplification.
-- Queryability analysis for residual unknown-dependent predicates.
-- A parser-independent and consumer-independent boundary for future language evolution.
+- Constant folding and type-preserving simplification.
+- A parser-independent semantic boundary for future language evolution.
 
 ### 2.2.1 Program Model
 
 An Embedded Language source is the executable body of exactly one program. It does not contain a module declaration, export declaration, wrapper function, arrow function, or other callable declaration in the current language version.
 
-The program MAY contain immutable `const` declarations and `if`/`else` control flow and SHALL terminate every reachable path with `return <expression>;` whose expression has static type `Bool`.
+The program MAY contain immutable `const` declarations and `if`/`else` control flow. Every reachable control-flow path SHALL terminate with `return <expression>;`, and the compiler SHALL determine one static program result type from the reachable return expressions.
+
+The program result type MAY be any type supported by the language and the Environment Schema.
 
 The Embedded Language has no implicit return, truthiness conversion, automatic semicolon insertion, or ECMAScript module/function execution semantics.
 
 ### 2.2.2 Known and Unknown Inputs
 
-Every compiled expression SHALL identify the Environment Schema roots on which it depends.
+Every Semantic AST expression SHALL identify the Environment Schema roots on which it depends.
 
-For one evaluation operation, the consumer SHALL provide each required root as either known or unknown. An expression that depends only on known values MAY be evaluated immediately. An expression that depends on an unknown value SHALL remain symbolic unless simplification proves that the unknown dependency cannot affect the result.
-
-The Embedded Language SHALL NOT assign domain meaning to a root name or determine which roots are known or unknown for a consumer operation.
-
-### 2.2.3 Query-Lowering Boundary
-
-The Embedded Language SHALL NOT embed JPA, SQL, or another consumer persistence API in Language IR.
-
-A consumer MAY define which roots, fields, and operators are query-lowerable. After partial evaluation, every residual subtree that still depends on a query-bound unknown root SHALL be accepted only when the selected consumer contract can lower the subtree without changing Embedded Language semantics.
+For one evaluation operation, each required root SHALL be supplied as either known or unknown. An expression that depends only on known values MAY be evaluated immediately. An expression that depends on an unknown value SHALL remain symbolic unless simplification proves that the unknown dependency cannot affect the result.
 
 ## 2.3 Stakeholders and Users
 
-The Embedded Language is consumed by program authors, feature components, Environment Schema providers, query-lowering adapters, and reviewers of language changes. This SRS does not prescribe an editor or user-interface implementation.
+The Embedded Language is used by program authors and Taskmigo components that compile or execute Embedded Language programs. This SRS does not prescribe an editor or user-interface implementation.
 
 ## 2.4 Operational Context and Scenarios
 
 The following scenarios are supporting context, not additional normative requirements:
 
-1. A consumer compiles a program once for an exact source/schema contract and evaluates it repeatedly with fully known inputs.
-2. A consumer partially evaluates a program with one or more roots marked unknown.
-3. A known branch result removes an otherwise unknown-dependent residual predicate through constant/control-flow simplification.
-4. A residual predicate that uses consumer-declared queryable fields/operators is lowered through a consumer adapter.
+1. A program is compiled once into a Semantic AST for an exact source and Environment Schema.
+2. The Semantic AST is evaluated repeatedly with fully known inputs.
+3. The Semantic AST is partially evaluated with one or more unknown inputs.
+4. A known branch result removes an unknown-dependent residual expression through constant or control-flow simplification.
 
 ## 2.5 Out of Scope
 
-The boundaries listed in [Scope](01-introduction.md#12-scope) remain outside this SRS. Consumer-domain semantics, persistence-specific execution, reusable program modules, callable abstractions, and utility-function libraries are consumer or future-language concerns.
+The boundaries listed in [Scope](01-introduction.md#12-scope) remain outside this SRS.

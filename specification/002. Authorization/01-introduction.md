@@ -8,14 +8,16 @@ This document is tailored to the software-requirements information-item guidance
 
 ## 1.2 Scope
 
-The authorization model SHALL use the [Embedded Language feature](../003.%20Embedded%20Language/README.md) to compile and execute Statement `policy` source while preserving these product semantics:
+The authorization model SHALL use the [Embedded Language feature](../003.%20Embedded%20Language/README.md) for Statement `policy` source while preserving these product semantics:
 
 - Request Authorization is default-deny and DENY overrides ALLOW.
 - Object Authorization is applied in the database query before pagination.
 - Every authorization operation resolves its relevant effective Statements from the database; Statement state is not cached across requests.
 - One authorization operation uses one immutable authorization snapshot from start to finish.
 - Request Authorization uses only the `principal` and `request` values available at authorization time; it does not load business resources.
-- Object policies compile to typed Language IR, are partially evaluated with symbolic `object`, and lower residual predicates to the persistence-neutral Filter AST.
+- Statement policies compile to Embedded Language Semantic AST.
+- Request Authorization evaluates the Semantic AST with concrete inputs.
+- Object Authorization partially evaluates the Semantic AST with symbolic `object` and lowers residual boolean Semantic AST expressions to the persistence-neutral Filter AST.
 
 Package/module ownership and public SDK boundaries are governed by [issue #54](https://github.com/taskmigo/specification/issues/54) and are not redefined here.
 
@@ -32,9 +34,9 @@ The following capabilities are outside the scope of this SRS:
 | Term                   | Definition                                                                                              |
 | ---------------------- | ------------------------------------------------------------------------------------------------------- |
 | Authorization Snapshot | Immutable authorization state used for one request or authorization operation.                          |
-| Embedded Language      | Consumer-neutral language used to compile and evaluate Statement `policy` source.                       |
+| Embedded Language      | Language used to compile and evaluate Statement `policy` source.                                        |
 | Filter AST             | Persistence-neutral boolean predicate representation used for Object Authorization and query filtering. |
-| Language IR            | Typed intermediate representation defined by the Embedded Language feature.                             |
+| Semantic AST           | Typed semantic representation produced by the Embedded Language compiler and consumed by Authorization. |
 | Request Authorization  | Authorization based only on the available request, principal, and applicable Request Statements.        |
 | Object Authorization   | Database-side visibility filtering based on symbolic object fields and applicable Object Statements.    |
 | Statement              | Named authorization rule with an effect, scope, API target, and policy.                                 |
@@ -42,7 +44,7 @@ The following capabilities are outside the scope of this SRS:
 ## 1.4 References and Baseline
 
 - The linked standard's software-requirements information-item guidance is used as a tailored framework.
-- The [Embedded Language feature](../003.%20Embedded%20Language/README.md) defines the source language, type system, evaluation, partial evaluation, and queryability contracts consumed by Authorization.
+- The [Embedded Language feature](../003.%20Embedded%20Language/README.md) defines the source language, Semantic AST, type system, evaluation, and partial evaluation used by Authorization.
 - The linked issue defines module ownership and public SDK boundaries outside the scope of this SRS.
 - Baseline: The server `next` source review recorded in the preceding authorization specification, used only to identify legacy authorization behavior that the requirements replace or preserve. The source repository and exact baseline commit are not included here, so this document does not claim a fresh runtime verification.
 
