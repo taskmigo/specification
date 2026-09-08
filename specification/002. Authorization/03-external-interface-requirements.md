@@ -38,7 +38,9 @@ Traceability: [Embedded Language Contract](02-overall-description.md#223-embedde
 
 ### STMT-003 — Required policy program
 
-Every Statement `policy` SHALL satisfy the [Embedded Language source contract](../003.%20Embedded%20Language/03-external-interface-requirements.md#31-source-contract).
+Every Statement `policy` SHALL satisfy the [Embedded Language source contract](../003.%20Embedded%20Language/03-external-interface-requirements.md#31-source-contract) in `PROGRAM` mode.
+
+The Authorization policy Compilation Profile SHALL enable the current Embedded Language feature families defined by ENV-004. `EXPRESSION`-mode source without the required `PROGRAM` statement structure SHALL NOT satisfy the Statement policy contract.
 
 Authorization SHALL NOT require a specific static Embedded Language program result type as a prerequisite for Statement activation. A program that is otherwise valid Embedded Language SHALL NOT be rejected before activation solely because its static result type is not `Bool`.
 
@@ -58,10 +60,10 @@ if (principal.username == "admin") {
 return false;
 ```
 
-A Statement policy that fails Embedded Language parsing, binding, control-flow validation, type checking, authorization-scope validation, or applicable field/operator queryability validation SHALL be rejected before the Statement becomes active. Static program result type SHALL NOT be an activation-time rejection criterion.
+A Statement policy that fails Embedded Language parsing, compilation-profile validation, binding, control-flow validation, type checking, authorization-scope validation, or applicable field/operator queryability validation SHALL be rejected before the Statement becomes active. Static program result type SHALL NOT be an activation-time rejection criterion.
 
-Verification: Compile and activate valid Embedded Language programs returning `Bool`, `String`, and `Number`; confirm result type alone does not change activation acceptance. Also reject export/function/arrow/call syntax, fall-through paths, unavailable authorization roots, and unsupported residual fields/operators where applicable.
-Traceability: [Embedded Language Contract](02-overall-description.md#223-embedded-language-contract); POLICY-001 through POLICY-003.
+Verification: Compile and activate valid `PROGRAM` sources returning `Bool`, `String`, and `Number`; confirm result type alone does not change activation acceptance. Reject equivalent `EXPRESSION`-only source, export/function/arrow/call syntax, fall-through paths, unavailable authorization roots, and unsupported residual fields/operators where applicable.
+Traceability: [Embedded Language Contract](02-overall-description.md#223-embedded-language-contract); [Embedded Language Compilation Profile](../003.%20Embedded%20Language/03-external-interface-requirements.md#env-004--compilation-profile); POLICY-001 through POLICY-003.
 
 ### STMT-004 — Boolean decision contract
 
@@ -74,14 +76,14 @@ During Request Authorization:
 
 During Object Authorization:
 
-- A concrete partial-evaluation result of `true` or `false` SHALL be accepted for lowering to `ALL` or `NONE`.
-- A residual Semantic AST expression SHALL be accepted for Filter AST lowering only when its static type is `Bool`.
-- A concrete non-`Bool` result or residual non-`Bool` Semantic AST expression SHALL raise an authorization runtime exception and SHALL fail closed before Filter AST lowering.
+- A concrete partial-evaluation result of `true` or `false` SHALL be accepted as the constant Object Predicate.
+- A residual Semantic AST expression SHALL be accepted as an Object Predicate only when its static type is `Bool`.
+- A concrete non-`Bool` result or residual non-`Bool` Semantic AST expression SHALL raise an authorization runtime exception and SHALL fail closed before queryability validation or persistence-query compilation.
 
 Runtime truthy/falsy coercion SHALL NOT be used in either scope.
 
-Verification: Activate valid non-`Bool` Embedded Language programs. Evaluate their Semantic AST through Request Authorization and Object Authorization and confirm the corresponding runtime authorization exception is raised and authorization fails closed; confirm valid concrete and residual `Bool` results continue normally.
-Traceability: [Embedded Language typed program result](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#lang-002--typed-program-result); [Embedded Language semantic representation](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#lang-001--language-owned-semantic-representation); TECH-004; REQ-001; OBJ-001.
+Verification: Activate valid non-`Bool` Embedded Language programs. Evaluate their Semantic AST through Request Authorization and Object Authorization and confirm the corresponding runtime authorization exception is raised and authorization fails closed; confirm valid concrete and residual `Bool` results continue to queryability validation and query compilation where applicable.
+Traceability: [Embedded Language typed source result](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#lang-002--typed-source-result); [Embedded Language semantic representation](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#lang-001--language-owned-semantic-representation); TECH-004; REQ-001; OBJ-001.
 
 ### STMT-005 — Effect semantics
 
