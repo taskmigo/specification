@@ -4,72 +4,63 @@
 
 ### LANG-001 — Language-owned semantic representation
 
-Embedded Language source SHALL compile through the parser frontend and semantic analysis into a language-owned typed Semantic AST.
+Source SHALL compile through the parser frontend and semantic analysis into a language-owned typed Semantic AST independent of ANTLR parse-tree classes, ECMAScript semantics, application-domain semantics, consumer profile names, persistence APIs, and host APIs.
 
-The Semantic AST SHALL be independent of ANTLR parse-tree classes, ECMAScript semantics, callable/module semantics, application-domain semantics, consumer profile names, and host APIs.
+Equivalent enabled expressions compiled through either source mode SHALL use the same Semantic AST expression semantics.
 
-Equivalent expressions compiled under `PROGRAM` and `EXPRESSION` modes with compatible Environment Schemas and enabled feature families SHALL use the same Semantic AST expression semantics.
-
-Verification: Inspect public/core language types and confirm evaluator and partial evaluator code consume the Semantic AST rather than ANTLR parse-tree, application-domain, persistence, or consumer-specific types; compare equivalent expression nodes compiled through both source modes.
-Traceability: [Product Perspective](02-overall-description.md#21-product-perspective); [Parser Frontend](07-constraints.md#71-parser-frontend); ENV-004.
+Verification: Inspect dependency direction and compare equivalent expressions compiled through both modes.
+Traceability: [Product Perspective](02-overall-description.md#21-product-perspective); TECH-001.
 
 ### LANG-002 — Typed source result
 
-In `PROGRAM` mode, every reachable control-flow path SHALL execute a `return` whose expression has a statically known type. The reachable return expressions SHALL have one statically compatible source result type. A reachable path that falls through end-of-source/end-of-block without reaching a later enclosing return, or a set of reachable return expressions that cannot form one compatible result type, SHALL be rejected during compilation.
+In `PROGRAM`, every reachable path SHALL execute a `return` with a statically known type, and reachable returns SHALL form one compatible source result type. Reachable fall-through SHALL be rejected.
 
-In `EXPRESSION` mode, the source expression SHALL have a statically known source result type and SHALL NOT require a `return` statement.
+In `EXPRESSION`, the source expression SHALL have a statically known result type and SHALL NOT require `return`.
 
-The source result type MAY be any value type supported by TYPE-001 and the applicable Environment Schema.
+The result type MAY be any supported type. Truthy/falsy result coercion SHALL NOT exist.
 
-Runtime truthy/falsy conversion or result coercion SHALL NOT exist.
-
-Verification: Compile program and expression sources returning or producing `Bool`, `String`, `Number`, nullable values, lists, and compatible schema-defined scalar types; reject program fall-through paths and incompatible mixed return types.
-Traceability: [Program Model](02-overall-description.md#221-program-model); TYPE-001; SYNTAX-001.
+Verification: Compile sources producing booleans, strings, numbers, nullable values, lists, and schema-defined types; reject incompatible program returns and fall-through.
+Traceability: TYPE-001; SYNTAX-001.
 
 ### LANG-003 — Immutable local bindings
 
-When `LOCAL_BINDINGS` is enabled in a `PROGRAM` Compilation Profile, a `const` declaration SHALL bind one immutable local name to the value of its expression.
+When `LOCAL_BINDINGS` is enabled in `PROGRAM`, `const` SHALL bind one immutable lexical name. Visibility SHALL begin after declaration and follow lexical block scope. Reassignment, duplicate same-scope names, and forward references SHALL be rejected.
 
-A local binding SHALL be visible only after its declaration and within its lexical block and nested blocks. Duplicate local names in the same lexical scope, reassignment, and local names that conflict with reserved keywords SHALL be rejected.
-
-`EXPRESSION` mode SHALL NOT provide local declarations.
-
-Verification: Test sequential references, block visibility, forward-reference rejection, duplicate-name rejection, the absence of assignment syntax, disabled `LOCAL_BINDINGS`, and rejection of local declarations in `EXPRESSION` mode.
-Traceability: SYNTAX-001; ENV-004; [Language Restrictions](07-constraints.md#72-language-restrictions).
+Verification: Test lexical visibility, duplicates, forward references, and disabled local bindings.
+Traceability: ENV-004; TECH-002.
 
 ### LANG-004 — Conditional and return control flow
 
-When `CONDITIONAL_CONTROL_FLOW` is enabled in `PROGRAM` mode, `if (<condition>) { ... }` SHALL require a `Bool` condition and SHALL follow the source delimiters defined by SYNTAX-003.
+When enabled in `PROGRAM`, `if` SHALL require a `Bool` condition. Executed `return` SHALL terminate the current path. Direct and partial evaluation SHALL evaluate only branches that can affect the result.
 
-A `return <expression>;` in `PROGRAM` mode SHALL immediately terminate evaluation of the current program path. Statements following an executed return SHALL NOT be evaluated.
-
-Only the selected `if`/`else` branch SHALL be evaluated when the condition is concrete.
-
-During partial evaluation, a concrete condition SHALL select one branch. An unknown condition SHALL preserve the branch-dependent typed result as residual Semantic AST when multiple outcomes may affect the program result.
-
-`EXPRESSION` mode SHALL NOT provide statement-level conditional control flow or `return` statements.
-
-Verification: Test direct and partial evaluation with true, false, and unknown conditions, `else if`, early return, multiple compatible result types, unreachable failing statements after return, disabled `CONDITIONAL_CONTROL_FLOW`, and statement rejection in `EXPRESSION` mode.
+Verification: Test true, false, unknown conditions, early return, and unreachable failures.
 Traceability: TYPE-001; PARTIAL-001; ENV-004.
 
 ### LANG-005 — Compilation-profile restrictions
 
-The compiler SHALL enforce the feature set selected by ENV-004 during compilation before producing an executable Semantic AST.
+The compiler SHALL enforce the feature set selected by ENV-004 before producing an executable artifact. Disabling a feature SHALL NOT change the semantics of constructs that remain enabled.
 
-A disabled feature SHALL be rejected even when the same source construct would be valid under another Compilation Profile. Disabling a feature SHALL NOT change the semantics of constructs that remain enabled.
-
-Compilation-profile enforcement SHALL apply before compiled-artifact reuse is considered valid under DATA-003.
-
-Verification: Compile the same source under multiple profiles, reject every disabled feature family, compare Semantic AST/evaluation behavior for enabled constructs, and confirm an artifact compiled under a less-restrictive profile is not reused under an incompatible more-restrictive profile.
+Verification: Compile the same source under multiple profiles and confirm disabled features fail and incompatible artifacts are not reused.
 Traceability: ENV-004; DATA-003; PERF-003.
+
+### LANG-006 — Restricted collection lambdas and intrinsics
+
+`all`, `any`, `none`, and `len` SHALL be canonical compiler-recognized intrinsic forms rather than general callable values.
+
+A quantifier lambda SHALL introduce exactly one lexical element binding scoped to its predicate. The lambda SHALL NOT be storable, returnable, independently invokable, or passable to an arbitrary function.
+
+A lambda predicate MAY reference visible outer lexical values and Environment Schema roots in addition to its element binding.
+
+Verification: Accept valid intrinsic forms and captured outer values; reject standalone lambdas, direct lambda invocation, arbitrary function calls, and lambda escape.
+Traceability: SYNTAX-002; SYNTAX-004; TECH-002.
 
 ## 4.2 Type System and Operators
 
 ### TYPE-001 — Static types and no implicit coercion
 
-The Embedded Language SHALL statically type every expression and, in `PROGRAM` mode, every reachable return before producing an executable Semantic AST.
+Every expression and applicable reachable return SHALL be statically typed before execution.
 
-The initial language SHALL support these value categories:
+The initial value categories SHALL include:
 
 ```text
 Bool
@@ -79,122 +70,129 @@ Null
 List<T>
 ```
 
-Environment Schema paths MAY additionally carry schema-defined scalar types when their supported operators and equality semantics are declared by the schema.
+Environment Schemas MAY additionally declare schema-defined scalar types and structured types with statically declared properties. `List<T>` MAY use a structured schema-defined element type.
 
-The Embedded Language SHALL NOT implicitly convert between booleans, strings, numbers, lists, null, or schema-defined scalar types.
+The language SHALL NOT implicitly convert between incompatible types.
 
-Verification: Compile valid same-type operations in both source modes and reject mixed-type arithmetic, boolean coercion, string-to-number coercion, and list-to-scalar coercion.
-Traceability: [Strict Semantics](07-constraints.md#73-strict-semantics).
+Verification: Test scalar, structured, and list typing and reject implicit coercion.
+Traceability: TECH-003.
 
 ### TYPE-002 — Boolean and equality operators
 
-When their corresponding feature families are enabled, `&&`, `||`, and `!` SHALL operate only on `Bool`, while `==` and `!=` SHALL compare type-compatible operands and SHALL return `Bool`.
+When enabled, `&&`, `||`, and `!` SHALL operate only on `Bool`; `==` and `!=` SHALL compare type-compatible operands and return `Bool`. `&&` and `||` SHALL short-circuit.
 
-`&&` and `||` SHALL short-circuit when the left operand determines the result.
-
-Verification: Test boolean type errors, short-circuit behavior with a failing right operand, equality on compatible/incompatible types, and rejection when the relevant feature family is disabled.
-Traceability: LANG-002; LANG-005; EVAL-001.
+Verification: Test valid operations, type errors, short-circuiting, and disabled features.
+Traceability: LANG-005; EVAL-001.
 
 ### TYPE-003 — Ordering and arithmetic operators
 
-When `ORDERING_OPERATORS` is enabled, `<`, `<=`, `>`, and `>=` SHALL operate only on operands whose type defines an ordering compatible with both operands.
+When enabled, ordering operators SHALL require mutually compatible ordered operands. Arithmetic operators SHALL require `Number` unless another overload is explicitly specified. Invalid or non-finite numeric operations SHALL fail.
 
-When `ARITHMETIC_OPERATORS` is enabled, `+`, `-`, `*`, `/`, `%`, unary `+`, and unary `-` SHALL operate only on `Number` unless a future specification explicitly adds another overload.
-
-Numeric results SHALL be finite and deterministic. Division or modulo by zero, numeric overflow outside the implementation's supported finite range, or another invalid numeric operation SHALL be an evaluation failure.
-
-Verification: Test valid numeric arithmetic/comparison, disabled ordering/arithmetic profiles, and rejection or failure for incompatible operands, divide-by-zero, modulo-by-zero, and non-finite results.
-Traceability: LANG-005; [Determinism](06-quality-and-performance-requirements.md#61-determinism).
+Verification: Test valid operations, incompatible operands, zero division/modulo, non-finite results, and disabled features.
+Traceability: LANG-005; QUAL-001.
 
 ### TYPE-004 — Null, lists, and membership
 
-`null` SHALL be a value, not an absent identifier and not an ECMAScript-style `undefined` value.
+`null` SHALL be a value distinct from absence and `undefined`. Ordering/arithmetic with `null` SHALL be invalid. Equality with `null` SHALL be permitted only when nullability allows it.
 
-Ordering and arithmetic with `null` SHALL be invalid. Equality with `null` SHALL be permitted only for values whose Environment Schema or expression type allows null.
+List literals SHALL contain compatible elements. `value in list` SHALL require a compatible element type and return `Bool`. Membership in an empty list SHALL return `false`.
 
-When `LIST_LITERALS` is enabled, a list literal SHALL contain type-compatible elements.
+Verification: Test null semantics, list compatibility, membership, and disabled list/membership features.
+Traceability: TYPE-001; LANG-005.
 
-When `MEMBERSHIP` is enabled, `value in list` SHALL require `list` to have element type compatible with `value` and SHALL return `Bool`.
+### TYPE-005 — Collection quantifiers and length
 
-`value in []` SHALL evaluate to `false` when list literals and membership are enabled.
+When `COLLECTION_QUANTIFIERS` is enabled:
 
-Verification: Test null equality, invalid null arithmetic/ordering, homogeneous and heterogeneous lists, membership, empty-list membership, and rejection when list or membership features are disabled.
-Traceability: TYPE-001; SYNTAX-003; LANG-005.
+```text
+all(collection, element => predicate)
+any(collection, element => predicate)
+none(collection, element => predicate)
+```
+
+SHALL require `collection: List<T>`, bind `element: T`, require `predicate: Bool`, and return `Bool`.
+
+The semantics over an empty list SHALL be:
+
+```text
+all([], p)  -> true
+any([], p)  -> false
+none([], p) -> true
+```
+
+A nullable collection SHALL NOT be implicitly treated as an empty list. Quantification over a concrete `null` SHALL fail; a statically nullable collection operand SHALL be rejected unless a future specified null-safe construct removes the ambiguity.
+
+When `LENGTH_INTRINSIC` is enabled, `len(value)` SHALL accept a non-null `String` or `List<T>` and return `Number`. It SHALL NOT use host reflection or arbitrary method invocation.
+
+Verification: Test quantifier typing, nested structured element paths, empty-list semantics, null rejection, captured outer values, and `len` over strings/lists.
+Traceability: LANG-006; TYPE-001; ENV-004.
 
 ## 4.3 References
 
 ### REF-001 — Static reference resolution
 
-Every value reference SHALL resolve at compile time to either a previously declared visible local `const` binding in `PROGRAM` mode or an Environment Schema root/path.
+Every value reference SHALL resolve at compile time to a visible `const`, a visible restricted-lambda element binding, or an Environment Schema root/path.
 
-An unknown root, unknown path, unavailable schema path, dynamic path, method call, or call expression SHALL be rejected during compilation.
+Unknown roots/paths, dynamic paths, method calls, and general call expressions SHALL be rejected.
 
-Verification: Compile valid and invalid roots/paths in both source modes against multiple schemas and reject representative dynamic/call syntax.
-Traceability: ENV-001; SYNTAX-004.
+Verification: Compile valid and invalid nested paths, local bindings, lambda element paths, and general calls.
+Traceability: ENV-001; SYNTAX-004; LANG-006.
 
 ## 4.4 Direct Evaluation
 
 ### EVAL-001 — Known-input evaluation
 
-When every dependency required by the selected execution path is known, the Embedded Language SHALL evaluate the Semantic AST to exactly one value conforming to the compiled source result type, or an evaluation failure.
+When all dependencies required by the selected execution path are known, evaluation SHALL produce exactly one conforming value or an evaluation failure.
 
-Evaluation SHALL preserve `&&`, `||`, and applicable `PROGRAM` control-flow semantics so that unreachable failing expressions or statements do not fail the evaluation.
+Evaluation SHALL preserve short-circuit, `PROGRAM` control-flow, and quantifier short-circuit semantics. `all` MAY stop at the first false predicate; `any` MAY stop at the first true predicate; `none` MAY stop at the first true predicate.
 
-Verification: Evaluate representative program and expression sources with known inputs and multiple result types, including short-circuited failing expressions and program-only unreachable divide-by-zero branches/statements.
-Traceability: LANG-001; LANG-002; TYPE-002; LANG-004; EVAL-IF-002.
+Verification: Evaluate representative sources including skipped failing expressions and quantified collections.
+Traceability: LANG-002; TYPE-002; TYPE-005; EVAL-IF-002.
 
 ### EVAL-002 — Deterministic values
 
-For the same Semantic AST, Environment Schema, Compilation Profile, and input values, direct evaluation SHALL produce the same result or the same class of evaluation failure.
+For the same Semantic AST, Environment Schema, Compilation Profile, and input values, evaluation SHALL produce the same result or same class of failure.
 
-Verification: Re-evaluate identical inputs across repeated executions and compare results/failure classes.
-Traceability: [Determinism](06-quality-and-performance-requirements.md#61-determinism); ENV-004.
+Verification: Repeat identical executions and compare results/failures.
+Traceability: QUAL-001; ENV-004.
 
 ## 4.5 Partial Evaluation
 
 ### PARTIAL-001 — Unknown-preserving evaluation
 
-Partial evaluation SHALL evaluate any expression or applicable `PROGRAM` statement whose result/control-flow effect can be determined from known inputs without evaluating an unknown-dependent branch.
+Partial evaluation SHALL evaluate any expression or applicable statement whose result can be determined from known inputs without evaluating an unknown-dependent path. A source result still depending on unknown input SHALL remain as a typed residual Semantic AST expression unless simplification removes the dependency.
 
-A source result that still depends on an unknown input SHALL remain as a typed residual Semantic AST expression conforming to the compiled source result type unless simplification eliminates that dependency.
-
-Verification: Partially evaluate program and expression sources that mix known and unknown roots across multiple result types and inspect the residual Semantic AST.
-Traceability: [Known and Unknown Inputs](02-overall-description.md#222-known-and-unknown-inputs); LANG-001; LANG-002.
+Verification: Partially evaluate mixed known/unknown sources and inspect residual types.
+Traceability: LANG-001; LANG-002.
 
 ### PARTIAL-002 — Constant folding and boolean simplification
 
-Compilation and partial evaluation SHALL fold constants when Embedded Language semantics are unchanged.
+Compilation and partial evaluation SHALL fold constants when semantics are unchanged. At minimum, standard boolean identities SHALL be preserved.
 
-At minimum, simplification SHALL preserve these identities when the applicable operators are enabled:
+A simplification SHALL NOT evaluate a branch, operand, or quantifier element that direct evaluation would skip.
 
-```text
-true && X   -> X
-false && X  -> false
-true || X   -> true
-false || X  -> X
-!true       -> false
-!false      -> true
-```
-
-A simplification SHALL NOT evaluate an expression, branch, or statement that direct evaluation would skip because of short-circuit or applicable `PROGRAM` control-flow semantics.
-
-Verification: Test each identity in both source modes where applicable and skipped failing expressions/branches/statements.
+Verification: Test boolean identities and skipped failing branches/elements.
 Traceability: TYPE-002; EVAL-001.
 
 ### PARTIAL-003 — Residual result contract
 
-A successful partial evaluation SHALL produce a concrete value or a residual Semantic AST expression whose static type conforms to the compiled source result type.
+Successful partial evaluation SHALL produce a concrete value or residual Semantic AST expression conforming to the compiled source result type. Incompatible internal results SHALL fail rather than coerce.
 
-If internal corruption produces a result that does not conform to the compiled source result type, evaluation SHALL fail rather than reinterpret or coerce the result.
-
-Verification: Inspect residual Semantic AST types for representative `Bool`, `String`, and `Number` program and expression sources and inject an incompatible internal result at a test boundary.
+Verification: Inspect residual types and inject incompatible internal results at a test boundary.
 Traceability: LANG-001; LANG-002; EVAL-IF-002.
 
 ### PARTIAL-004 — Dependency metadata
 
-The Semantic AST SHALL record the set of Environment Schema roots on which each relevant expression depends, or equivalent metadata that permits the partial evaluator to determine whether a subtree can be evaluated without recursively rediscovering its root dependencies.
+The Semantic AST SHALL retain or provide equivalent dependency metadata sufficient to determine unknown-root dependencies without rediscovering them recursively for every specialization decision.
 
-Dependency metadata SHALL be preserved or recomputed correctly after control-flow normalization, constant folding, and residual rewriting.
+Verification: Inspect dependency metadata before and after simplification.
+Traceability: PERF-002.
 
-Verification: Inspect dependency sets before and after simplification for constant, single-root, and multi-root expressions compiled through both source modes.
-Traceability: [Known and Unknown Inputs](02-overall-description.md#222-known-and-unknown-inputs); PERF-002.
+### PARTIAL-005 — Quantifier specialization
+
+When a quantifier source collection is concrete, partial evaluation MAY evaluate element predicates and apply quantifier short-circuit semantics. When the collection or element predicate remains symbolic, partial evaluation SHALL preserve a typed residual quantifier expression unless simplification proves a concrete result.
+
+Captured known outer values SHALL specialize normally inside the residual predicate.
+
+Verification: Partially evaluate concrete, symbolic, empty, and outer-value-capturing quantifiers and compare with direct evaluation semantics.
+Traceability: TYPE-005; PARTIAL-001; PARTIAL-004.

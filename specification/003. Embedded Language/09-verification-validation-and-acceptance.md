@@ -2,33 +2,33 @@
 
 ## 9.1 Verification and Conformance Matrix
 
-| Requirement IDs         | Verification objective                                                                                                                                                                                |
-| ----------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| SYNTAX-001–SYNTAX-004   | Parse canonical `PROGRAM` and `EXPRESSION` source modes through shared expression syntax, enforce mode-specific delimiters, and reject export/function/arrow/call/member-method syntax.               |
-| ENV-001–ENV-004         | Compile against explicit Environment Schemas and Compilation Profiles, verify schema-defined root namespaces, feature restrictions, source modes, and Semantic AST/result-type/diagnostic interfaces. |
-| EVAL-IF-001–EVAL-IF-002 | Validate typed runtime inputs and concrete/residual result forms without coercion in both source modes.                                                                                                |
-| LANG-001–LANG-005       | Inspect the language-owned Semantic AST and test typed source results, `PROGRAM` local/control-flow semantics, `EXPRESSION` sources, and compilation-profile restrictions.                            |
-| TYPE-001–TYPE-004       | Test strict types, boolean/equality, arithmetic/ordering, null, lists, membership semantics, and feature-family disablement.                                                                           |
-| REF-001                 | Test static path resolution and reject dynamic paths, method calls, and call expressions in both source modes.                                                                                         |
-| EVAL-001–EVAL-002       | Test known-input evaluation across multiple source result types and modes, applicable branch/short-circuit/return behavior, and deterministic repeated results.                                       |
-| PARTIAL-001–PARTIAL-004 | Test unknown preservation, simplification, residual Semantic AST typing, and dependency metadata across multiple source result types and modes.                                                        |
-| DATA-001–DATA-004       | Inspect immutable values, schema/artifact identity, mode/profile identity, Semantic AST metadata, source fingerprints, and source-location metadata.                                                    |
-| QUAL-001–QUAL-003       | Verify deterministic semantics, guaranteed termination from the non-callable bounded language, and parser-independent Semantic AST dependency direction.                                               |
-| PERF-001–PERF-003       | Exercise compiler limits, dependency-aware specialization, and exact compiled-artifact reuse across source/schema/profile identity changes.                                                            |
-| DIAG-001                | Trigger every required diagnostic category, including `FeatureError`, and verify source location where applicable.                                                                                    |
-| TECH-001–TECH-005       | Verify shared ANTLR Java frontend use for both modes, parse-tree-to-Semantic-AST conversion, language exclusions, strict semantics, host isolation, and compiler-limit handling.                      |
+| Requirement IDs         | Verification objective                                                                                                                               |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SYNTAX-001–SYNTAX-004   | Parse both modes, shared expressions, bounded intrinsic/lambda syntax, and reject general calls/dynamic members.                                     |
+| ENV-001–ENV-004         | Verify structured schemas, symbolic metadata, source result interfaces, modes, and feature-profile restrictions.                                    |
+| EVAL-IF-001–EVAL-IF-002 | Validate typed runtime inputs and concrete/residual results without coercion.                                                                         |
+| LANG-001–LANG-006       | Verify Semantic AST ownership, typed results, program control flow, profile restrictions, and bounded intrinsic/lambda semantics.                    |
+| TYPE-001–TYPE-005       | Verify scalar/structured/list types, operators, membership, quantifiers, empty-list semantics, null handling, and `len`.                              |
+| REF-001                 | Verify lexical and nested static reference resolution and reject dynamic/general callable references.                                                |
+| EVAL-001–EVAL-002       | Verify known-input evaluation, short-circuiting, quantifier evaluation, and determinism.                                                             |
+| PARTIAL-001–PARTIAL-005 | Verify unknown preservation, simplification, residual typing, dependency metadata, and quantifier specialization.                                    |
+| DATA-001–DATA-004       | Inspect immutable values, schema/artifact identity, source/profile metadata, and source locations.                                                    |
+| QUAL-001–QUAL-003       | Verify deterministic semantics, bounded termination, and parser-independent Semantic AST dependencies.                                               |
+| PERF-001–PERF-003       | Exercise compiler limits, dependency-aware specialization, and exact artifact reuse.                                                                 |
+| DIAG-001                | Trigger every required diagnostic category, including feature errors for quantifier/length capabilities.                                            |
+| TECH-001–TECH-005       | Verify ANTLR Java frontend use, bounded callable model, strict semantics, host isolation, and compiler-limit behavior.                                |
 
-The verification objectives above are acceptance conditions for the corresponding normative requirements. Implementation test evidence is produced by the system repository when these requirements are realized.
+The verification objectives above are acceptance conditions for the corresponding normative requirements.
 
 ## 9.2 Execution Acceptance
 
 Verification SHALL demonstrate:
 
-1. `PROGRAM` compilation produces a typed Semantic AST for valid programs with different supported result types and preserves complete-return validation.
-2. `EXPRESSION` compilation produces a typed Semantic AST for a standalone expression without requiring or accepting a statement wrapper.
-3. A Compilation Profile can disable each feature family defined by ENV-004, and disabled-feature usage fails before an executable artifact is produced.
-4. The same enabled expression semantics are preserved across compatible `PROGRAM` and `EXPRESSION` compilations.
-5. Direct evaluation succeeds when all required Environment Schema roots are known.
-6. Partial evaluation preserves a typed residual Semantic AST expression when one or more required roots are unknown.
-7. The same source compiles consistently against different Environment Schemas and Compilation Profiles according to the roots, types, mode, and feature set supplied to compilation.
-8. Compiled-artifact reuse does not cross incompatible source modes or feature profiles.
+1. `PROGRAM` and `EXPRESSION` compile through shared expression semantics.
+2. Profiles disable every defined feature family independently.
+3. `all`, `any`, and `none` statically type their element binding and predicate.
+4. `all([], p)` is `true`, `any([], p)` is `false`, and `none([], p)` is `true`.
+5. `len(...)` works only for specified non-null operand types.
+6. Restricted lambdas cannot escape or be used as general function values.
+7. Partial evaluation preserves symbolic quantified predicates and specializes captured known outer values.
+8. Compiled-artifact reuse does not cross incompatible schemas, modes, or feature sets.

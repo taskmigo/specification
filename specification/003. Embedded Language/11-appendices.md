@@ -1,130 +1,64 @@
 # 11. Appendices
 
-## 11.1 Canonical Examples
+The examples in this section are supporting material and do not add requirements.
 
-The examples in this section are supporting material and do not add requirements beyond the normative sections. Each example assumes the shown root names are declared by the Environment Schema.
+## 11.1 Source Examples
 
-### Direct Program
-
-Compilation Profile:
-
-```text
-Mode: PROGRAM
-```
-
-Source:
+### Program
 
 ```text
 const enabled = record.enabled == true;
-const aboveThreshold = record.score >= context.minimumScore;
 
-return enabled && aboveThreshold;
-```
-
-### Conditional Program
-
-```text
 if (context.override) {
   return true;
 }
 
-return record.enabled == true;
+return enabled && record.score >= context.minimumScore;
 ```
 
-### Non-Boolean Result Program
-
-```text
-if (context.override) {
-  return "override";
-}
-
-return operation.mode;
-```
-
-### Standalone Expression
-
-Compilation Profile:
-
-```text
-Mode: EXPRESSION
-```
-
-Source:
+### Expression
 
 ```text
 record.enabled == true && record.score >= context.minimumScore
 ```
 
-The expression source uses the same expression semantics and Semantic AST expression model as the corresponding expression inside a program.
-
-### Restricted Expression Profile
-
-A consumer can restrict `EXPRESSION` mode without defining another language. For example:
+### Collection Quantifier
 
 ```text
-Mode: EXPRESSION
-Enabled:
-  LOGICAL_OPERATORS
-  EQUALITY_OPERATORS
-  ORDERING_OPERATORS
+all(record.emails, email => len(email) > 10)
 ```
 
-Under that profile:
+### Structured Collection Element
 
 ```text
-record.enabled == true && record.score >= 10
+any(record.orders, order => order.product.name == "Book")
 ```
-
-is accepted, while list membership or arithmetic source is rejected because those feature families are not enabled.
 
 ## 11.2 Partial Evaluation Example
 
-Given:
-
-```text
-context.override = false
-context.minimumScore = 10
-record = unknown
-```
-
-The program:
-
-```text
-return context.override || record.score >= context.minimumScore;
-```
-
-specializes to a residual Semantic AST expression equivalent to:
-
-```text
-record.score >= 10
-```
-
-The equivalent `EXPRESSION` source:
+Given known `context.minimumScore = 10`, known `context.override = false`, and symbolic `record`, this expression:
 
 ```text
 context.override || record.score >= context.minimumScore
 ```
 
-specializes to the same residual expression under a compatible Compilation Profile and Environment Schema.
+specializes to a residual expression equivalent to:
 
-The exact Semantic AST node shape is implementation-private as long as the specified language semantics are preserved.
+```text
+record.score >= 10
+```
 
-## 11.3 Callable and Utility Functions (non-normative)
+A quantified expression may similarly specialize captured known values while preserving its symbolic collection source.
 
-Callable syntax is intentionally absent from the initial language contract.
+## 11.3 Excluded Callable Forms
 
-The following examples do not compile in this version:
+These forms are not part of the language:
 
 ```text
 function check() { return true; }
-export default () => true;
-startsWith(record.name, "prefix-")
-lower(record.email)
-contains(context.tags, "admin")
+const check = value => value > 0;
+check(record.score)
+record.check()
 ```
 
-A future language revision may define callable or utility functions only after specifying their syntax, static types, runtime behavior, and partial-evaluation behavior.
-
-## 11.4 Source-Language Migration Note (non-normative)
-
-A migration tool from a previous restricted ECMAScript source may compile legacy source into the Semantic AST and print equivalent canonical Embedded Language source. Source-to-source text rewriting is not required by this SRS.
+The restricted lambda accepted inside `all`, `any`, or `none` does not make these forms valid.
