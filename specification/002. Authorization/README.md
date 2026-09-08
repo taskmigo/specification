@@ -1,7 +1,7 @@
 ---
 metadata:
-  version: 0.3.2
-  changelog: Uses Embedded Language Semantic AST for Request and Object authorization with runtime Bool enforcement.
+  version: 0.4.0
+  changelog: Uses PROGRAM-mode policies and residual Semantic AST expressions directly for database authorization predicates.
 ---
 
 <!-- markdownlint-disable MD041 -->
