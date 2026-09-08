@@ -23,14 +23,12 @@ The capability SHALL NOT expose arbitrary database columns, table names, JPA pro
 
 ## 1.3 Definitions, Acronyms, and Abbreviations
 
-| Term             | Definition                                                                                                   |
-| ---------------- | ------------------------------------------------------------------------------------------------------------ |
-| Query Contract   | Java type identifying one logical API query surface independently of persistence entity topology.            |
-| Query Field      | Typed, explicitly queryable API-visible path with allowed logical operators.                                 |
-| Query Path       | Ordered path segments relative to the query `object` root, such as `user.name`.                               |
-| Query Predicate  | Opaque typed logical boolean predicate over one Query Contract.                                               |
-| Query Schema     | Typed registry of the Query Fields available for one Query Contract.                                         |
-| Persistence Map  | Resource-owned trusted translation from logical Query Paths/operators to persistence expressions or queries. |
+- **Query Contract:** Java type identifying one logical API query surface independently of persistence entity topology.
+- **Query Field:** Typed, explicitly queryable API-visible path with allowed logical operators.
+- **Query Path:** Ordered path segments relative to the query `object` root, such as `user.name`.
+- **Query Predicate:** Opaque typed logical boolean predicate over one Query Contract.
+- **Query Schema:** Typed registry of the Query Fields available for one Query Contract.
+- **Persistence Map:** Resource-owned trusted translation from logical Query Paths/operators to persistence expressions or queries.
 
 ## 1.4 References
 

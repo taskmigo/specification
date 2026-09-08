@@ -24,17 +24,15 @@ The Environment Schema SHALL define the roots, structured paths, types, nullabil
 
 ## 1.3 Definitions, Acronyms, and Abbreviations
 
-| Term                | Definition                                                                                                                      |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| ANTLR               | Parser generator required for the Embedded Language lexer/parser frontend.                                                      |
-| Compilation Mode    | Source entry mode selecting either a statement-bearing `PROGRAM` source or a standalone `EXPRESSION` source.                   |
-| Compilation Profile | Consumer-supplied compilation contract containing the selected mode and enabled canonical feature families.                    |
-| Environment Schema  | Typed definition of roots, structured paths, nullability, and symbolic availability for a compiled source.                     |
-| Intrinsic           | Compiler-recognized bounded language operation with specified static and runtime semantics, not a general callable host method. |
-| Semantic AST        | Typed language-owned abstract syntax tree produced after binding, type checking, and applicable control-flow validation.       |
-| Partial Evaluation  | Evaluation that resolves known-dependent subexpressions while preserving unknown-dependent subexpressions.                      |
-| Residual Expression | Typed Semantic AST expression remaining after partial evaluation because it depends on unknown values.                          |
-| Restricted Lambda   | Lexically scoped element-binding expression accepted only inside a specified collection quantifier.                            |
+- **ANTLR:** Parser generator required for the Embedded Language lexer/parser frontend.
+- **Compilation Mode:** Source entry mode selecting either a statement-bearing `PROGRAM` source or a standalone `EXPRESSION` source.
+- **Compilation Profile:** Consumer-supplied compilation contract containing the selected mode and enabled canonical feature families.
+- **Environment Schema:** Typed definition of roots, structured paths, nullability, and symbolic availability for a compiled source.
+- **Intrinsic:** Compiler-recognized bounded language operation with specified static and runtime semantics, not a general callable host method.
+- **Semantic AST:** Typed language-owned abstract syntax tree produced after binding, type checking, and applicable control-flow validation.
+- **Partial Evaluation:** Evaluation that resolves known-dependent subexpressions while preserving unknown-dependent subexpressions.
+- **Residual Expression:** Typed Semantic AST expression remaining after partial evaluation because it depends on unknown values.
+- **Restricted Lambda:** Lexically scoped element-binding expression accepted only inside a specified collection quantifier.
 
 ## 1.4 References and Baseline
 

@@ -26,16 +26,14 @@ Additional authorization target kinds beyond `target.api` remain outside this SR
 
 ## 1.3 Definitions, Acronyms, and Abbreviations
 
-| Term                  | Definition                                                                                                  |
-| --------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Authorization Context | Opaque operation-scoped public handle carrying the authorization state required by subsequent operations. |
-| Authorization Snapshot| Internal immutable authorization state materialized once for one operation.                                |
-| Object Predicate      | Typed logical `QueryPredicate<Q>` produced from Object Authorization policy semantics.                     |
-| Query Contract        | Logical API query surface defined by Query Filtering and identified by generic type `Q`.                   |
-| Query Schema          | Query Filtering schema defining API-visible paths, types, nullability, and allowed operators.              |
-| Request Authorization | Authorization based only on available principal/request inputs and applicable Request Statements.          |
-| Object Authorization  | Database-side visibility filtering derived from symbolic object policies and a Query Schema.               |
-| Statement             | Named authorization rule with effect, scope, API target, and policy.                                       |
+- **Authorization Context:** Opaque operation-scoped public handle carrying the authorization state required by subsequent operations.
+- **Authorization Snapshot:** Internal immutable authorization state materialized once for one operation.
+- **Object Predicate:** Typed logical `QueryPredicate<Q>` produced from Object Authorization policy semantics.
+- **Query Contract:** Logical API query surface defined by Query Filtering and identified by generic type `Q`.
+- **Query Schema:** Query Filtering schema defining API-visible paths, types, nullability, and allowed operators.
+- **Request Authorization:** Authorization based only on available principal/request inputs and applicable Request Statements.
+- **Object Authorization:** Database-side visibility filtering derived from symbolic object policies and a Query Schema.
+- **Statement:** Named authorization rule with effect, scope, API target, and policy.
 
 ## 1.4 References and Baseline
 

@@ -2,18 +2,18 @@
 
 ## 9.1 Verification and Conformance Matrix
 
-| Requirement IDs           | Verification objective                                                                                                                           |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| STMT-001–STMT-007         | Verify Statement contract, PROGRAM profile, bounded intrinsics, runtime Bool enforcement, effects, and targets.                                  |
-| INPUT-001–INPUT-003       | Verify typed principal/request roots and Query Schema-derived symbolic object paths.                                                              |
-| RES-001–RES-003           | Verify Request resource exclusion and absence of privileged resource-loading calls.                                                              |
-| SNAPSHOT-001–SNAPSHOT-004 | Verify one immutable operation state, consistency, coherent creation, and no cross-request reuse.                                                |
-| AUTH-API-001–AUTH-API-005 | Verify typed request input, opaque context, Request/Object APIs, and Spring Security-to-MVC context propagation.                                 |
-| POLICY-001–POLICY-005     | Verify PROGRAM compilation, schema/profile-aware validation, database-authoritative state, artifact identity, and folding.                      |
-| REQ-001–REQ-003           | Verify default-deny, deny-overrides, non-Bool fail-closed behavior, short-circuiting, and Request input boundary.                                |
-| OBJ-001–OBJ-005           | Verify partial evaluation, nested/composed/collection Query Schema paths, opaque Query Predicates, queryability, and composition.               |
-| PERF-001–PERF-005         | Verify graph/query performance, per-operation freshness, cache independence, and stress behavior.                                                |
-| TECH-001–TECH-004         | Verify pattern discipline, policy isolation, fail-closed behavior, and distinct client-filter failures.                                         |
+Verification SHALL cover:
+
+- STMT-001–STMT-007: Statement contract, `PROGRAM` profile, bounded intrinsics, runtime Bool enforcement, effects, and targets.
+- INPUT-001–INPUT-003: Typed principal/request roots and Query Schema-derived symbolic object paths.
+- RES-001–RES-003: Request resource exclusion and absence of privileged resource-loading calls.
+- SNAPSHOT-001–SNAPSHOT-004: One immutable operation state, consistency, coherent creation, and no cross-request reuse.
+- AUTH-API-001–AUTH-API-005: Typed request input, opaque context, Request/Object APIs, and Spring Security-to-MVC context propagation.
+- POLICY-001–POLICY-005: `PROGRAM` compilation, schema/profile-aware validation, database-authoritative state, artifact identity, and folding.
+- REQ-001–REQ-003: Default-deny, deny-overrides, non-`Bool` fail-closed behavior, short-circuiting, and Request input boundary.
+- OBJ-001–OBJ-005: Partial evaluation, nested/composed/collection Query Schema paths, opaque Query Predicates, queryability, and composition.
+- PERF-001–PERF-005: Graph/query performance, per-operation freshness, cache independence, and stress behavior.
+- TECH-001–TECH-004: Pattern discipline, policy isolation, fail-closed behavior, and distinct client-filter failures.
 
 ## 9.2 Acceptance Conditions
 

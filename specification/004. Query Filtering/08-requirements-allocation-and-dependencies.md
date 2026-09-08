@@ -9,12 +9,9 @@
 
 ## 8.2 Requirements Allocation
 
-| Responsibility                                      | Query Filtering | Embedded Language | Authorization | Resource Module | Web |
-| --------------------------------------------------- | --------------- | ----------------- | ------------- | --------------- | --- |
-| Define expression syntax/typing                     | SHALL NOT       | SHALL             | SHALL NOT     | SHALL NOT       | SHALL NOT |
-| Define API-visible Query Schema                     | SHALL contract  | SHALL NOT         | SHALL NOT     | SHALL provide   | SHALL NOT |
-| Compile `filterBy`                                  | SHALL           | SHALL execute     | SHALL NOT     | SHALL NOT       | MAY invoke |
-| Produce Object Authorization predicate              | SHALL contract  | SHALL support     | SHALL         | SHALL NOT       | MAY invoke |
-| Compose logical predicates                          | SHALL           | SHALL NOT         | MAY invoke    | MAY invoke      | MAY invoke |
-| Map logical paths to persistence                    | SHALL contract  | SHALL NOT         | SHALL NOT     | SHALL            | SHALL NOT |
-| Resolve generic MVC query argument                  | SHALL contract  | SHALL NOT         | MAY provide input | SHALL NOT    | SHALL |
+- Query Filtering SHALL define the Query Schema/Query Predicate contracts, compile `filterBy`, and provide logical predicate composition.
+- Embedded Language SHALL own expression syntax, typing, Semantic AST, quantifier semantics, and evaluation/partial-evaluation behavior.
+- Authorization SHALL own Object Authorization policy semantics and MAY produce Query Predicates through the shared Query Filtering contract.
+- Resource-owning modules SHALL provide Query Schemas and map logical paths/predicates to persistence.
+- `web` SHALL resolve generic MVC query arguments and MAY invoke Authorization/Query Filtering APIs.
+- Query Filtering SHALL NOT own Authorization decisions or resource-specific persistence topology.

@@ -2,23 +2,21 @@
 
 ## 9.1 Verification and Conformance Matrix
 
-| Requirement IDs         | Verification objective                                                                                                                               |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| SYNTAX-001–SYNTAX-004   | Parse both modes, shared expressions, bounded intrinsic/lambda syntax, and reject general calls/dynamic members.                                     |
-| ENV-001–ENV-004         | Verify structured schemas, symbolic metadata, source result interfaces, modes, and feature-profile restrictions.                                    |
-| EVAL-IF-001–EVAL-IF-002 | Validate typed runtime inputs and concrete/residual results without coercion.                                                                         |
-| LANG-001–LANG-006       | Verify Semantic AST ownership, typed results, program control flow, profile restrictions, and bounded intrinsic/lambda semantics.                    |
-| TYPE-001–TYPE-005       | Verify scalar/structured/list types, operators, membership, quantifiers, empty-list semantics, null handling, and `len`.                              |
-| REF-001                 | Verify lexical and nested static reference resolution and reject dynamic/general callable references.                                                |
-| EVAL-001–EVAL-002       | Verify known-input evaluation, short-circuiting, quantifier evaluation, and determinism.                                                             |
-| PARTIAL-001–PARTIAL-005 | Verify unknown preservation, simplification, residual typing, dependency metadata, and quantifier specialization.                                    |
-| DATA-001–DATA-004       | Inspect immutable values, schema/artifact identity, source/profile metadata, and source locations.                                                    |
-| QUAL-001–QUAL-003       | Verify deterministic semantics, bounded termination, and parser-independent Semantic AST dependencies.                                               |
-| PERF-001–PERF-003       | Exercise compiler limits, dependency-aware specialization, and exact artifact reuse.                                                                 |
-| DIAG-001                | Trigger every required diagnostic category, including feature errors for quantifier/length capabilities.                                            |
-| TECH-001–TECH-005       | Verify ANTLR Java frontend use, bounded callable model, strict semantics, host isolation, and compiler-limit behavior.                                |
+Verification SHALL cover:
 
-The verification objectives above are acceptance conditions for the corresponding normative requirements.
+- SYNTAX-001–SYNTAX-004: Both modes, shared expressions, bounded intrinsic/lambda syntax, and rejection of general calls/dynamic members.
+- ENV-001–ENV-004: Structured schemas, symbolic metadata, result interfaces, modes, and feature-profile restrictions.
+- EVAL-IF-001–EVAL-IF-002: Typed runtime inputs and concrete/residual results without coercion.
+- LANG-001–LANG-006: Semantic AST ownership, typed results, program control flow, profile restrictions, and bounded intrinsic/lambda semantics.
+- TYPE-001–TYPE-005: Scalar/structured/list types, operators, membership, quantifiers, empty-list semantics, null handling, and `len`.
+- REF-001: Lexical/nested static reference resolution and rejection of dynamic/general callable references.
+- EVAL-001–EVAL-002: Known-input evaluation, short-circuiting, quantifier evaluation, and determinism.
+- PARTIAL-001–PARTIAL-005: Unknown preservation, simplification, residual typing, dependency metadata, and quantifier specialization.
+- DATA-001–DATA-004: Immutable values, schema/artifact identity, source/profile metadata, and source locations.
+- QUAL-001–QUAL-003: Deterministic semantics, bounded termination, and parser-independent Semantic AST dependencies.
+- PERF-001–PERF-003: Compiler limits, dependency-aware specialization, and exact artifact reuse.
+- DIAG-001: All required diagnostic categories, including feature errors for quantifier/length capabilities.
+- TECH-001–TECH-005: ANTLR Java frontend use, bounded callable model, strict semantics, host isolation, and compiler-limit behavior.
 
 ## 9.2 Execution Acceptance
 

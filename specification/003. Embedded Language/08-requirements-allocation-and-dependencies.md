@@ -10,15 +10,8 @@
 
 ## 8.2 Requirements Allocation
 
-| Responsibility                                           | Embedded Language | External Environment |
-| -------------------------------------------------------- | ----------------- | -------------------- |
-| Parse canonical `PROGRAM` and `EXPRESSION` sources       | SHALL             | SHALL NOT            |
-| Enforce Compilation Profile                              | SHALL             | SHALL supply         |
-| Bind/type-check paths, locals, restricted lambdas        | SHALL             | SHALL NOT            |
-| Define bounded intrinsic semantics                       | SHALL             | SHALL NOT            |
-| Validate complete return flow                            | SHALL in PROGRAM  | SHALL NOT            |
-| Produce typed Semantic AST                               | SHALL             | SHALL NOT            |
-| Evaluate and partially evaluate                          | SHALL             | MAY invoke           |
-| Define application root/path contracts                   | SHALL NOT         | SHALL                |
-| Define queryability or persistence mappings              | SHALL NOT         | SHALL                |
-| Define consumer-specific profile purpose                 | SHALL NOT         | SHALL                |
+- Embedded Language SHALL parse canonical `PROGRAM` and `EXPRESSION` sources and enforce supplied Compilation Profiles.
+- Embedded Language SHALL bind/type-check roots, structured paths, locals, restricted lambdas, and bounded intrinsics.
+- Embedded Language SHALL validate complete typed return flow in `PROGRAM`, produce typed Semantic AST, and evaluate/partially evaluate it.
+- External consumers SHALL supply root/path contracts, Compilation Profiles, and runtime values.
+- External consumers SHALL own queryability, persistence mappings, and consumer-specific semantics.

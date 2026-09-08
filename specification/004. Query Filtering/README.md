@@ -18,7 +18,7 @@ metadata:
 | 6       | Quality and Performance Requirements              | Determinism, safety, caching, and database execution quality          | [06-quality-and-performance-requirements.md](06-quality-and-performance-requirements.md)         |
 | 7       | Constraints                                       | Spring, persistence, isolation, and diagnostic constraints            | [07-constraints.md](07-constraints.md)                                                           |
 | 8       | Requirements Allocation and Dependencies          | Ownership across web, Authorization, Embedded Language, and resources | [08-requirements-allocation-and-dependencies.md](08-requirements-allocation-and-dependencies.md) |
-| 9       | Verification, Validation, and Acceptance Evidence | Verification objectives and acceptance conditions                    | [09-verification-validation-and-acceptance.md](09-verification-validation-and-acceptance.md)     |
+| 9       | Verification, Validation, and Acceptance Evidence | Verification objectives and acceptance conditions                     | [09-verification-validation-and-acceptance.md](09-verification-validation-and-acceptance.md)     |
 | 10      | Traceability and Unresolved Issues                | Requirement traceability and unresolved decisions                     | [10-traceability-and-unresolved-issues.md](10-traceability-and-unresolved-issues.md)             |
 | 11      | Appendices                                        | Canonical examples                                                    | [11-appendices.md](11-appendices.md)                                                             |
 

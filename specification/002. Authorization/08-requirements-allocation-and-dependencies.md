@@ -11,13 +11,10 @@
 
 ## 8.2 Requirements Allocation
 
-| Responsibility                                  | Authorization | Embedded Language | Query Filtering | Web/Resource |
-| ----------------------------------------------- | ------------- | ----------------- | --------------- | ------------ |
-| Define Statement policy semantics               | SHALL         | SHALL NOT         | SHALL NOT       | SHALL NOT    |
-| Parse/type/evaluate policy language              | SHALL invoke  | SHALL             | SHALL NOT       | SHALL NOT    |
-| Resolve effective authorization state           | SHALL         | SHALL NOT         | SHALL NOT       | SHALL NOT    |
-| Define API-visible Query Schema                 | SHALL NOT     | SHALL NOT         | SHALL contract  | SHALL provide|
-| Produce Object Authorization Query Predicate    | SHALL         | SHALL support     | SHALL contract  | MAY invoke   |
-| Compile client `filterBy`                       | SHALL NOT     | SHALL support     | SHALL           | MAY invoke   |
-| Map logical predicate to persistence            | SHALL NOT     | SHALL NOT         | SHALL contract  | SHALL        |
-| Adapt Spring Security/MVC                       | SHALL contract| SHALL NOT         | SHALL contract  | SHALL        |
+- Authorization SHALL define Statement policy semantics, resolve effective authorization state, and produce Object Authorization Query Predicates.
+- Embedded Language SHALL parse, type, evaluate, and partially evaluate policy source.
+- Query Filtering SHALL define the public Query Schema/Query Predicate contracts and client `filterBy` compilation.
+- Resource-owning modules SHALL provide Query Schemas and map logical predicates to persistence.
+- `web` SHALL adapt Spring Security/MVC and MAY invoke Authorization and Query Filtering public APIs.
+- Authorization SHALL NOT own client `filterBy` compilation or logical-to-persistence field mappings.
+- Embedded Language SHALL NOT own queryability, persistence mappings, or Authorization decision semantics.
