@@ -6,7 +6,7 @@
 
 The authorization system SHALL compile Statement `policy` source through the [Embedded Language](../003.%20Embedded%20Language/README.md) compiler in `PROGRAM` mode into a typed Semantic AST.
 
-The Authorization policy Compilation Profile SHALL enable the current Embedded Language feature families defined by ENV-004 and SHALL be included in compiled-artifact identity under POLICY-004.
+The Authorization policy Compilation Profile SHALL enable the current feature families defined by the [Embedded Language Compilation Profile](../003.%20Embedded%20Language/03-external-interface-requirements.md#env-004--compilation-profile) and SHALL be included in compiled-artifact identity under POLICY-004.
 
 Request Authorization SHALL evaluate the Semantic AST. Object Authorization SHALL partially evaluate the Semantic AST. Authorization SHALL NOT invoke a general-purpose JavaScript runtime or evaluate policy source directly.
 
