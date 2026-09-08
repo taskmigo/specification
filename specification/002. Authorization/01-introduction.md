@@ -31,16 +31,16 @@ The following capabilities are outside the scope of this SRS:
 
 ## 1.3 Definitions, Acronyms, and Abbreviations
 
-| Term                   | Definition                                                                                                                   |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| Authorization Snapshot | Immutable authorization state used for one request or authorization operation.                                               |
-| Embedded Language      | Language used to compile and evaluate Statement `policy` source.                                                             |
+| Term                   | Definition                                                                                                                    |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Authorization Snapshot | Immutable authorization state used for one request or authorization operation.                                                |
+| Embedded Language      | Language used to compile and evaluate Statement `policy` source.                                                              |
 | Filter Schema          | Authorization-owned mapping of policy-visible object fields/operators to persistence-query fields/operators for one resource. |
-| Object Predicate       | Boolean Semantic AST expression used as the persistence-neutral logical predicate for Object Authorization.                  |
-| Semantic AST           | Typed semantic representation produced by the Embedded Language compiler and consumed by Authorization.                      |
-| Request Authorization  | Authorization based only on the available request, principal, and applicable Request Statements.                             |
-| Object Authorization   | Database-side visibility filtering based on symbolic object fields and applicable Object Statements.                         |
-| Statement              | Named authorization rule with an effect, scope, API target, and policy.                                                      |
+| Object Predicate       | Boolean Semantic AST expression used as the persistence-neutral logical predicate for Object Authorization.                   |
+| Semantic AST           | Typed semantic representation produced by the Embedded Language compiler and consumed by Authorization.                       |
+| Request Authorization  | Authorization based only on the available request, principal, and applicable Request Statements.                              |
+| Object Authorization   | Database-side visibility filtering based on symbolic object fields and applicable Object Statements.                          |
+| Statement              | Named authorization rule with an effect, scope, API target, and policy.                                                       |
 
 ## 1.4 References and Baseline
 
