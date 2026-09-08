@@ -29,9 +29,9 @@ The authorization system provides:
 - Direct and inherited User, Group, Role, and Statement semantics.
 - Database resolution of effective Statements for every authorization operation.
 - One immutable authorization snapshot shared across Request and Object Authorization.
-- Statement policy compilation to Embedded Language Semantic AST.
+- Statement policy compilation through Embedded Language `PROGRAM` mode to Semantic AST.
 - Request evaluation and Object partial evaluation over the Semantic AST.
-- Persistence-neutral Filter AST generation for Object policies.
+- Filter Schema validation and persistence translation directly from residual boolean Semantic AST expressions.
 - Bounded authorization-state resolution without complete in-memory hierarchy loading.
 - Fail-closed handling for authorization failures.
 
@@ -51,26 +51,28 @@ The authorization system SHALL:
 
 The authorization system SHALL:
 
-- Represent Object Authorization with ALL, NONE, and the Filter AST operators required by the existing behavior.
-- Use Filter Schema for direct one-segment object fields.
-- Translate residual boolean Semantic AST expressions into Filter AST and then into the persistence query predicate.
-- Constant-fold before persistence translation.
+- Represent an Object Authorization predicate as a typed `Bool` Semantic AST expression, using constant `true` and `false` as the allow-all and allow-none predicates.
+- Use Filter Schema for direct one-segment object fields and supported persistence-query operators.
+- Partially evaluate Object policies, validate the resulting boolean Semantic AST expression against Filter Schema, and compile that expression into the persistence query predicate.
+- Constant-fold Semantic AST predicate composition before persistence translation.
 - Compose authorization filtering with the business predicate before pagination.
 - Avoid JVM row filtering.
+
+A separate persistence-neutral Filter AST is not part of the normative authorization contract. Persistence adapters MAY use implementation-private representations internally as long as the observable semantics above are preserved.
 
 ### 2.2.3 Embedded Language Contract
 
 The authorization system SHALL:
 
 - Use `scope` instead of `target.type` and required `policy` instead of `conditions[]`.
-- Compile Statement `policy` using the [Embedded Language feature](../003.%20Embedded%20Language/README.md) into Semantic AST.
-- Supply the scope-dependent Authorization Environment Schema.
+- Compile Statement `policy` using the [Embedded Language feature](../003.%20Embedded%20Language/README.md) in `PROGRAM` mode into Semantic AST.
+- Supply the scope-dependent Authorization Environment Schema and an Authorization-owned Compilation Profile.
 - Evaluate Request policies by evaluating the Semantic AST with known `principal` and `request` values.
 - Partially evaluate Object policies by partially evaluating the Semantic AST with known `principal` and `request` values while `object` remains symbolic.
 - Interpret policy results according to STMT-004.
 - Validate Object residual fields and operators against Filter Schema before activation.
 - Keep database-loaded Statement state authoritative for every operation.
-- Permit compiled Semantic AST reuse only as a derived optimization that cannot bypass database resolution.
+- Permit compiled Semantic AST reuse only as a derived optimization that cannot bypass database resolution and only when the Embedded Language compiled-artifact identity includes the applicable Compilation Profile.
 
 ### 2.2.4 Request Authorization Input Boundary
 
@@ -94,10 +96,10 @@ The authorization capability is consumed by policy authors, authorization-aware 
 The following scenarios are supporting context, not additional normative requirements:
 
 1. A request operation resolves effective authorization state from the database, creates one immutable snapshot, matches the request target, and evaluates applicable Request Statements.
-2. A Request Statement compiles its Embedded Language policy to Semantic AST and evaluates that AST with the available `principal` and `request` inputs.
-3. An Object Statement partially evaluates its policy Semantic AST and lowers a residual boolean Semantic AST expression to Filter AST.
+2. A Request Statement compiles its Embedded Language policy in `PROGRAM` mode to Semantic AST and evaluates that AST with the available `principal` and `request` inputs.
+3. An Object Statement partially evaluates its policy Semantic AST, validates the residual boolean Semantic AST expression against Filter Schema, and compiles the validated expression into the persistence query predicate.
 4. A committed authorization change is observed by the next operation while the current operation continues with its existing snapshot.
 
 ## 2.5 Out of Scope
 
-The current authorization capability excludes client-facing `filterBy` syntax, nested or relationship Object filtering, and target kinds beyond `target.api`. These boundaries are detailed in the [Scope](01-introduction.md#12-scope) and [Appendix B](11-appendices.md#111-future-extensions-non-normative).
+The current authorization capability excludes a client-facing `filterBy` contract, nested or relationship Object filtering, and target kinds beyond `target.api`. These boundaries are detailed in the [Scope](01-introduction.md#12-scope) and [Appendix B](11-appendices.md#111-future-extensions-non-normative).
