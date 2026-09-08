@@ -4,87 +4,54 @@
 
 ### POLICY-001 — Compilation model
 
-The authorization system SHALL compile Statement `policy` source through the [Embedded Language](../003.%20Embedded%20Language/README.md) compiler into a typed Semantic AST.
+Authorization SHALL compile Statement `policy` through Embedded Language `PROGRAM` mode into typed Semantic AST using an Authorization-owned Compilation Profile.
 
-Request Authorization SHALL evaluate the Semantic AST. Object Authorization SHALL partially evaluate the Semantic AST. Authorization SHALL NOT invoke a general-purpose JavaScript runtime or evaluate policy source directly.
+The profile MAY enable canonical collection quantifiers and `len(...)` and SHALL be included in compiled-artifact identity.
 
-Verification: Inspect the compiler and execution boundary and run Request and Object policy tests that confirm Authorization consumes the Embedded Language Semantic AST rather than ANTLR parse-tree types or policy source.
-Traceability: [Embedded Language Contract](02-overall-description.md#223-embedded-language-contract); [Embedded Language semantic representation](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#lang-001--language-owned-semantic-representation).
+Request Authorization SHALL evaluate Semantic AST; Object Authorization SHALL partially evaluate it. Authorization SHALL NOT execute source through a general-purpose script runtime.
 
-### POLICY-002 — Embedded Language contract
+Verification: Inspect compilation/execution boundaries and profile identity.
+Traceability: [Embedded Language](../003.%20Embedded%20Language/README.md); STMT-003.
 
-Program syntax, Semantic AST semantics, type-system semantics, control flow, operators, evaluation, and partial evaluation SHALL follow the [Embedded Language feature](../003.%20Embedded%20Language/README.md).
+### POLICY-002 — Environment contract
 
-For `scope: request`, the Authorization Environment Schema SHALL expose `principal` and `request` and SHALL not expose `object`.
-
-For `scope: object`, the Authorization Environment Schema SHALL expose `principal`, `request`, and symbolic `object`.
+Request scope SHALL expose `principal` and `request`. Object scope SHALL additionally expose symbolic `object` paths/types derived from the applicable Query Schema.
 
 Policy-result interpretation SHALL follow STMT-004.
 
-Verification: Compile policies in both scopes to Semantic AST against the corresponding Authorization Environment Schema and execute them through the applicable Authorization runtime path.
-Traceability: [Authorization inputs](03-external-interface-requirements.md#32-authorization-inputs-and-operation-snapshot); STMT-004; [Embedded Language Environment Schema](../003.%20Embedded%20Language/03-external-interface-requirements.md#env-001--environment-schema); [Embedded Language semantic representation](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#lang-001--language-owned-semantic-representation).
+Verification: Compile both scopes against their exact Environment Schemas.
+Traceability: INPUT-001; [Query Schema](../004.%20Query%20Filtering/03-external-interface-requirements.md#schema-002--query-schema).
 
 ### POLICY-003 — Static validation
 
-Before a Statement becomes active, compilation SHALL validate:
+Before activation, Authorization SHALL validate language/profile syntax, binding/types, complete return flow, supported authorization roots, complexity limits, and Object queryability for every registered applicable Query Schema that the Statement target may govern.
 
-- Embedded Language syntax.
-- Binding, static types, and complete return control flow.
-- Supported authorization roots and fields for the Statement scope.
-- Compiler complexity limits.
-- Object residual field/operator support for the selected Filter Schema mapping.
+Control-flow and quantified expressions SHALL NOT hide unsupported symbolic object paths/operators from queryability validation.
 
-A policy failing a required static validation SHALL NOT become active.
+Verification: Activate policies with unsupported paths/operators inside conditional and quantifier predicates and confirm rejection for applicable Query Schemas.
+Traceability: OBJ-002; OBJ-004.
 
-Verification: Attempt activation with one failure in each required static-validation category. Also activate valid non-`Bool` Embedded Language programs and verify STMT-004 is enforced only when Authorization evaluates or partially evaluates their Semantic AST.
-Traceability: [Embedded Language diagnostics](../003.%20Embedded%20Language/06-quality-and-performance-requirements.md#diag-001--actionable-diagnostics); STMT-003; STMT-004; OBJ-004.
+### POLICY-004 — DB-authoritative Statement state and artifact reuse
 
-### POLICY-004 — DB-authoritative Statement state and compiled-artifact reuse
+Every authorization operation SHALL obtain current effective Statement state from the database. Compiled Semantic AST MAY be reused only after current Statement loading and only under exact Statement/language/schema/profile identity.
 
-Every authorization operation SHALL obtain the current relevant effective Statement state from the database before policy evaluation.
+A compiled-artifact cache SHALL NOT determine effective Statements, suppress the required database lookup, or make correctness depend on TTL/invalidation/synchronization.
 
-The authorization system SHALL NOT use an in-memory or distributed cache of Statement records, effective Statement sets, Statement ids, or authorization snapshots to bypass that database lookup.
-
-A compiled Semantic AST MAY be reused across operations only as a derived artifact after the current Statement has been loaded from the database. Any such reuse SHALL be keyed by an immutable fingerprint of the exact policy/Statement state loaded for the current operation and SHALL also satisfy the compiled-artifact identity requirements of the Embedded Language feature.
-
-A compiled-artifact cache:
-
-- SHALL NOT determine which Statements are effective.
-- SHALL NOT suppress the per-operation database lookup.
-- SHALL NOT make authorization correctness depend on cache invalidation, TTL, or cross-node synchronization.
-- SHALL be treated as an optimization only.
-
-If a safe compiled Semantic AST cannot be matched to the exact database-loaded Statement state and Embedded Language compilation contract, the authorization system SHALL compile from that loaded policy source.
-
-Verification: Change policy, Statement metadata, or a relevant Embedded Language compilation contract between operations and confirm a stale Semantic AST is not used.
-Traceability: [Embedded Language Contract](02-overall-description.md#223-embedded-language-contract); [Embedded Language compiled artifact metadata](../003.%20Embedded%20Language/05-data-and-information-requirements.md#data-003--compiled-artifact-metadata); PERF-004.
+Verification: Change Statement state and compilation identities independently.
+Traceability: [Embedded Language compiled artifact metadata](../003.%20Embedded%20Language/05-data-and-information-requirements.md#data-003--compiled-artifact-metadata); PERF-004.
 
 ### POLICY-005 — Constant folding
 
-Constant policy results and constant subexpressions SHALL be folded when Embedded Language semantics are unchanged.
+Constant policy results and subexpressions SHALL be folded when semantics are unchanged.
 
-At minimum:
-
-```text
-return true;
-```
-
-and:
-
-```text
-return false;
-```
-
-SHALL be represented as constant Semantic AST results.
-
-Verification: Compile the true and false constant examples and inspect the Semantic AST for constant representations; evaluate equivalent constant subexpressions.
+Verification: Inspect constant true/false and quantified constant cases.
 Traceability: [Embedded Language constant folding](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#partial-002--constant-folding-and-boolean-simplification); OBJ-005.
 
 ## 4.2 Request Authorization
 
 ### REQ-001 — Decision semantics
 
-For `scope: request`:
+For Request scope:
 
 ```text
 DENY if any target-matching DENY Statement evaluates true
@@ -92,127 +59,72 @@ ELSE ALLOW if any target-matching ALLOW Statement evaluates true
 ELSE DENY
 ```
 
-For each evaluated Request policy, Authorization SHALL evaluate its Semantic AST and inspect the concrete result. A result whose runtime type is not `Bool` SHALL raise an authorization runtime exception and fail closed before the Statement effect is applied.
+Each evaluated policy SHALL yield concrete `Bool`; non-`Bool` or evaluation failure SHALL fail closed.
 
-Failures in policy evaluation or required `principal`/`request` input resolution SHALL fail closed.
-
-Verification: Evaluate matching allow and deny Statements, including default-deny and deny-overrides cases. Evaluate an active non-`Bool` policy Semantic AST and confirm a runtime authorization exception and denial. Inject evaluator and required-input failures and confirm the result is denial where required.
-Traceability: [Fail-Closed Behavior](07-constraints.md#74-fail-closed-behavior); STMT-004.
+Verification: Test default deny, allow, deny override, non-`Bool`, and evaluator failure.
+Traceability: STMT-004; TECH-004.
 
 ### REQ-002 — Constant short-circuit
 
-A target-matching DENY Statement whose compiled policy is constant `TRUE` SHALL immediately produce the final DENY result.
+A target-matching constant-true DENY SHALL produce final DENY after required operation Statement resolution. A constant-true ALLOW SHALL NOT bypass applicable DENY Statements.
 
-After the final result is known, authorization SHALL NOT evaluate remaining policies or resolve authorization inputs that cannot change that result.
-
-A constant-`TRUE` ALLOW SHALL NOT bypass applicable DENY Statements.
-
-The required database Statement resolution for the operation occurs before these in-operation evaluation short-circuits; short-circuiting SHALL NOT skip the per-operation DB source-of-truth lookup.
-
-Verification: Use a constant-true deny followed by an instrumented policy/input resolution and confirm the deny short-circuits evaluation after database resolution has occurred.
-Traceability: [Resolution and Operation Snapshot](02-overall-description.md#221-resolution-and-operation-snapshot); PERF-004.
+Verification: Instrument remaining evaluation after constant deny.
+Traceability: POLICY-005; PERF-004.
 
 ### REQ-003 — Request input boundary
 
-For `scope: request`, authorization SHALL evaluate the policy Semantic AST using only the `principal` and `request` values already available at the time of authorization.
+Request Authorization SHALL evaluate using only already-available principal/request inputs. It SHALL NOT load business resources, invoke resource adapters, or expose `object`.
 
-Request Authorization SHALL NOT load business resources, invoke resource adapters, or make resource data available through `object`.
+Verification: Instrument resource access and reject unavailable roots/privileged calls.
+Traceability: INPUT-001 through INPUT-003; RES-001 through RES-003.
 
-A Request policy that references `object`, `resources`, or uses call syntax SHALL be rejected before the Statement becomes active. No compatibility fallback SHALL ignore these constructs.
-
-Statement database resolution and creation of the operation-scoped Authorization Snapshot SHALL remain part of authorization and SHALL not be interpreted as business-resource loading.
-
-Verification: Accept Request policies using the supported `principal` and `request` fields; reject `object`, `resources`, and `resource(...)`; verify the resource exclusions and no resource lookup specified by RES-001–RES-003; inject missing required request inputs and confirm denial.
-Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); INPUT-001 through INPUT-003; RES-001 through RES-003; [Fail-Closed Behavior](07-constraints.md#74-fail-closed-behavior).
-
-## 4.3 Object Authorization and Shared Filter AST
+## 4.3 Object Authorization
 
 ### OBJ-001 — Partial evaluation
 
-For `scope: object`, the authorization system SHALL partially evaluate the Statement policy Semantic AST with known `principal` and `request` values while retaining `object.*` as symbolic values.
+Object Authorization SHALL partially evaluate policy Semantic AST using known `principal`/`request` values while retaining Query Schema-derived `object` values as symbolic.
 
-Partial evaluation SHALL follow the [Embedded Language Partial Evaluation requirements](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#45-partial-evaluation).
+A concrete `Bool` or residual `Bool` expression SHALL become the logical Object Predicate. Non-`Bool` concrete/residual results or evaluation failures SHALL fail closed before queryability/persistence translation.
 
-After partial evaluation:
+Verification: Partially evaluate constant, nested, quantified, conditional, and non-`Bool` policies.
+Traceability: STMT-004; [Embedded Language partial evaluation](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#45-partial-evaluation).
 
-- A concrete `true` SHALL lower to `ALL`.
-- A concrete `false` SHALL lower to `NONE`.
-- A residual Semantic AST expression whose static type is `Bool` SHALL be lowered to Filter AST.
-- A concrete non-`Bool` result or residual non-`Bool` Semantic AST expression SHALL raise an authorization runtime exception and fail closed before Filter AST lowering.
+### OBJ-002 — Query Schema scope
 
-An evaluation failure or invalid residual contract SHALL raise an authorization exception and fail closed.
+Object policy-visible paths, structured types, collection element types, nullability, and queryable operators SHALL derive from the applicable `QuerySchema<Q>` defined by Query Filtering.
 
-Verification: Partially evaluate active `Bool` and non-`Bool` policy Semantic ASTs across constant, symbolic, conditional, early-return, and failing cases. Confirm valid concrete booleans and residual boolean Semantic AST expressions become filters, while concrete or residual non-`Bool` results raise a runtime authorization exception and fail closed.
-Traceability: [Shared Object Filter](02-overall-description.md#222-shared-object-filter); STMT-004; [Embedded Language partial evaluation](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#partial-001--unknown-preserving-evaluation).
+Nested/composed API paths MAY map to joins, computed persistence expressions, multiple entities, arrays/JSON, or custom query adapters without changing the Object policy path.
 
-### OBJ-002 — Initial Filter Schema scope
+Verification: Authorize nested/composed Query Contracts with differing persistence topology.
+Traceability: [Query Schema requirements](../004.%20Query%20Filtering/03-external-interface-requirements.md#31-query-contract-interfaces).
 
-Filter Schema SHALL map policy-visible object fields to persisted fields/types for a registered Object Authorization mapping and SHALL define which fields and operators can be represented by Filter AST.
+### OBJ-003 — Shared logical predicate
 
-The mapped object fields and types SHALL be exposed through the `object` root in the Authorization Environment Schema.
+The persistence-neutral Object Predicate SHALL remain a typed logical `QueryPredicate<Q>` whose internal semantic representation is derived from the residual Boolean Semantic AST. Authorization SHALL NOT require a second public predicate AST.
 
-The authorization system SHALL preserve direct one-segment object fields. Nested paths, joins, and relationship predicates remain outside the current scope.
+Verification: Inspect public/domain boundaries and confirm no Filter AST conversion is required.
+Traceability: AUTH-API-004; [Query Predicate](../004.%20Query%20Filtering/03-external-interface-requirements.md#pred-001--typed-opaque-query-predicate).
 
-Verification: Map valid direct fields through a registered Filter Schema and reject nested, joined, or relationship field references.
-Traceability: [Scope](01-introduction.md#12-scope); [Assumptions and Dependencies](08-requirements-allocation-and-dependencies.md#81-assumptions-and-dependencies).
+### OBJ-004 — Queryability and database execution
 
-### OBJ-003 — Filter AST
+Authorization SHALL validate symbolic object paths/operators, including those inside restricted collection lambdas, against the applicable Query Schema before the predicate is accepted for persistence use.
 
-The Filter AST SHALL support the operations required to preserve the existing Object Authorization semantics:
+Object filtering SHALL execute in the database before pagination through Query Filtering/resource persistence mapping. Authorization SHALL NOT load unrestricted rows and filter them in JVM memory.
 
-```text
-ALL NONE
-AND OR NOT
-EQ NE GT GE LT LE
-numeric ADD SUBTRACT MULTIPLY DIVIDE NEGATE
-```
-
-Filter AST is independent of Embedded Language source syntax and persistence APIs.
-
-Verification: Inspect the Filter AST API and translate equivalent predicates from residual Semantic AST expressions and a future client-filter producer without exposing persistence types in the AST.
-Traceability: [Scope](01-introduction.md#12-scope); [Appendix B](11-appendices.md#111-future-extensions-non-normative) `filterBy` extension.
-
-### OBJ-004 — Database execution and queryability
-
-Filter AST SHALL compile to the resource query predicate used by the existing persistence layer.
-
-Authorization filtering SHALL execute before pagination. The authorization system SHALL NOT load unrestricted business rows and filter them in JVM memory.
-
-Activation-time Object queryability validation SHALL validate only residual fields and operators that depend on symbolic `object` against the selected Filter Schema / Filter AST mapping.
-
-Control-flow constructs in the Semantic AST SHALL NOT hide residual fields or operators from activation-time queryability validation.
-
-Verification: Activate policies using supported and unsupported residual fields/operators across conditional/return paths and confirm mapping validation rejects unsupported cases before activation; verify authorized rows are filtered in the database before pagination.
-Traceability: [Shared Object Filter](02-overall-description.md#222-shared-object-filter); POLICY-003.
+Verification: Test unsupported nested/collection paths/operators and inspect database-before-pagination execution.
+Traceability: OBJ-002; [Query execution](../004.%20Query%20Filtering/04-functional-and-behavioral-requirements.md#qry-005--persistence-execution-before-pagination).
 
 ### OBJ-005 — Composition
 
-Object visibility SHALL use:
+Object visibility SHALL preserve:
 
 ```text
-ANY(ALLOW filters) AND NOT ANY(DENY filters)
+ANY(ALLOW predicates) AND NOT ANY(DENY predicates)
 ```
 
-Constant composition SHALL be simplified before JPA translation.
+Composition SHALL produce `QueryPredicate<Q>` and simplify constant Boolean identities before persistence translation when semantics are unchanged.
 
-At minimum:
+A constant-true matching DENY SHALL reduce the final Object predicate to constant false.
 
-```text
-TRUE object policy  -> ALL
-FALSE object policy -> NONE
-ALL OR X             -> ALL
-NONE OR X            -> X
-ALL AND X            -> X
-NONE AND X           -> NONE
-NOT ALL              -> NONE
-NOT NONE              -> ALL
-```
-
-A target-matching DENY Statement with constant `TRUE` SHALL reduce the final authorization filter to `NONE` without translating remaining ACL predicates.
-
-When the final authorization filter is `NONE`, the query layer SHOULD avoid a database query when the caller can produce the correct empty result without it.
-
-Verification: Test constant and composed object policies, inspect the simplified Filter AST, and confirm the authorization predicate is applied before pagination without JVM row filtering.
-Traceability: [Scope](01-introduction.md#12-scope); [Shared Object Filter](02-overall-description.md#222-shared-object-filter).
-
-The composition test SHALL include the complete allow/deny table and confirm constant simplification preserves the required visibility result.
+Verification: Test complete allow/deny combinations and constant simplification.
+Traceability: [Query Predicate composition](../004.%20Query%20Filtering/03-external-interface-requirements.md#pred-002--typed-composition); POLICY-005.

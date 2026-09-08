@@ -1,78 +1,64 @@
 # 11. Appendices
 
-## 11.1 Canonical Examples
+The examples in this section are supporting material and do not add requirements.
 
-The examples in this section are supporting material and do not add requirements beyond the normative sections. Each example assumes the shown root names are declared by the Environment Schema.
+## 11.1 Source Examples
 
-### Direct Program
+### Program
 
 ```text
 const enabled = record.enabled == true;
-const aboveThreshold = record.score >= context.minimumScore;
 
-return enabled && aboveThreshold;
-```
-
-### Conditional Program
-
-```text
 if (context.override) {
   return true;
 }
 
-return record.enabled == true;
+return enabled && record.score >= context.minimumScore;
 ```
 
-### Non-Boolean Result Program
+### Expression
 
 ```text
-if (context.override) {
-  return "override";
-}
+record.enabled == true && record.score >= context.minimumScore
+```
 
-return operation.mode;
+### Collection Quantifier
+
+```text
+all(record.emails, email => len(email) > 10)
+```
+
+### Structured Collection Element
+
+```text
+any(record.orders, order => order.product.name == "Book")
 ```
 
 ## 11.2 Partial Evaluation Example
 
-Given:
+Given known `context.minimumScore = 10`, known `context.override = false`, and symbolic `record`, this expression:
 
 ```text
-context.override = false
-context.minimumScore = 10
-record = unknown
+context.override || record.score >= context.minimumScore
 ```
 
-The program:
-
-```text
-return context.override || record.score >= context.minimumScore;
-```
-
-SHALL specialize to a residual Semantic AST expression equivalent to:
+specializes to a residual expression equivalent to:
 
 ```text
 record.score >= 10
 ```
 
-The exact Semantic AST node shape is implementation-private as long as the specified language semantics are preserved.
+A quantified expression may similarly specialize captured known values while preserving its symbolic collection source.
 
-## 11.3 Callable and Utility Functions (non-normative)
+## 11.3 Excluded Callable Forms
 
-Callable syntax is intentionally absent from the initial language contract.
-
-The following examples SHALL NOT compile in this version:
+These forms are not part of the language:
 
 ```text
 function check() { return true; }
-export default () => true;
-startsWith(record.name, "prefix-")
-lower(record.email)
-contains(context.tags, "admin")
+const check = value => value > 0;
+check(record.score)
+record.check()
 ```
 
-A future language revision may define callable or utility functions only after specifying their syntax, static types, runtime behavior, and partial-evaluation behavior.
-
-## 11.4 Source-Language Migration Note (non-normative)
-
-A migration tool from a previous restricted ECMAScript source may compile legacy source into the Semantic AST and print equivalent canonical Embedded Language source. Source-to-source text rewriting is not required by this SRS.
+The restricted lambda accepted inside `all`, `any`, or `none` does not make these forms valid.

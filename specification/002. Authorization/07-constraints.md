@@ -1,60 +1,41 @@
 # 7. Constraints
 
-## 7.1 Null Object Pattern
+## 7.1 Pattern Discipline
 
 ### TECH-001 — Null Object usage
 
-Internal authorization abstractions SHOULD use the Null Object Pattern where it removes sentinel/null branching while preserving the normal interface.
+Internal authorization abstractions SHOULD use constant/identity objects where they remove sentinel branching without changing the external Statement contract.
 
-Examples include constant compiled policies and Filter AST identity/zero objects such as `ALL` and `NONE`.
+Verification: Inspect constant policy/predicate implementations.
+Traceability: OBJ-005.
 
-This SHALL NOT alter the external Statement contract: `policy` is always required and valid.
+### TECH-002 — Integration pattern discipline
 
-Verification: Inspect constant-policy and Filter AST identity/zero implementations and confirm the external Statement validation remains unchanged.
-Traceability: [Shared Object Filter](02-overall-description.md#222-shared-object-filter); [Embedded Language Contract](02-overall-description.md#223-embedded-language-contract).
+Authorization SHOULD use Spring/framework patterns only where they reduce coupling. Relevant patterns include Strategy for Request/Object evaluation, Composite for logical predicate composition, Adapter for Spring Security/web boundaries, and Registry through Query Filtering Spring-managed Query Schemas.
 
-## 7.2 Design Patterns
+A pattern SHALL NOT introduce a second public predicate AST when Query Predicate/Semantic AST already carry the required semantics.
 
-### TECH-002 — Pattern discipline
+Verification: Review public/internal boundaries for unnecessary pattern-only abstractions.
+Traceability: AUTH-API-003 through AUTH-API-005; OBJ-003.
 
-The authorization architecture SHOULD apply established design patterns when they materially reduce coupling, branching, duplication, or persistence/runtime leakage. Patterns SHALL simplify the design and SHALL NOT create abstractions solely to satisfy a pattern checklist.
-
-Preferred applications include:
-
-| Concern                                              | Preferred pattern |
-| ---------------------------------------------------- | ----------------- |
-| Constant/identity authorization behavior             | Null Object       |
-| Request evaluation vs Object partial evaluation      | Strategy          |
-| Semantic AST and Filter AST boolean trees            | Composite         |
-| Persistence-specific translation boundaries          | Adapter           |
-| Database authorization predicates                    | Specification     |
-| Filter Schemas selected by registered type or target | Registry          |
-
-Equivalent patterns or simpler designs are acceptable where they better fit the architecture. The authorization architecture SHOULD make its intent clear when a non-obvious pattern is introduced.
-
-Verification: Review the relevant architecture and confirm each selected pattern reduces a stated boundary or behavior concern without pattern-only abstractions.
-Traceability: [Product Functions](02-overall-description.md#22-product-functions).
-
-## 7.3 Security and Failure Constraints
+## 7.2 Security and Isolation
 
 ### TECH-003 — Authorization policy isolation
 
-Policy source is untrusted compiler input.
+Policy source is untrusted compiler input. Authorization SHALL satisfy Embedded Language isolation constraints and SHALL NOT expose repositories, Spring/ApplicationContext objects, JPA entities, filesystems, networks, processes, reflection, arbitrary host objects, or privileged call surfaces through the policy Environment Schema.
 
-Authorization SHALL satisfy the [Embedded Language isolation and compiler constraints](../003.%20Embedded%20Language/07-constraints.md).
+Canonical bounded Embedded Language intrinsics MAY be enabled but SHALL NOT dispatch to arbitrary host behavior.
 
-The Authorization Environment Schema SHALL NOT expose repositories, Spring/ApplicationContext objects, JPA entities, filesystem/network/process access, reflection, arbitrary Java objects, host methods, or callable utility surfaces.
+Verification: Attempt forbidden host/resource access from direct and restricted-lambda policy expressions.
+Traceability: [Embedded Language isolation](../003.%20Embedded%20Language/07-constraints.md#74-isolation-and-host-access); RES-002.
 
-Verification: Inspect the Authorization Environment Schema and execute policies attempting forbidden host access or call syntax; confirm rejection or isolation.
-Traceability: [Embedded Language Contract](02-overall-description.md#223-embedded-language-contract); POLICY-001 through POLICY-003.
-
-## 7.4 Fail-Closed Behavior
+## 7.3 Fail-Closed Behavior
 
 ### TECH-004 — Fail-closed authorization
 
-Policy parse, binding, control-flow, type, complexity, scope, or queryability errors SHALL prevent activation.
+Policy parse/profile/binding/control-flow/type/complexity/scope/queryability errors SHALL prevent activation where validation is required. Runtime authorization failures SHALL not grant access.
 
-Runtime authorization failures SHALL not grant access.
+Client `filterBy` failures remain Query Filtering client-input errors and SHALL NOT be reinterpreted as authorization decisions.
 
-Verification: Inject compile-time and runtime authorization failures and confirm the resulting decision is denial and invalid Statements cannot activate.
-Traceability: [Scope](01-introduction.md#12-scope); STMT-004; REQ-001.
+Verification: Trigger activation/runtime authorization failures and independent `filterBy` errors.
+Traceability: STMT-004; REQ-001; [Query Filtering failure boundary](../004.%20Query%20Filtering/07-constraints.md#tech-004--filter-failure-boundary).

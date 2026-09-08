@@ -2,22 +2,16 @@
 
 ## 8.1 Assumptions and Dependencies
 
-- The Environment Schema defines root names, fields, nullability, scalar semantics, and symbolic availability.
+- The Environment Schema defines root names, structured paths, types, nullability, and symbolic availability.
+- Each compilation supplies a Compilation Profile selecting one mode and enabled feature families.
 - Each evaluation operation supplies required roots as known or unknown values.
-- The initial language provides no export/module system, user-defined functions, arrow functions, call expressions, or utility-function library.
-- The parser frontend depends on the ANTLR Java runtime as constrained by TECH-001.
-- The Embedded Language does not depend on an ECMAScript parser or JavaScript runtime.
+- The parser frontend depends on the ANTLR Java runtime.
+- Consumer-specific purposes, queryability, and persistence translation remain external.
 
 ## 8.2 Requirements Allocation
 
-| Responsibility                              | Embedded Language | External Environment |
-| ------------------------------------------- | ----------------- | -------------------- |
-| Parse canonical program                     | SHALL             | SHALL NOT            |
-| Bind and type-check statements/expressions  | SHALL             | SHALL NOT            |
-| Validate complete typed return control flow | SHALL             | SHALL NOT            |
-| Determine the static program result type    | SHALL             | SHALL NOT            |
-| Produce typed Semantic AST                  | SHALL             | SHALL NOT            |
-| Evaluate known program inputs               | SHALL             | MAY invoke           |
-| Partially evaluate known/unknown inputs     | SHALL             | MAY invoke           |
-| Define root names and field contracts       | SHALL NOT         | SHALL                |
-| Supply values for evaluation                | SHALL NOT         | SHALL                |
+- Embedded Language SHALL parse canonical `PROGRAM` and `EXPRESSION` sources and enforce supplied Compilation Profiles.
+- Embedded Language SHALL bind/type-check roots, structured paths, locals, restricted lambdas, and bounded intrinsics.
+- Embedded Language SHALL validate complete typed return flow in `PROGRAM`, produce typed Semantic AST, and evaluate/partially evaluate it.
+- External consumers SHALL supply root/path contracts, Compilation Profiles, and runtime values.
+- External consumers SHALL own queryability, persistence mappings, and consumer-specific semantics.

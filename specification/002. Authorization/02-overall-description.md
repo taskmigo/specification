@@ -2,102 +2,74 @@
 
 ## 2.1 Product Perspective and Baseline
 
-The following behavior was recorded from the `next` baseline described in the [references and baseline](01-introduction.md#14-references-and-baseline). It describes the authorization capability before the policy-contract update; it is context for the derived requirements, not the final contract.
+Authorization is consumed by Spring Security/web adapters and resource query paths. The target model separates HTTP adaptation, authorization semantics, logical query predicates, and persistence translation.
 
-| Area                           | Baseline behavior                                                                                                                                                                   |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Statement contract             | `effect`, `target.type`, `target.api.method`, `target.api.path`, `conditions: List<String>`                                                                                         |
-| Persistence                    | `statements.target_type` plus `statement_conditions`                                                                                                                                |
-| Statement API                  | Create accepts nullable `conditions`; missing conditions become an empty list                                                                                                       |
-| Target matching                | Method is exact or `*`; path is a full-match Java regular expression; `Pattern.compile(...)` currently occurs during matching                                                       |
-| Condition compiler             | Restricted SpEL is parsed into an implementation-owned expression tree                                                                                                              |
-| Request Authorization          | Resolves effective Statements, compiles conditions during authorization, evaluates `principal` and `request`, DENY overrides ALLOW                                                  |
-| Request input                  | `principal.id`, `principal.username`, `request.method`, `request.path`; no route/path-variable map                                                                                  |
-| Object Authorization           | Resolves effective Statements again, compiles conditions again, specializes `principal.*` / `request.*`, retains `object.*`, and translates the residual expression to JPA Criteria |
-| Object query mapping           | Registered per concrete method/path; only direct one-segment object fields are queryable                                                                                            |
-| Effective Statement resolution | Loads all Groups and all Roles, builds hierarchy graphs in JVM, then fetches effective Statements                                                                                   |
-| Bootstrap                      | Built-in Statements use `target.type` + `conditions`; empty conditions mean unconditional `true`                                                                                    |
+```text
+Spring Security/web
+        ↓
+RequestAuthorization
+        ↓
+AuthorizationContext
+        ↓
+ObjectAuthorization + QuerySchema<Q>
+        ↓
+QueryPredicate<Q>
+        ↓
+Query Filtering/resource persistence adapter
+        ↓
+database before pagination
+```
 
-The target authorization model SHALL exclude hot-path graph loading, duplicate Statement resolution within one operation, per-authorization policy compilation when an exact compiled artifact is available, and per-match regular-expression compilation.
+The target model SHALL exclude duplicate effective-Statement resolution within one operation, unrestricted hierarchy loading on the hot path, public exposure of Authorization Snapshot/Semantic AST, and a second public predicate AST.
 
 ## 2.2 Product Functions
 
 The authorization system provides:
 
-- Default-deny Request Authorization with DENY overriding ALLOW.
-- Database-side Object Authorization before pagination.
+- Request decisions using effective Request Statements.
+- Database-side Object Authorization using logical Query Predicates.
 - Direct and inherited User, Group, Role, and Statement semantics.
-- Database resolution of effective Statements for every authorization operation.
-- One immutable authorization snapshot shared across Request and Object Authorization.
-- Statement policy compilation to Embedded Language Semantic AST.
-- Request evaluation and Object partial evaluation over the Semantic AST.
-- Persistence-neutral Filter AST generation for Object policies.
-- Bounded authorization-state resolution without complete in-memory hierarchy loading.
-- Fail-closed handling for authorization failures.
+- One operation-scoped immutable authorization state shared across Request and Object Authorization.
+- `PROGRAM` policy compilation and Semantic AST execution/partial evaluation.
+- Query Schema validation for API-visible nested/composed object paths and supported operators.
+- Fail-closed behavior for authorization failures.
 
-### 2.2.1 Resolution and Operation Snapshot
+### 2.2.1 Resolution and Operation Context
 
-The authorization system SHALL:
+The system SHALL resolve relevant effective Statements from the database once per authorization operation, create one immutable internal snapshot, expose only an opaque `AuthorizationContext` to external consumers, and discard operation state when the operation ends.
 
-- Resolve relevant effective Statements from the database for every authorization operation.
-- Preserve direct and inherited User/Group/Role/Statement semantics.
-- Avoid loading the complete Group/Role graph during authorization.
-- Use one immutable, request-scoped Authorization Snapshot for Request and Object Authorization.
-- Discard the snapshot when the operation ends.
-- Resolve effective authorization state only once within an operation.
-- Reuse target matchers within an operation and permit derived compiled-artifact reuse across operations only when keyed by the exact Statement state loaded from the database.
+### 2.2.2 Shared Object Predicate
 
-### 2.2.2 Shared Object Filter
+Object Authorization SHALL produce a typed logical `QueryPredicate<Q>` using the Query Contract supplied for the resource operation. The predicate SHALL remain expressed in API-visible logical paths until Query Filtering/resource-owned persistence translation.
 
-The authorization system SHALL:
-
-- Represent Object Authorization with ALL, NONE, and the Filter AST operators required by the existing behavior.
-- Use Filter Schema for direct one-segment object fields.
-- Translate residual boolean Semantic AST expressions into Filter AST and then into the persistence query predicate.
-- Constant-fold before persistence translation.
-- Compose authorization filtering with the business predicate before pagination.
-- Avoid JVM row filtering.
+A separate public Filter AST SHALL NOT be required.
 
 ### 2.2.3 Embedded Language Contract
 
-The authorization system SHALL:
+Authorization SHALL compile policies in `PROGRAM` mode, supply an Authorization-owned Compilation Profile and scope-dependent Environment Schema, evaluate Request policies, partially evaluate Object policies, and enforce Boolean decision semantics at authorization runtime as defined by STMT-004.
 
-- Use `scope` instead of `target.type` and required `policy` instead of `conditions[]`.
-- Compile Statement `policy` using the [Embedded Language feature](../003.%20Embedded%20Language/README.md) into Semantic AST.
-- Supply the scope-dependent Authorization Environment Schema.
-- Evaluate Request policies by evaluating the Semantic AST with known `principal` and `request` values.
-- Partially evaluate Object policies by partially evaluating the Semantic AST with known `principal` and `request` values while `object` remains symbolic.
-- Interpret policy results according to STMT-004.
-- Validate Object residual fields and operators against Filter Schema before activation.
-- Keep database-loaded Statement state authoritative for every operation.
-- Permit compiled Semantic AST reuse only as a derived optimization that cannot bypass database resolution.
+### 2.2.4 Request Input Boundary
 
-### 2.2.4 Request Authorization Input Boundary
+Request Authorization SHALL expose only supported `principal` and `request` values and SHALL NOT load business resources to satisfy policy references.
 
-The authorization system SHALL:
+### 2.2.5 Spring/Web Integration
 
-- Provide `request.pathVariables` as authorization input.
-- Make only `principal` and `request` available to `scope: request` policies.
-- Reject Request policies that reference unavailable roots such as `object` or `resources`, or use call syntax, before activation.
-- Perform Request Authorization without loading business resources or invoking resource adapters.
-
-### 2.2.5 Integration and Consistency
-
-The web, security, and Object Authorization boundaries SHALL share the same request-scoped authorization context. Every authorization operation SHALL observe committed authorization changes on the next operation without cache invalidation, TTL expiry, or distributed-cache coordination.
+Spring Security adaptation SHALL remain in `web`. Authorization SHALL expose typed transport-neutral public inputs/results and an opaque `AuthorizationContext`. The same context SHALL be available to Spring MVC query resolution for subsequent Object Authorization.
 
 ## 2.3 Stakeholders and Users
 
-The authorization capability is consumed by policy authors, authorization-aware application components, Filter Schema owners, and operators or reviewers of authorization changes. It does not prescribe a user interface or operational persona.
+The capability is consumed by policy authors, Spring Security/web adapters, Query Filtering, resource modules, and operators/reviewers of authorization changes.
 
-## 2.4 Operational Context and Scenarios
+## 2.4 Operational Scenarios
 
-The following scenarios are supporting context, not additional normative requirements:
+The following scenarios are supporting context:
 
-1. A request operation resolves effective authorization state from the database, creates one immutable snapshot, matches the request target, and evaluates applicable Request Statements.
-2. A Request Statement compiles its Embedded Language policy to Semantic AST and evaluates that AST with the available `principal` and `request` inputs.
-3. An Object Statement partially evaluates its policy Semantic AST and lowers a residual boolean Semantic AST expression to Filter AST.
-4. A committed authorization change is observed by the next operation while the current operation continues with its existing snapshot.
+1. Spring Security adapts an authenticated HTTP request to typed Authorization principal/request inputs.
+2. Request Authorization resolves Statements, creates one authorization context, and returns the Request decision.
+3. A collection operation uses the same context and `QuerySchema<Q>` to derive an Object `QueryPredicate<Q>`.
+4. Query Filtering composes Object Authorization with optional `filterBy` before resource persistence execution.
+5. The next authorization operation re-resolves database state and observes committed changes.
 
 ## 2.5 Out of Scope
 
-The current authorization capability excludes client-facing `filterBy` syntax, nested or relationship Object filtering, and target kinds beyond `target.api`. These boundaries are detailed in the [Scope](01-introduction.md#12-scope) and [Appendix B](11-appendices.md#111-future-extensions-non-normative).
+Client `filterBy` syntax and persistence mapping semantics are owned by [Query Filtering](../004.%20Query%20Filtering/README.md). Additional authorization target shapes beyond `target.api` are outside this SRS.

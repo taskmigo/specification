@@ -2,29 +2,31 @@
 
 ## 9.1 Verification and Conformance Matrix
 
-| Requirement IDs         | Verification objective                                                                                                                                                         |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| SYNTAX-001–SYNTAX-004   | Parse the direct program syntax, JavaScript-like delimiters/operators/literals, and reject export/function/arrow/call/member-method syntax.                                    |
-| ENV-001–ENV-003         | Compile against explicit Environment Schemas, verify schema-defined root namespaces, and inspect Semantic AST/result-type/diagnostic interfaces.                               |
-| EVAL-IF-001–EVAL-IF-002 | Validate typed runtime inputs and concrete/residual result forms without coercion.                                                                                             |
-| LANG-001–LANG-004       | Inspect the language-owned Semantic AST and test complete typed returns, multiple supported result types, immutable `const` bindings, conditional semantics, and early return. |
-| TYPE-001–TYPE-004       | Test strict types, boolean/equality, arithmetic/ordering, null, lists, and membership semantics.                                                                               |
-| REF-001                 | Test static path resolution and reject dynamic paths, method calls, and call expressions.                                                                                      |
-| EVAL-001–EVAL-002       | Test known-input evaluation across multiple program result types, branch/short-circuit/return behavior, and deterministic repeated results.                                    |
-| PARTIAL-001–PARTIAL-004 | Test unknown preservation, simplification, residual Semantic AST typing, and dependency metadata across multiple program result types.                                         |
-| DATA-001–DATA-004       | Inspect immutable values, schema/artifact identity, Semantic AST metadata, source fingerprints, and source-location metadata.                                                  |
-| QUAL-001–QUAL-003       | Verify deterministic semantics, guaranteed termination from the non-callable bounded language, and parser-independent Semantic AST dependency direction.                       |
-| PERF-001–PERF-003       | Exercise compiler limits, dependency-aware specialization, and exact compiled-artifact reuse.                                                                                  |
-| DIAG-001                | Trigger every required diagnostic category and verify source location where applicable.                                                                                        |
-| TECH-001–TECH-005       | Verify ANTLR Java frontend use, parse-tree-to-Semantic-AST conversion, language exclusions, strict non-ECMAScript semantics, host isolation, and compiler-limit handling.      |
+Verification SHALL cover:
 
-The verification objectives above are acceptance conditions for the corresponding normative requirements. Implementation test evidence is produced by the system repository when these requirements are realized.
+- SYNTAX-001–SYNTAX-004: Both modes, shared expressions, bounded intrinsic/lambda syntax, and rejection of general calls/dynamic members.
+- ENV-001–ENV-004: Structured schemas, symbolic metadata, result interfaces, modes, and feature-profile restrictions.
+- EVAL-IF-001–EVAL-IF-002: Typed runtime inputs and concrete/residual results without coercion.
+- LANG-001–LANG-006: Semantic AST ownership, typed results, program control flow, profile restrictions, and bounded intrinsic/lambda semantics.
+- TYPE-001–TYPE-005: Scalar/structured/list types, operators, membership, quantifiers, empty-list semantics, null handling, and `len`.
+- REF-001: Lexical/nested static reference resolution and rejection of dynamic/general callable references.
+- EVAL-001–EVAL-002: Known-input evaluation, short-circuiting, quantifier evaluation, and determinism.
+- PARTIAL-001–PARTIAL-005: Unknown preservation, simplification, residual typing, dependency metadata, and quantifier specialization.
+- DATA-001–DATA-004: Immutable values, schema/artifact identity, source/profile metadata, and source locations.
+- QUAL-001–QUAL-003: Deterministic semantics, bounded termination, and parser-independent Semantic AST dependencies.
+- PERF-001–PERF-003: Compiler limits, dependency-aware specialization, and exact artifact reuse.
+- DIAG-001: All required diagnostic categories, including feature errors for quantifier/length capabilities.
+- TECH-001–TECH-005: ANTLR Java frontend use, bounded callable model, strict semantics, host isolation, and compiler-limit behavior.
 
 ## 9.2 Execution Acceptance
 
 Verification SHALL demonstrate:
 
-1. Compilation produces a typed Semantic AST for valid programs with different supported result types.
-2. Direct evaluation succeeds when all required Environment Schema roots are known.
-3. Partial evaluation preserves a typed residual Semantic AST expression when one or more required roots are unknown.
-4. The same program compiles consistently against different Environment Schemas according to the roots and types declared by each schema.
+1. `PROGRAM` and `EXPRESSION` compile through shared expression semantics.
+2. Profiles disable every defined feature family independently.
+3. `all`, `any`, and `none` statically type their element binding and predicate.
+4. `all([], p)` is `true`, `any([], p)` is `false`, and `none([], p)` is `true`.
+5. `len(...)` works only for specified non-null operand types.
+6. Restricted lambdas cannot escape or be used as general function values.
+7. Partial evaluation preserves symbolic quantified predicates and specializes captured known outer values.
+8. Compiled-artifact reuse does not cross incompatible schemas, modes, or feature sets.

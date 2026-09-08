@@ -2,19 +2,19 @@
 
 ## 8.1 Assumptions and Dependencies
 
-- The [Embedded Language feature](../003.%20Embedded%20Language/README.md) defines program syntax, Semantic AST, typing, evaluation, partial evaluation, and diagnostics.
-- `target.api` is the only target shape defined by this SRS.
-- The database is the authoritative source for effective authorization state.
-- Request and Object Authorization share one operation-scoped snapshot.
-- Request Authorization receives only the available `principal` and `request` inputs and does not load business resources.
-- Object filtering translates residual boolean Semantic AST expressions through a persistence-neutral Filter AST and then the resource query predicate.
-- The initial object schema supports direct one-segment fields only.
-- Future client filtering, relationship predicates, and additional Filter AST operators require the separate specification described in [Appendix B](11-appendices.md#111-future-extensions-non-normative).
+- [Embedded Language](../003.%20Embedded%20Language/README.md) defines language syntax, profiles, Semantic AST, typing, intrinsics, evaluation, and partial evaluation.
+- [Query Filtering](../004.%20Query%20Filtering/README.md) defines Query Contracts, Query Schemas, Query Predicates, predicate composition, and persistence integration.
+- Statement policy uses `PROGRAM` mode with an Authorization-owned Compilation Profile.
+- `target.api` is the only authorization target shape defined here.
+- The database is authoritative for effective authorization state.
+- Request and Object Authorization share one operation-scoped authorization context.
 
 ## 8.2 Requirements Allocation
 
-Embedded Language owns language syntax, Semantic AST, typing, control flow, evaluation, and partial evaluation. Authorization owns the Statement `policy` contract, Authorization Environment Schema, policy-result interpretation, Statement effects, scope rules, target matching, effective authorization resolution, Authorization Snapshots, Object queryability, Filter AST lowering, and persistence-side authorization filtering.
-
-Request Authorization evaluates Embedded Language Semantic AST. Object Authorization partially evaluates Embedded Language Semantic AST and lowers residual boolean Semantic AST expressions to Filter AST.
-
-No other requirements allocation across products or future releases is specified.
+- Authorization SHALL define Statement policy semantics, resolve effective authorization state, and produce Object Authorization Query Predicates.
+- Embedded Language SHALL parse, type, evaluate, and partially evaluate policy source.
+- Query Filtering SHALL define the public Query Schema/Query Predicate contracts and client `filterBy` compilation.
+- Resource-owning modules SHALL provide Query Schemas and map logical predicates to persistence.
+- `web` SHALL adapt Spring Security/MVC and MAY invoke Authorization and Query Filtering public APIs.
+- Authorization SHALL NOT own client `filterBy` compilation or logical-to-persistence field mappings.
+- Embedded Language SHALL NOT own queryability, persistence mappings, or Authorization decision semantics.

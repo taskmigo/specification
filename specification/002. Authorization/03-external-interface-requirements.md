@@ -9,133 +9,77 @@ name: <name>
 description: <description>
 effect: allow | deny
 scope: request | object
-
 target:
   api:
     method: <HTTP method | *>
     path: <full-match path regex>
-
 policy: |
   const readable = request.method == "GET";
   return principal.enabled && readable;
 ```
 
-The canonical Statement SHALL contain the fields and nesting shown above.
+The canonical Statement SHALL contain the fields and nesting shown above. `target.api` is the only target shape specified by this SRS.
 
-`scope` controls how the policy is evaluated. `target.api` is the only target shape specified by this SRS.
-
-Verification: Inspect the persisted Statement schema and API representation against the contract, then run a serialization contract test.
-Traceability: [Scope](01-introduction.md#12-scope); [Embedded Language Contract](02-overall-description.md#223-embedded-language-contract).
+Verification: Inspect persistence/API representation and run serialization contract tests.
+Traceability: [Scope](01-introduction.md#12-scope); POLICY-001.
 
 ### STMT-002 — Required policy
 
-`policy` SHALL be a required, non-null, non-blank Embedded Language source string.
+`policy` SHALL be required, non-null, and non-blank. Invalid values SHALL NOT become active.
 
-The Statement SHALL be invalid when `policy` is missing, `null`, empty, or whitespace-only.
-
-Verification: Test create and update requests for each invalid value and confirm that no invalid Statement becomes active.
-Traceability: [Embedded Language Contract](02-overall-description.md#223-embedded-language-contract); POLICY-001.
+Verification: Test create/update with missing, null, empty, and whitespace-only policy.
+Traceability: POLICY-001.
 
 ### STMT-003 — Required policy program
 
-Every Statement `policy` SHALL satisfy the [Embedded Language source contract](../003.%20Embedded%20Language/03-external-interface-requirements.md#31-source-contract).
+Every Statement `policy` SHALL satisfy the Embedded Language source contract in `PROGRAM` mode under the Authorization policy Compilation Profile.
 
-Authorization SHALL NOT require a specific static Embedded Language program result type as a prerequisite for Statement activation. A program that is otherwise valid Embedded Language SHALL NOT be rejected before activation solely because its static result type is not `Bool`.
+Authorization SHALL NOT reject a policy before activation solely because its static result type is not `Bool`.
 
-Authorization SHALL NOT require or permit an `export`, function, arrow-function, module, or entry-point wrapper around the Embedded Language program stored in `policy`.
+General function declarations/calls, modules, standalone/first-class lambdas, and entry-point wrappers SHALL remain invalid. Restricted collection lambdas and canonical intrinsics MAY be used when enabled by the Authorization profile and valid under the policy Environment Schema.
 
-Examples:
+A policy failing parsing, profile validation, binding, control-flow validation, typing, scope validation, complexity limits, or required Object queryability validation SHALL NOT become active.
 
-```text
-return true;
-```
-
-```text
-if (principal.username == "admin") {
-  return true;
-}
-
-return false;
-```
-
-A Statement policy that fails Embedded Language parsing, binding, control-flow validation, type checking, authorization-scope validation, or applicable field/operator queryability validation SHALL be rejected before the Statement becomes active. Static program result type SHALL NOT be an activation-time rejection criterion.
-
-Verification: Compile and activate valid Embedded Language programs returning `Bool`, `String`, and `Number`; confirm result type alone does not change activation acceptance. Also reject export/function/arrow/call syntax, fall-through paths, unavailable authorization roots, and unsupported residual fields/operators where applicable.
-Traceability: [Embedded Language Contract](02-overall-description.md#223-embedded-language-contract); POLICY-001 through POLICY-003.
+Verification: Activate valid multiple-result-type programs; test bounded quantifiers; reject general callable/module syntax, fall-through, unavailable roots, and unsupported query paths/operators.
+Traceability: [Embedded Language Compilation Profile](../003.%20Embedded%20Language/03-external-interface-requirements.md#env-004--compilation-profile); POLICY-001 through POLICY-003.
 
 ### STMT-004 — Boolean decision contract
 
-Authorization SHALL enforce boolean policy results when a policy is evaluated, not when the policy is compiled or activated.
+Authorization SHALL enforce Boolean policy results when a policy is evaluated or partially evaluated, not as a generic Embedded Language compilation restriction.
 
-During Request Authorization:
+For Request Authorization, direct evaluation SHALL yield `Bool`; a concrete non-`Bool` result SHALL raise an authorization runtime exception and fail closed.
 
-- Direct evaluation of the policy Semantic AST SHALL produce `true` or `false` to be accepted as the Statement match result.
-- A concrete result whose runtime type is not `Bool` SHALL raise an authorization runtime exception and SHALL fail closed.
+For Object Authorization, concrete `true`/`false` or a residual Semantic AST expression statically typed `Bool` SHALL be accepted; concrete/residual non-`Bool` results SHALL raise an authorization runtime exception and fail closed before queryability/persistence processing.
 
-During Object Authorization:
-
-- A concrete partial-evaluation result of `true` or `false` SHALL be accepted for lowering to `ALL` or `NONE`.
-- A residual Semantic AST expression SHALL be accepted for Filter AST lowering only when its static type is `Bool`.
-- A concrete non-`Bool` result or residual non-`Bool` Semantic AST expression SHALL raise an authorization runtime exception and SHALL fail closed before Filter AST lowering.
-
-Runtime truthy/falsy coercion SHALL NOT be used in either scope.
-
-Verification: Activate valid non-`Bool` Embedded Language programs. Evaluate their Semantic AST through Request Authorization and Object Authorization and confirm the corresponding runtime authorization exception is raised and authorization fails closed; confirm valid concrete and residual `Bool` results continue normally.
-Traceability: [Embedded Language typed program result](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#lang-002--typed-program-result); [Embedded Language semantic representation](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#lang-001--language-owned-semantic-representation); TECH-004; REQ-001; OBJ-001.
+Verification: Activate valid non-`Bool` policies and verify runtime fail-closed behavior in each scope.
+Traceability: [Embedded Language typed result](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#lang-002--typed-source-result); REQ-001; OBJ-001.
 
 ### STMT-005 — Effect semantics
 
-The policy determines whether a Statement matches. `effect` determines the result of a matched Statement.
+A policy result of `true` applies the Statement effect; `false` means the Statement does not match. Unconditional policies SHALL be authored explicitly with `return true;`.
 
-```text
-policy == true  -> apply effect
-policy == false -> Statement does not match
-```
-
-An unconditional Statement SHALL be authored explicitly:
-
-```text
-return true;
-```
-
-Verification: Evaluate matching allow and deny Statements with true and false policy results and confirm that only true results apply the declared effect.
-Traceability: [Scope](01-introduction.md#12-scope); REQ-001.
+Verification: Test ALLOW/DENY with true/false policies.
+Traceability: REQ-001.
 
 ### STMT-006 — Target semantics
 
-`target.api.method` SHALL preserve the current exact-method-or-`*` semantics.
+`target.api.method` SHALL preserve exact-method-or-`*` behavior. `target.api.path` SHALL use full-match regular-expression semantics against the request path without query string. Target validation/regex compilation SHALL occur before repeated matching within an operation.
 
-`target.api.path` SHALL preserve the current full-match regular-expression semantics against the request path without the query string.
-
-Method/path validation and regular-expression compilation SHALL occur before or when building the request-scoped executable representation. Authorization evaluation SHALL reuse the compiled matcher within the same operation.
-
-A compiled target matcher MAY be reused across operations only as a derived artifact keyed by the exact Statement state loaded from the database for the current operation. Such reuse SHALL NOT eliminate the required database Statement lookup.
-
-Verification: Test exact and wildcard methods, full path matching without query strings, matcher reuse within an operation, and changed database Statement state across operations.
-Traceability: [Product Perspective](02-overall-description.md#21-product-perspective-and-baseline); PERF-004.
+Verification: Test exact/wildcard methods, full path matching, and matcher reuse.
+Traceability: PERF-004.
 
 ### STMT-007 — Canonical persistence and API contract
 
-The canonical Statement model SHALL store and expose:
+The canonical model SHALL persist/expose `effect`, `scope`, `target.api.method`, `target.api.path`, and `policy`. Legacy `target_type`, `conditions[]`, and `statement_conditions` execution SHALL be removed.
 
-```text
-effect
-scope
-target.api.method
-target.api.path
-policy
-```
-
-`target_type`, `conditions[]`, and `statement_conditions` SHALL be removed from the final model. No compatibility execution path for legacy conditions or ECMAScript policy source is required.
-
-Verification: Inspect the schema, API models, bootstrap data, and authorization execution path for the canonical fields and absence of legacy-condition/ECMAScript execution.
-Traceability: [Product Perspective](02-overall-description.md#21-product-perspective-and-baseline); [Embedded Language Contract](02-overall-description.md#223-embedded-language-contract).
+Verification: Inspect schema/API/bootstrap/execution paths.
+Traceability: STMT-001.
 
 ## 3.2 Authorization Inputs and Operation Snapshot
 
 ### INPUT-001 — Policy roots
 
-The Authorization Environment Schema SHALL expose these scope-dependent roots:
+The Authorization Environment Schema SHALL expose:
 
 ```text
 principal
@@ -143,112 +87,140 @@ request
 object (Object Authorization only)
 ```
 
-The minimum request shape is:
+Minimum request paths SHALL include `request.method`, `request.path`, and `request.pathVariables`. Minimum principal paths SHALL include `principal.id` and `principal.username`.
 
-```text
-request.method
-request.path
-request.pathVariables
-```
+Object paths SHALL derive from the applicable `QuerySchema<Q>` and MAY include nested/structured/collection paths permitted by that schema.
 
-`request.path` remains the concrete request path string. `request.pathVariables` is a map of resolved route/path variables.
-
-The minimum principal shape preserves the currently exposed identity values:
-
-```text
-principal.id
-principal.username
-```
-
-Additional principal attributes require an explicit typed authorization contract.
-
-Verification: Provide a request with path variables and the minimum principal fields and confirm the Embedded Language Environment Schema/input shape; reject or separately specify unsupported principal attributes.
-Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); [Embedded Language Environment Schema](../003.%20Embedded%20Language/03-external-interface-requirements.md#32-compilation-environment).
+Verification: Validate scope-dependent roots and nested Query Schema object paths.
+Traceability: [Query Schema](../004.%20Query%20Filtering/03-external-interface-requirements.md#schema-002--query-schema); POLICY-002.
 
 ### INPUT-002 — Object root and Request boundary
 
-For `scope: request`, the `object` root SHALL be absent from the Authorization Environment Schema. A Request policy that references `object` SHALL be rejected before activation.
+For Request scope, `object` SHALL be absent and references SHALL fail before activation. For Object scope, `object` SHALL remain symbolic during partial evaluation and its path/type contract SHALL be derived from `QuerySchema<Q>`.
 
-For `scope: object`, `object.*` SHALL remain symbolic during Embedded Language partial evaluation and SHALL be validated against the selected Filter Schema under OBJ-002 and OBJ-004.
-
-Verification: Compile Request policies that use `principal` and `request` and confirm they are accepted; reject `object` references. Partially evaluate an Object policy with symbolic object fields and confirm that Object input remains supported.
-Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); [Shared Object Filter](02-overall-description.md#222-shared-object-filter); OBJ-001; OBJ-002; OBJ-004.
+Verification: Reject Request `object` references and partially evaluate Object policies with nested/collection symbolic fields.
+Traceability: OBJ-001; OBJ-002.
 
 ### INPUT-003 — Request input availability
 
-For `scope: request`, the authorization system SHALL supply only the `principal` and `request` values already available at the time of authorization. Request Authorization SHALL NOT obtain additional business data to complete those inputs.
+Request Authorization SHALL use only already-available `principal` and `request` values and SHALL NOT load business resources to complete those inputs.
 
-Verification: Evaluate a Request policy using the supported `principal` and `request` fields with no business-resource lookup and confirm the supplied values are the complete policy input.
-Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); REQ-003.
+Verification: Instrument business-resource access during Request Authorization.
+Traceability: REQ-003.
 
 ### RES-001 — Resource root exclusion
 
-The `resources` root SHALL not be part of the Authorization Environment Schema for either authorization scope. A policy that references `resources` SHALL be rejected before activation.
+A `resources` root SHALL NOT be part of the Authorization Environment Schema.
 
-Verification: Attempt to activate Request and Object policies referencing `resources` and confirm both are rejected before activation.
-Traceability: INPUT-001; [Embedded Language static reference resolution](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#ref-001--static-reference-resolution).
+Verification: Reject Request/Object policies referencing `resources`.
+Traceability: INPUT-001.
 
-### RES-002 — No resource-loading call syntax
+### RES-002 — No privileged resource-loading call
 
-The Authorization feature SHALL NOT provide a built-in `resource(...)` function or another privileged utility function for loading business resources.
+Authorization SHALL NOT provide `resource(...)` or another privileged business-resource-loading intrinsic. General call syntax remains invalid under Embedded Language.
 
-Because call expressions are outside the initial Embedded Language grammar, `resource(...)` and equivalent call syntax SHALL be rejected before activation.
+Verification: Reject policies attempting `resource(...)` while permitting only canonical language intrinsics.
+Traceability: [Embedded Language bounded intrinsic syntax](../003.%20Embedded%20Language/03-external-interface-requirements.md#syntax-004--static-paths-and-bounded-intrinsic-syntax).
 
-Verification: Attempt to activate a policy invoking `resource(...)` and confirm it is rejected before activation.
-Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); [Embedded Language call-syntax exclusion](../003.%20Embedded%20Language/03-external-interface-requirements.md#syntax-004--no-dynamic-member-method-or-call-syntax).
+### RES-003 — No Request resource resolution
 
-### RES-003 — No resource resolution
+Request Authorization SHALL NOT load business resources or invoke resource adapters. Effective-Statement resolution is authorization-state loading and remains required.
 
-Request Authorization SHALL NOT load business resources or invoke resource adapters. Statement database resolution and the operation snapshot remain required authorization inputs and are not business-resource loading.
-
-Verification: Instrument resource adapters and business-resource persistence during Request Authorization and confirm neither is invoked; confirm required Statement database resolution still occurs.
-Traceability: [Request Authorization Input Boundary](02-overall-description.md#224-request-authorization-input-boundary); REQ-003; TECH-004.
+Verification: Instrument business-resource persistence and authorization-state resolution separately.
+Traceability: INPUT-003; REQ-003.
 
 ### SNAPSHOT-001 — One snapshot per operation
 
-The authorization system SHALL establish exactly one immutable Authorization Snapshot for each request/authorization operation after resolving the relevant effective Statement state from the database.
+The system SHALL establish exactly one immutable internal Authorization Snapshot after resolving effective Statement state. Request and Object Authorization in the same operation SHALL consume that same state and SHALL NOT independently re-resolve it.
 
-The snapshot SHALL represent the effective authorization state required by that operation without prescribing a `List<Statement>` representation.
-
-Request Authorization and Object Authorization in the same operation SHALL consume that same snapshot and SHALL NOT independently resolve effective authorization state again.
-
-The snapshot is request/operation-scoped materialization, not a cross-request cache.
-
-Verification: Instrument effective-Statement resolution during an operation containing Request and Object Authorization and confirm one shared snapshot is used.
-Traceability: [Scope](01-introduction.md#12-scope); [Resolution and Operation Snapshot](02-overall-description.md#221-resolution-and-operation-snapshot).
+Verification: Instrument one operation containing both paths.
+Traceability: AUTH-API-002.
 
 ### SNAPSHOT-002 — Consistency
 
-Authorization-state changes committed after snapshot creation SHALL NOT affect the current operation.
+Authorization changes committed after snapshot creation SHALL NOT affect the current operation. The next operation SHALL query database state again and observe then-current authorization state without cache invalidation requirements.
 
-The next operation SHALL query the database again, create a new snapshot, and observe the then-current authorization state.
-
-```text
-request A -> DB resolve -> snapshot S1 -> ALLOW
-authorization state changes in DB
-request A continues with S1
-request B -> DB resolve -> snapshot S2 -> observes new state
-```
-
-The same rule applies to long-running operations.
-
-No cache invalidation, TTL expiry, or inter-node cache synchronization SHALL be required for request B to observe the new Statement state.
-
-Verification: Commit an authorization change between two operations and confirm the first retains its snapshot while the second observes the committed state without cache intervention.
-Traceability: [Scope](01-introduction.md#12-scope); PERF-005.
+Verification: Commit authorization changes between operations.
+Traceability: PERF-005.
 
 ### SNAPSHOT-003 — Coherent creation
 
-Snapshot creation SHALL not mix incompatible authorization states when hierarchy, assignments, or Statements change concurrently.
+Snapshot creation SHALL avoid mixing incompatible concurrent authorization states and SHALL NOT require holding a database transaction for the full HTTP request solely to preserve snapshot semantics.
 
-The authorization system SHALL not keep a database transaction open for the full HTTP request solely to preserve snapshot semantics.
+Verification: Inspect transaction boundaries under concurrent changes.
+Traceability: [Operation Context](02-overall-description.md#221-resolution-and-operation-context).
 
-Verification: Inspect transaction boundaries and exercise a long-running request while authorization state changes concurrently.
-Traceability: [Integration and Consistency](02-overall-description.md#225-integration-and-consistency).
+### SNAPSHOT-004 — No cross-request reuse
 
-### SNAPSHOT-004 — No cross-request snapshot reuse
+An internal Authorization Snapshot and public `AuthorizationContext` SHALL NOT be reused as authorization input for a later unrelated operation.
 
-An Authorization Snapshot SHALL be discarded when its operation ends and SHALL NOT be reused as authorization input for a later request/operation.
+Verification: Exercise sequential operations with state changes.
+Traceability: AUTH-API-002.
 
-Verification: Exercise sequential operations with distinct authorization changes and confirm each operation creates and consumes a distinct snapshot.
-Traceability: [Scope](01-introduction.md#12-scope); PERF-004.
+## 3.3 Public Integration API
+
+### AUTH-API-001 — Typed Request Authorization input
+
+The public API SHALL accept typed principal/request values rather than caller-constructed Embedded Language root maps, with behavior equivalent to:
+
+```java
+public record AuthorizationPrincipal(UUID id, String username) {}
+public record AuthorizationRequest(String method, String path, Map<String, String> pathVariables) {}
+```
+
+Verification: Inspect the public API and confirm callers do not construct `principal`/`request` language root maps.
+Traceability: INPUT-001; INPUT-003.
+
+### AUTH-API-002 — Opaque authorization context
+
+The public operation handle SHALL provide behavior equivalent to:
+
+```java
+public interface AuthorizationContext {}
+```
+
+It SHALL NOT expose Authorization Snapshot, effective Statement internals, Semantic AST, Environment Schema, or mutable request state.
+
+Verification: Inspect public visibility and lifecycle.
+Traceability: SNAPSHOT-001; SNAPSHOT-004.
+
+### AUTH-API-003 — Request Authorization API
+
+The public Request Authorization API SHALL provide behavior equivalent to:
+
+```java
+public interface RequestAuthorization {
+    RequestAuthorizationResult authorize(AuthorizationPrincipal principal, AuthorizationRequest request);
+}
+
+public record RequestAuthorizationResult(boolean granted, AuthorizationContext context) {}
+```
+
+The returned context SHALL represent the same operation state used to make the Request decision.
+
+Verification: Authorize a request and reuse the returned context for Object Authorization without a second Statement resolution.
+Traceability: SNAPSHOT-001; REQ-001.
+
+### AUTH-API-004 — Object Authorization API
+
+The public Object Authorization API SHALL integrate with Query Filtering through behavior equivalent to:
+
+```java
+public interface ObjectAuthorization {
+    <Q> QueryPredicate<Q> authorize(AuthorizationContext context, QuerySchema<Q> schema);
+}
+```
+
+The API SHALL accept a logical Query Schema, not an entity/table identifier, and SHALL return an opaque typed Query Predicate.
+
+Verification: Authorize simple and composed Query Contracts and confirm no JPA entity or string target key is required by the public API.
+Traceability: OBJ-001 through OBJ-005; [Query Predicate](../004.%20Query%20Filtering/03-external-interface-requirements.md#pred-001--typed-opaque-query-predicate).
+
+### AUTH-API-005 — Spring Security and MVC adaptation
+
+`web` SHALL adapt Request Authorization through Spring Security `AuthorizationManager<RequestAuthorizationContext>` or an equivalent Spring Security authorization extension point. A granted `AuthorizationContext` SHALL be propagated within the current request so Spring MVC query resolution can consume the same context.
+
+Spring adapters SHALL remain outside core Authorization semantics.
+
+Verification: Inspect Spring Security integration and confirm one context crosses the security-to-MVC boundary.
+Traceability: AUTH-API-003; [Query Filtering Spring MVC interface](../004.%20Query%20Filtering/03-external-interface-requirements.md#spring-001--authorized-query-argument).

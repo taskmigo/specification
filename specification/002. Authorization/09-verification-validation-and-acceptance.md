@@ -2,27 +2,29 @@
 
 ## 9.1 Verification and Conformance Matrix
 
-| Requirement IDs           | Verification objective                                                                                                                                                                                  |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| STMT-001–STMT-007         | Inspect and test the canonical Statement schema, Embedded Language policy contract, runtime Boolean decision handling, effect, target matching, and removal of legacy execution.                        |
-| INPUT-001–INPUT-003       | Test policy-root shape, path variables, principal identity, Request-only inputs, rejection of object/resource usage, and symbolic Object fields.                                                        |
-| SNAPSHOT-001–SNAPSHOT-004 | Instrument one operation and sequential operations to verify one immutable snapshot, coherent creation, freshness, and disposal.                                                                        |
-| RES-001–RES-003           | Test rejection of resource roots/call syntax and confirm Request Authorization performs no business-resource or adapter resolution.                                                                     |
-| POLICY-001–POLICY-005     | Inspect the Embedded Language Semantic AST boundary and verify policy compilation, Authorization schemas, state-keyed Semantic AST reuse, and constant folding.                                         |
-| REQ-001–REQ-003           | Test Request Authorization evaluation over Semantic AST, default deny, deny-overrides, Request input boundaries, non-`Bool` runtime failure behavior, and constant-true deny short-circuiting.          |
-| OBJ-001–OBJ-005           | Test Semantic AST partial evaluation, runtime rejection of concrete/residual non-`Bool` results, Authorization-owned Object queryability, Filter AST algebra, and database-before-pagination execution. |
-| PERF-001–PERF-005         | Instrument graph resolution, query counts, cross-operation freshness, cache-independence, and the approximately 500-Statement stress case.                                                              |
-| TECH-001–TECH-004         | Review selected patterns and policy isolation, then inject invalid or unsafe inputs to verify fail-closed behavior.                                                                                     |
+Verification SHALL cover:
 
-The verification objectives above are acceptance conditions for the corresponding normative requirements.
+- STMT-001–STMT-007: Statement contract, `PROGRAM` profile, bounded intrinsics, runtime Bool enforcement, effects, and targets.
+- INPUT-001–INPUT-003: Typed principal/request roots and Query Schema-derived symbolic object paths.
+- RES-001–RES-003: Request resource exclusion and absence of privileged resource-loading calls.
+- SNAPSHOT-001–SNAPSHOT-004: One immutable operation state, consistency, coherent creation, and no cross-request reuse.
+- AUTH-API-001–AUTH-API-005: Typed request input, opaque context, Request/Object APIs, and Spring Security-to-MVC context propagation.
+- POLICY-001–POLICY-005: `PROGRAM` compilation, schema/profile-aware validation, database-authoritative state, artifact identity, and folding.
+- REQ-001–REQ-003: Default-deny, deny-overrides, non-`Bool` fail-closed behavior, short-circuiting, and Request input boundary.
+- OBJ-001–OBJ-005: Partial evaluation, nested/composed/collection Query Schema paths, opaque Query Predicates, queryability, and composition.
+- PERF-001–PERF-005: Graph/query performance, per-operation freshness, cache independence, and stress behavior.
+- TECH-001–TECH-004: Pattern discipline, policy isolation, fail-closed behavior, and distinct client-filter failures.
 
-Authorization verification SHALL include valid non-`Bool` Embedded Language programs for both scopes and confirm:
+## 9.2 Acceptance Conditions
 
-1. The programs compile to Semantic AST and are not rejected before activation solely because of their static result type.
-2. Request Authorization evaluates the Semantic AST, raises an authorization runtime exception, and fails closed when evaluation produces a concrete non-`Bool` result.
-3. Object Authorization partially evaluates the Semantic AST, raises an authorization runtime exception, and fails closed when partial evaluation produces either a concrete non-`Bool` result or residual non-`Bool` Semantic AST expression.
-4. Filter AST lowering is not attempted after an invalid Object runtime result is observed.
+Verification SHALL demonstrate:
 
-Embedded Language parser, Semantic AST, type, control-flow, evaluation, partial-evaluation, diagnostic, and ANTLR frontend evidence SHALL additionally satisfy the [Embedded Language verification matrix](../003.%20Embedded%20Language/09-verification-validation-and-acceptance.md#91-verification-and-conformance-matrix).
+1. Request Authorization returns one opaque `AuthorizationContext` derived from the same state used for its decision.
+2. Object Authorization reuses that context without independently resolving effective Statements.
+3. `ObjectAuthorization.authorize(context, QuerySchema<Q>)` returns a typed logical `QueryPredicate<Q>` without exposing JPA entities or Semantic AST.
+4. Nested API paths and collection quantifiers are validated against Query Schema and remain symbolic until persistence translation.
+5. Non-`Bool` Object results fail closed before Query Predicate acceptance.
+6. Object Authorization and Query Filtering compose before pagination.
+7. Spring Security and MVC integration reuse the same operation context.
 
-The repository currently contains the specification and Markdown quality gate; implementation test evidence is produced by the system repository when these requirements are realized.
+Embedded Language evidence SHALL satisfy the [Embedded Language verification matrix](../003.%20Embedded%20Language/09-verification-validation-and-acceptance.md#91-verification-and-conformance-matrix). Query predicate/persistence evidence SHALL satisfy the [Query Filtering verification matrix](../004.%20Query%20Filtering/09-verification-validation-and-acceptance.md#91-verification-matrix).
