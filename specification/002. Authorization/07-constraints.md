@@ -2,7 +2,7 @@
 
 ## 7.1 Pattern Discipline
 
-### TECH-001 — Null Object usage
+### TECH-001 — Constant identity behavior
 
 Internal authorization abstractions SHOULD use constant/identity objects where they remove sentinel branching without changing the external Statement contract.
 
@@ -11,12 +11,12 @@ Traceability: OBJ-005.
 
 ### TECH-002 — Integration pattern discipline
 
-Authorization SHOULD use Spring/framework patterns only where they reduce coupling. Relevant patterns include Strategy for Request/Object evaluation, Composite for logical predicate composition, Adapter for Spring Security/web boundaries, and Registry through Query Filtering Spring-managed Query Schemas.
+Authorization SHOULD use framework patterns only where they reduce coupling. Relevant patterns include Strategy for Request/Object evaluation, Composite for Object predicate composition, Adapter for Spring Security/web boundaries, and Registry through Spring-managed Object Authorization Schemas.
 
-A pattern SHALL NOT introduce a second public predicate AST when Query Predicate/Semantic AST already carry the required semantics.
+A pattern SHALL NOT expose Semantic AST or persistence query structures through public authorization interfaces.
 
 Verification: Review public/internal boundaries for unnecessary pattern-only abstractions.
-Traceability: AUTH-API-003 through AUTH-API-005; OBJ-003.
+Traceability: AUTH-API-003 through AUTH-API-006; OBJ-003.
 
 ## 7.2 Security and Isolation
 
@@ -35,7 +35,7 @@ Traceability: [Embedded Language isolation](../003.%20Embedded%20Language/07-con
 
 Policy parse/profile/binding/control-flow/type/complexity/scope/queryability errors SHALL prevent activation where validation is required. Runtime authorization failures SHALL not grant access.
 
-Client `filterBy` failures remain Query Filtering client-input errors and SHALL NOT be reinterpreted as authorization decisions.
+Persistence translation failure for an Object Authorization Predicate SHALL fail closed and SHALL NOT fall back to unrestricted row retrieval.
 
-Verification: Trigger activation/runtime authorization failures and independent `filterBy` errors.
-Traceability: STMT-004; REQ-001; [Query Filtering failure boundary](../004.%20Query%20Filtering/07-constraints.md#tech-004--filter-failure-boundary).
+Verification: Trigger activation, runtime, and persistence-translation authorization failures.
+Traceability: STMT-004; REQ-001; OBJ-004.

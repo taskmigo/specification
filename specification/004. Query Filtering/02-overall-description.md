@@ -2,21 +2,19 @@
 
 ## 2.1 Product Perspective
 
-Query Filtering is the logical boundary between user-authored API-field predicates and resource-owned persistence translation.
-
 ```text
-API-visible Query Schema
-        ↓
-filterBy EXPRESSION source ──┐
-                             ├─> QueryPredicate<Q>
-Object Authorization ────────┘
-        ↓
-logical predicate composition
-        ↓
+HTTP filterBy
+    ↓
+QuerySchema<Q>
+    ↓
+Embedded Language EXPRESSION compilation
+    ↓
+QueryPredicate<Q>
+    ↓
 resource-owned persistence mapping
-        ↓
-Spring Data/custom repository query
-        ↓
+    ↓
+database query
+    ↓
 pagination
 ```
 
@@ -24,19 +22,19 @@ pagination
 
 The capability provides:
 
-- Query-contract types that identify logical query surfaces.
+- Query Contract types identifying logical query surfaces.
 - Structured API-visible Query Paths and typed Query Fields.
 - Query Schema discovery through Spring.
-- `filterBy` compilation to a typed opaque Query Predicate.
-- Typed predicate composition.
+- `filterBy` compilation to an opaque typed Query Predicate.
+- Same-contract Query Predicate composition.
 - Resource-owned persistence binding.
-- Spring MVC argument resolution for authorized filtered collection queries.
+- Spring MVC argument resolution for filtered collection queries.
 
 ### 2.2.1 Logical Query Surface
 
-A Query Schema SHALL describe what users may query. It SHALL NOT describe the physical storage topology.
+A Query Schema SHALL describe only explicitly queryable API-visible paths and their logical types/operators.
 
-For an API response such as:
+For an API response:
 
 ```json
 {
@@ -47,35 +45,31 @@ For an API response such as:
 }
 ```
 
-the logical paths MAY include:
+a Query Schema MAY expose:
 
 ```text
 user.name
 user.age
 ```
 
-regardless of the number of entities, joins, columns, or computed expressions used to produce the response.
+without exposing the persistence paths used to produce those values.
 
-### 2.2.2 Predicate Producers
+### 2.2.2 Persistence Boundary
 
-`filterBy` and Object Authorization are independent predicate producers. Both SHALL produce `QueryPredicate<Q>` values over the same Query Contract before persistence translation.
-
-### 2.2.3 Persistence Boundary
-
-A resource-owning module SHALL translate logical predicates using trusted mappings. Controllers and user source SHALL NOT select persistence fields directly.
+A resource-owning module SHALL translate Query Predicates through trusted mappings. Client source and controllers SHALL NOT select persistence fields directly.
 
 ## 2.3 Stakeholders and Users
 
-The capability is consumed by API clients, `web`, Authorization, resource-owning modules, and persistence adapters.
+The capability is consumed by API clients, `web`, resource-owning modules, and persistence adapters.
 
 ## 2.4 Operational Scenarios
 
 The following scenarios are supporting context:
 
-1. A client filters a collection by API-visible scalar fields.
-2. A nested API path maps to one or more persistence joins.
-3. Object Authorization produces a logical predicate and `filterBy` adds a client predicate.
-4. A collection quantifier maps to relational, array, or JSON collection persistence semantics.
+1. A client filters a collection by an API-visible scalar path.
+2. A nested API path maps through a persistence join.
+3. A computed API field maps to a persistence expression.
+4. A collection quantifier maps to a supported relational, array, or JSON representation.
 
 ## 2.5 Out of Scope
 

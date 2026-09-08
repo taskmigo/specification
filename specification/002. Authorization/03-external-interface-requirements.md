@@ -40,7 +40,7 @@ General function declarations/calls, modules, standalone/first-class lambdas, an
 
 A policy failing parsing, profile validation, binding, control-flow validation, typing, scope validation, complexity limits, or required Object queryability validation SHALL NOT become active.
 
-Verification: Activate valid multiple-result-type programs; test bounded quantifiers; reject general callable/module syntax, fall-through, unavailable roots, and unsupported query paths/operators.
+Verification: Activate valid multiple-result-type programs; test bounded quantifiers; reject general callable/module syntax, fall-through, unavailable roots, and unsupported Object paths/operators.
 Traceability: [Embedded Language Compilation Profile](../003.%20Embedded%20Language/03-external-interface-requirements.md#env-004--compilation-profile); POLICY-001 through POLICY-003.
 
 ### STMT-004 — Boolean decision contract
@@ -49,7 +49,7 @@ Authorization SHALL enforce Boolean policy results when a policy is evaluated or
 
 For Request Authorization, direct evaluation SHALL yield `Bool`; a concrete non-`Bool` result SHALL raise an authorization runtime exception and fail closed.
 
-For Object Authorization, concrete `true`/`false` or a residual Semantic AST expression statically typed `Bool` SHALL be accepted; concrete/residual non-`Bool` results SHALL raise an authorization runtime exception and fail closed before queryability/persistence processing.
+For Object Authorization, concrete `true`/`false` or a residual Semantic AST expression statically typed `Bool` SHALL be accepted; concrete/residual non-`Bool` results SHALL raise an authorization runtime exception and fail closed before queryability or persistence processing.
 
 Verification: Activate valid non-`Bool` policies and verify runtime fail-closed behavior in each scope.
 Traceability: [Embedded Language typed result](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#lang-002--typed-source-result); REQ-001; OBJ-001.
@@ -70,7 +70,7 @@ Traceability: PERF-004.
 
 ### STMT-007 — Canonical persistence and API contract
 
-The canonical model SHALL persist/expose `effect`, `scope`, `target.api.method`, `target.api.path`, and `policy`. Legacy `target_type`, `conditions[]`, and `statement_conditions` execution SHALL be removed.
+The canonical model SHALL persist/expose `effect`, `scope`, `target.api.method`, `target.api.path`, and `policy`.
 
 Verification: Inspect schema/API/bootstrap/execution paths.
 Traceability: STMT-001.
@@ -89,14 +89,14 @@ object (Object Authorization only)
 
 Minimum request paths SHALL include `request.method`, `request.path`, and `request.pathVariables`. Minimum principal paths SHALL include `principal.id` and `principal.username`.
 
-Object paths SHALL derive from the applicable `QuerySchema<Q>` and MAY include nested/structured/collection paths permitted by that schema.
+Object paths SHALL derive from the applicable `ObjectAuthorizationSchema<Q>` and MAY include nested structured and collection paths permitted by that schema.
 
-Verification: Validate scope-dependent roots and nested Query Schema object paths.
-Traceability: [Query Schema](../004.%20Query%20Filtering/03-external-interface-requirements.md#schema-002--query-schema); POLICY-002.
+Verification: Validate scope-dependent roots and nested Object Authorization Schema paths.
+Traceability: AUTH-API-004; POLICY-002.
 
 ### INPUT-002 — Object root and Request boundary
 
-For Request scope, `object` SHALL be absent and references SHALL fail before activation. For Object scope, `object` SHALL remain symbolic during partial evaluation and its path/type contract SHALL be derived from `QuerySchema<Q>`.
+For Request scope, `object` SHALL be absent and references SHALL fail before activation. For Object scope, `object` SHALL remain symbolic during partial evaluation and its path/type contract SHALL derive from `ObjectAuthorizationSchema<Q>`.
 
 Verification: Reject Request `object` references and partially evaluate Object policies with nested/collection symbolic fields.
 Traceability: OBJ-001; OBJ-002.
@@ -124,7 +124,7 @@ Traceability: [Embedded Language bounded intrinsic syntax](../003.%20Embedded%20
 
 ### RES-003 — No Request resource resolution
 
-Request Authorization SHALL NOT load business resources or invoke resource adapters. Effective-Statement resolution is authorization-state loading and remains required.
+Request Authorization SHALL NOT load business resources or invoke resource adapters. Effective-Statement resolution remains required authorization-state loading.
 
 Verification: Instrument business-resource persistence and authorization-state resolution separately.
 Traceability: INPUT-003; REQ-003.
@@ -148,7 +148,7 @@ Traceability: PERF-005.
 Snapshot creation SHALL avoid mixing incompatible concurrent authorization states and SHALL NOT require holding a database transaction for the full HTTP request solely to preserve snapshot semantics.
 
 Verification: Inspect transaction boundaries under concurrent changes.
-Traceability: [Operation Context](02-overall-description.md#221-resolution-and-operation-context).
+Traceability: [Resolution and Operation Context](02-overall-description.md#221-resolution-and-operation-context).
 
 ### SNAPSHOT-004 — No cross-request reuse
 
@@ -171,7 +171,7 @@ public record AuthorizationRequest(String method, String path, Map<String, Strin
 Verification: Inspect the public API and confirm callers do not construct `principal`/`request` language root maps.
 Traceability: INPUT-001; INPUT-003.
 
-### AUTH-API-002 — Opaque authorization context
+### AUTH-API-002 — Opaque Authorization Context
 
 The public operation handle SHALL provide behavior equivalent to:
 
@@ -190,10 +190,16 @@ The public Request Authorization API SHALL provide behavior equivalent to:
 
 ```java
 public interface RequestAuthorization {
-    RequestAuthorizationResult authorize(AuthorizationPrincipal principal, AuthorizationRequest request);
+    RequestAuthorizationResult authorize(
+        AuthorizationPrincipal principal,
+        AuthorizationRequest request
+    );
 }
 
-public record RequestAuthorizationResult(boolean granted, AuthorizationContext context) {}
+public record RequestAuthorizationResult(
+    boolean granted,
+    AuthorizationContext context
+) {}
 ```
 
 The returned context SHALL represent the same operation state used to make the Request decision.
@@ -203,24 +209,66 @@ Traceability: SNAPSHOT-001; REQ-001.
 
 ### AUTH-API-004 — Object Authorization API
 
-The public Object Authorization API SHALL integrate with Query Filtering through behavior equivalent to:
+Object Authorization SHALL expose authorization-owned logical schema and predicate contracts with behavior equivalent to:
 
 ```java
+public interface ObjectAuthorizationSchema<Q> {
+    Class<Q> objectType();
+    Optional<ObjectAuthorizationField> field(ObjectAuthorizationPath path);
+    Collection<ObjectAuthorizationField> fields();
+}
+
+public interface ObjectAuthorizationField {
+    ObjectAuthorizationPath path();
+    ResolvableType type();
+    boolean nullable();
+    Set<ObjectAuthorizationOperator> operators();
+}
+
+public interface ObjectAuthorizationPredicate<Q> {
+    boolean isAlwaysTrue();
+    boolean isAlwaysFalse();
+}
+
 public interface ObjectAuthorization {
-    <Q> QueryPredicate<Q> authorize(AuthorizationContext context, QuerySchema<Q> schema);
+    <Q> ObjectAuthorizationPredicate<Q> authorize(
+        AuthorizationContext context,
+        ObjectAuthorizationSchema<Q> schema
+    );
 }
 ```
 
-The API SHALL accept a logical Query Schema, not an entity/table identifier, and SHALL return an opaque typed Query Predicate.
+The schema SHALL identify API-visible object paths independently of persistence entities. The predicate SHALL remain opaque to integration consumers.
 
-Verification: Authorize simple and composed Query Contracts and confirm no JPA entity or string target key is required by the public API.
-Traceability: OBJ-001 through OBJ-005; [Query Predicate](../004.%20Query%20Filtering/03-external-interface-requirements.md#pred-001--typed-opaque-query-predicate).
+Verification: Authorize simple, nested, composed, and collection object schemas and confirm no JPA entity or string target key is required by the public API.
+Traceability: OBJ-001 through OBJ-005.
 
 ### AUTH-API-005 — Spring Security and MVC adaptation
 
-`web` SHALL adapt Request Authorization through Spring Security `AuthorizationManager<RequestAuthorizationContext>` or an equivalent Spring Security authorization extension point. A granted `AuthorizationContext` SHALL be propagated within the current request so Spring MVC query resolution can consume the same context.
+`web` SHALL adapt Request Authorization through Spring Security `AuthorizationManager<RequestAuthorizationContext>` or an equivalent Spring Security authorization extension point.
+
+A granted `AuthorizationContext` SHALL be available within the current HTTP request and MAY be exposed to MVC handlers through a `HandlerMethodArgumentResolver`.
 
 Spring adapters SHALL remain outside core Authorization semantics.
 
-Verification: Inspect Spring Security integration and confirm one context crosses the security-to-MVC boundary.
-Traceability: AUTH-API-003; [Query Filtering Spring MVC interface](../004.%20Query%20Filtering/03-external-interface-requirements.md#spring-001--authorized-query-argument).
+Verification: Inspect Spring Security integration and confirm the same context is available to subsequent Object Authorization in the current request.
+Traceability: AUTH-API-002; AUTH-API-003.
+
+### AUTH-API-006 — Resource-owned persistence binder
+
+For a JPA-backed resource, persistence integration MAY provide behavior equivalent to:
+
+```java
+public interface ObjectAuthorizationPredicateBinder<Q, E> {
+    Class<Q> objectType();
+    Class<E> domainType();
+    PredicateSpecification<E> bind(ObjectAuthorizationPredicate<Q> predicate);
+}
+```
+
+The resource-owning module SHALL own the trusted mapping from Object Authorization paths/operators to persistence expressions and joins.
+
+A custom repository adapter MAY be used when one JPA root is not an appropriate representation.
+
+Verification: Bind simple, nested, computed, and collection Object Authorization predicates without exposing entity types through core Authorization APIs.
+Traceability: OBJ-002; OBJ-004.
