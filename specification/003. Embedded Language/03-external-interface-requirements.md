@@ -145,7 +145,7 @@ Traceability: ENV-001; [Known and Unknown Inputs](02-overall-description.md#222-
 
 ### ENV-003 — Compiled source interface
 
-Successful compilation SHALL produce a compiled source artifact containing the typed Semantic AST, the statically determined source result type, and the metadata required by [compiled program artifacts](05-data-and-information-requirements.md#52-compiled-program-artifacts).
+Successful compilation SHALL produce a compiled source artifact containing the typed Semantic AST, the statically determined source result type, and the metadata required by [compiled source artifacts](05-data-and-information-requirements.md#52-compiled-source-artifacts).
 
 For `PROGRAM` mode, the source result type SHALL be derived from the reachable return expressions. For `EXPRESSION` mode, the source result type SHALL be the static type of the source expression.
 
