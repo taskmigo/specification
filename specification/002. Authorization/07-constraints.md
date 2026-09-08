@@ -6,11 +6,11 @@
 
 Internal authorization abstractions SHOULD use the Null Object Pattern where it removes sentinel/null branching while preserving the normal interface.
 
-Examples include constant compiled policies and Filter AST identity/zero objects such as `ALL` and `NONE`.
+Examples include constant compiled policies and persistence-query specifications representing allow-all or allow-none behavior.
 
 This SHALL NOT alter the external Statement contract: `policy` is always required and valid.
 
-Verification: Inspect constant-policy and Filter AST identity/zero implementations and confirm the external Statement validation remains unchanged.
+Verification: Inspect constant-policy and persistence-query identity/zero implementations and confirm the external Statement validation remains unchanged.
 Traceability: [Shared Object Filter](02-overall-description.md#222-shared-object-filter); [Embedded Language Contract](02-overall-description.md#223-embedded-language-contract).
 
 ## 7.2 Design Patterns
@@ -25,15 +25,15 @@ Preferred applications include:
 | ---------------------------------------------------- | ----------------- |
 | Constant/identity authorization behavior             | Null Object       |
 | Request evaluation vs Object partial evaluation      | Strategy          |
-| Semantic AST and Filter AST boolean trees            | Composite         |
+| Semantic AST boolean expression composition          | Composite         |
 | Persistence-specific translation boundaries          | Adapter           |
 | Database authorization predicates                    | Specification     |
 | Filter Schemas selected by registered type or target | Registry          |
 
-Equivalent patterns or simpler designs are acceptable where they better fit the architecture. The authorization architecture SHOULD make its intent clear when a non-obvious pattern is introduced.
+Equivalent patterns or simpler designs are acceptable where they better fit the architecture. In particular, a pattern SHALL NOT be used to introduce a second predicate AST when Semantic AST already represents the required Object Predicate semantics.
 
 Verification: Review the relevant architecture and confirm each selected pattern reduces a stated boundary or behavior concern without pattern-only abstractions.
-Traceability: [Product Functions](02-overall-description.md#22-product-functions).
+Traceability: [Product Functions](02-overall-description.md#22-product-functions); OBJ-003.
 
 ## 7.3 Security and Failure Constraints
 
@@ -52,7 +52,7 @@ Traceability: [Embedded Language Contract](02-overall-description.md#223-embedde
 
 ### TECH-004 — Fail-closed authorization
 
-Policy parse, binding, control-flow, type, complexity, scope, or queryability errors SHALL prevent activation.
+Policy parse, compilation-profile, binding, control-flow, type, complexity, scope, or queryability errors SHALL prevent activation.
 
 Runtime authorization failures SHALL not grant access.
 
