@@ -13,11 +13,11 @@ RequestAuthorizationResult result = authorization.authorize(
 );
 ```
 
-On grant, the returned opaque `AuthorizationContext` is propagated within the same HTTP request for subsequent MVC/Object Authorization use.
+On grant, the returned opaque `AuthorizationContext` remains available within the same HTTP request for subsequent Object Authorization.
 
-## 11.2 Object Authorization with Nested Query Contract
+## 11.2 Object Authorization with Nested Object Schema
 
-Given a Query Contract exposing:
+Given an Object Authorization Schema exposing:
 
 ```text
 object.user.name
@@ -32,18 +32,22 @@ return object.account.status == "ACTIVE"
     && all(object.user.emails, email => len(email) > 10);
 ```
 
-After known principal/request values are specialized, the residual Boolean semantics are returned as `QueryPredicate<Q>` and Query Filtering/resource adapters map the API-visible paths to persistence.
+After known principal/request values are specialized, the residual Boolean semantics are returned as `ObjectAuthorizationPredicate<Q>`.
 
-## 11.3 Combined Collection Query
+## 11.3 Persistence Binding
 
-The intended database-side composition is:
+A resource-owned binder may map:
 
 ```text
-business predicate
-AND
-Object Authorization QueryPredicate<Q>
-AND
-client filterBy QueryPredicate<Q>
+object.user.name
 ```
 
-before pagination.
+through a persistence join and map:
+
+```text
+object.account.status
+```
+
+through another join or custom query expression.
+
+The Object Authorization Predicate is applied before pagination.
