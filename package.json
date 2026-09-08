@@ -1,6 +1,6 @@
 {
   "name": "@taskmigo/specification",
-  "version": "1.0.0-alpha.5",
+  "version": "1.0.0-alpha.6",
   "engines": {
     "node": "26.2.0",
     "npm": "11.13.0"
@@ -19,8 +19,7 @@
   },
   "scripts": {
     "markdown:check": "markdownlint-cli2 --config \".markdownlint-cli2.jsonc\" \"**/*.md\" \"#node_modules\"",
-    "style:check": "prettier --check .",
-    "style:fix": "prettier --write ."
+    "style:check": "prettier --check ."
   },
   "devDependencies": {
     "markdownlint-cli2": "^0.23.2",
