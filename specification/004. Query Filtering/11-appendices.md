@@ -24,7 +24,7 @@ A resource mapping may translate `name` to `CustomerEntity_.customerName`, produ
 WHERE customer_name = ?
 ```
 
-## 11.2 Nested/Composed Projection
+## 11.2 Nested and Composed Projection
 
 API response:
 
@@ -46,7 +46,7 @@ Client filter:
 object.user.age >= 18 && object.account.status == "ACTIVE"
 ```
 
-The resource adapter may translate the two paths through different joins without changing the logical query contract.
+The resource adapter may translate the paths through different joins without changing the client expression.
 
 ## 11.3 Collection Quantifier
 
@@ -54,4 +54,4 @@ The resource adapter may translate the two paths through different joins without
 all(object.user.emails, email => len(email) > 10)
 ```
 
-A relationship-backed mapping may lower this to a `NOT EXISTS` query over violating elements. An array/JSON-backed mapping may use its backend collection traversal while preserving the same logical semantics.
+A relationship-backed mapping may lower this to a `NOT EXISTS` query over violating elements. An array/JSON-backed mapping may use supported collection traversal while preserving the same logical result.
