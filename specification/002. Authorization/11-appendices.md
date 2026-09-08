@@ -1,25 +1,49 @@
 # 11. Appendices
 
-## 11.1 Future Extensions (non-normative)
+The examples in this section are supporting material and do not add requirements.
 
-### `filterBy`
+## 11.1 Request Integration
 
-A future client-facing `filterBy` feature can use the [Embedded Language](../003.%20Embedded%20Language/README.md) in `EXPRESSION` mode with a consumer-owned Compilation Profile that disables language features outside the client-filter contract.
+A Spring Security adapter may transform the authenticated request into typed Authorization inputs and invoke:
 
-Its external query-parameter syntax, exposed root namespace, result-type contract, and exact enabled feature set are not specified by this Authorization SRS and require a separate client-filter specification.
+```java
+RequestAuthorizationResult result = authorization.authorize(
+    principal,
+    request
+);
+```
 
-When such a feature is specified, a valid client filter can produce a typed `Bool` Semantic AST expression, validate that expression against the applicable Filter Schema, and share the same persistence-query compiler used by Object Authorization. A separate Filter AST is not required merely to translate equivalent Semantic AST operators into another predicate tree.
+On grant, the returned opaque `AuthorizationContext` is propagated within the same HTTP request for subsequent MVC/Object Authorization use.
 
-The intended list-query composition is:
+## 11.2 Object Authorization with Nested Query Contract
+
+Given a Query Contract exposing:
+
+```text
+object.user.name
+object.user.emails
+object.account.status
+```
+
+an Object policy may contain:
+
+```text
+return object.account.status == "ACTIVE"
+    && all(object.user.emails, email => len(email) > 10);
+```
+
+After known principal/request values are specialized, the residual Boolean semantics are returned as `QueryPredicate<Q>` and Query Filtering/resource adapters map the API-visible paths to persistence.
+
+## 11.3 Combined Collection Query
+
+The intended database-side composition is:
 
 ```text
 business predicate
-AND client filter predicate
-AND authorization predicate
+AND
+Object Authorization QueryPredicate<Q>
+AND
+client filterBy QueryPredicate<Q>
 ```
 
 before pagination.
-
-### Relationships and Additional Operators
-
-Nested object paths, joins/subqueries, relationship predicates, and query operators outside the current Filter Schema/Object Predicate contract require a separate complete specification before inclusion in the authorization model.

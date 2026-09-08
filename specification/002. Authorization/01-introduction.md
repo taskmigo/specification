@@ -2,53 +2,47 @@
 
 ## 1.1 Purpose
 
-This Software Requirements Specification (SRS) defines the authorization model for Statements whose `policy` source is expressed in Embedded Language and for database-side Object Authorization. It specifies the Statement contract, authorization decisions, effective-state resolution, query-predicate mapping, security boundaries, and verification conditions.
+This Software Requirements Specification (SRS) defines Statement-based Request and Object Authorization using Embedded Language policies and the shared logical predicate contract defined by Query Filtering.
 
-This document is tailored to the software-requirements information-item guidance in [ISO/IEC/IEEE 29148:2018](https://committee.iso.org/standard/72089.html). The tailoring covers the software boundary, operational context, interfaces, functional and quality requirements, data/persistence constraints, verification, and traceability relevant to this authorization capability. It does not claim full conformance to the standard.
+This document is tailored to the software-requirements information-item guidance in [ISO/IEC/IEEE 29148:2018](https://committee.iso.org/standard/72089.html). It does not claim full conformance to the standard.
 
 ## 1.2 Scope
 
-The authorization model SHALL use the [Embedded Language feature](../003.%20Embedded%20Language/README.md) for Statement `policy` source while preserving these product semantics:
+The authorization model SHALL:
 
-- Request Authorization is default-deny and DENY overrides ALLOW.
-- Object Authorization is applied in the database query before pagination.
-- Every authorization operation resolves its relevant effective Statements from the database; Statement state is not cached across requests.
-- One authorization operation uses one immutable authorization snapshot from start to finish.
-- Request Authorization uses only the `principal` and `request` values available at authorization time; it does not load business resources.
-- Statement policies compile using Embedded Language `PROGRAM` mode into Semantic AST.
-- Request Authorization evaluates the Semantic AST with concrete inputs.
-- Object Authorization partially evaluates the Semantic AST with symbolic `object`, validates residual boolean Semantic AST expressions against the selected Filter Schema, and compiles those expressions into the persistence query predicate.
+- Preserve default-deny Request Authorization with DENY overriding ALLOW.
+- Resolve relevant effective Statements from the database for every authorization operation.
+- Use one immutable operation-scoped authorization snapshot for Request and Object Authorization.
+- Compile Statement policies with [Embedded Language](../003.%20Embedded%20Language/README.md) `PROGRAM` mode.
+- Evaluate Request policies using concrete `principal` and `request` values only.
+- Partially evaluate Object policies with symbolic `object` values.
+- Use the [Query Filtering feature](../004.%20Query%20Filtering/README.md) Query Schema and Query Predicate contracts for Object Authorization queryability and database-side filtering.
+- Apply Object Authorization before pagination without unrestricted JVM row filtering.
+- Expose an opaque authorization context to integration consumers rather than internal snapshots or Semantic AST.
 
 Package/module ownership and public SDK boundaries are governed by [issue #54](https://github.com/taskmigo/specification/issues/54) and are not redefined here.
 
-The following capabilities are outside the scope of this SRS:
-
-- An external `filterBy` contract, including its client syntax and exact Embedded Language Compilation Profile.
-- Nested/relationship Object filtering.
-- Additional authorization target kinds beyond `target.api`.
-- Language features not specified by the [Embedded Language feature](../003.%20Embedded%20Language/README.md).
-- Target kinds and query capabilities not explicitly specified here.
+Additional authorization target kinds beyond `target.api` remain outside this SRS.
 
 ## 1.3 Definitions, Acronyms, and Abbreviations
 
-| Term                   | Definition                                                                                                                    |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| Authorization Snapshot | Immutable authorization state used for one request or authorization operation.                                                |
-| Embedded Language      | Language used to compile and evaluate Statement `policy` source.                                                              |
-| Filter Schema          | Authorization-owned mapping of policy-visible object fields/operators to persistence-query fields/operators for one resource. |
-| Object Predicate       | Boolean Semantic AST expression used as the persistence-neutral logical predicate for Object Authorization.                   |
-| Semantic AST           | Typed semantic representation produced by the Embedded Language compiler and consumed by Authorization.                       |
-| Request Authorization  | Authorization based only on the available request, principal, and applicable Request Statements.                              |
-| Object Authorization   | Database-side visibility filtering based on symbolic object fields and applicable Object Statements.                          |
-| Statement              | Named authorization rule with an effect, scope, API target, and policy.                                                       |
+| Term                  | Definition                                                                                                  |
+| --------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Authorization Context | Opaque operation-scoped public handle carrying the authorization state required by subsequent operations. |
+| Authorization Snapshot| Internal immutable authorization state materialized once for one operation.                                |
+| Object Predicate      | Typed logical `QueryPredicate<Q>` produced from Object Authorization policy semantics.                     |
+| Query Contract        | Logical API query surface defined by Query Filtering and identified by generic type `Q`.                   |
+| Query Schema          | Query Filtering schema defining API-visible paths, types, nullability, and allowed operators.              |
+| Request Authorization | Authorization based only on available principal/request inputs and applicable Request Statements.          |
+| Object Authorization  | Database-side visibility filtering derived from symbolic object policies and a Query Schema.               |
+| Statement             | Named authorization rule with effect, scope, API target, and policy.                                       |
 
 ## 1.4 References and Baseline
 
-- The linked standard's software-requirements information-item guidance is used as a tailored framework.
-- The [Embedded Language feature](../003.%20Embedded%20Language/README.md) defines source modes, Compilation Profiles, Semantic AST, the type system, evaluation, and partial evaluation used by Authorization.
-- The linked issue defines module ownership and public SDK boundaries outside the scope of this SRS.
-- Baseline: The server `next` source review recorded in the preceding authorization specification, used only to identify legacy authorization behavior that the requirements replace or preserve. The source repository and exact baseline commit are not included here, so this document does not claim a fresh runtime verification.
+- The [Embedded Language feature](../003.%20Embedded%20Language/README.md) defines language syntax, Semantic AST, typing, profiles, evaluation, and partial evaluation.
+- The [Query Filtering feature](../004.%20Query%20Filtering/README.md) defines Query Schema, Query Predicate, API-visible query paths, predicate composition, and persistence integration.
+- The linked issue defines module ownership and public SDK boundaries outside this SRS.
 
 ## 1.5 Overview
 
-Sections [2](02-overall-description.md)–[8](08-requirements-allocation-and-dependencies.md) define the authorization context, interfaces, behavior, data, quality attributes, constraints, and dependencies. [Section 9](09-verification-validation-and-acceptance.md) defines verification and acceptance evidence; [Section 10](10-traceability-and-unresolved-issues.md) defines traceability and unresolved issues; [Section 11](11-appendices.md) provides supporting examples and extension guidance.
+Sections [2](02-overall-description.md)–[8](08-requirements-allocation-and-dependencies.md) define authorization context, interfaces, behavior, data, quality, constraints, and dependencies. [Section 9](09-verification-validation-and-acceptance.md) defines verification evidence.
