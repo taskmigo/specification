@@ -1,7 +1,7 @@
 ---
 metadata:
-  version: 0.3.0
-  changelog: Defined Embedded Language around a typed Semantic AST with generic program result types.
+  version: 0.4.0
+  changelog: Added PROGRAM and EXPRESSION compilation modes with consumer-defined feature profiles.
 ---
 
 <!-- markdownlint-disable MD041 -->
