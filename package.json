@@ -19,7 +19,8 @@
   },
   "scripts": {
     "markdown:check": "markdownlint-cli2 --config \".markdownlint-cli2.jsonc\" \"**/*.md\" \"#node_modules\"",
-    "style:check": "prettier --check ."
+    "style:check": "prettier --check .",
+    "style:fix": "prettier --write ."
   },
   "devDependencies": {
     "markdownlint-cli2": "^0.23.2",
