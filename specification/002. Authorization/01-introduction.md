@@ -2,7 +2,7 @@
 
 ## 1.1 Purpose
 
-This Software Requirements Specification (SRS) defines the authorization model for Statements whose `policy` source is expressed in Embedded Language and for shared query filtering. It specifies the Statement contract, authorization decisions, effective-state resolution, database filtering, security boundaries, and verification conditions.
+This Software Requirements Specification (SRS) defines the authorization model for Statements whose `policy` source is expressed in Embedded Language and for database-side Object Authorization. It specifies the Statement contract, authorization decisions, effective-state resolution, query-predicate mapping, security boundaries, and verification conditions.
 
 This document is tailored to the software-requirements information-item guidance in [ISO/IEC/IEEE 29148:2018](https://committee.iso.org/standard/72089.html). The tailoring covers the software boundary, operational context, interfaces, functional and quality requirements, data/persistence constraints, verification, and traceability relevant to this authorization capability. It does not claim full conformance to the standard.
 
@@ -15,15 +15,15 @@ The authorization model SHALL use the [Embedded Language feature](../003.%20Embe
 - Every authorization operation resolves its relevant effective Statements from the database; Statement state is not cached across requests.
 - One authorization operation uses one immutable authorization snapshot from start to finish.
 - Request Authorization uses only the `principal` and `request` values available at authorization time; it does not load business resources.
-- Statement policies compile to Embedded Language Semantic AST.
+- Statement policies compile using Embedded Language `PROGRAM` mode into Semantic AST.
 - Request Authorization evaluates the Semantic AST with concrete inputs.
-- Object Authorization partially evaluates the Semantic AST with symbolic `object` and lowers residual boolean Semantic AST expressions to the persistence-neutral Filter AST.
+- Object Authorization partially evaluates the Semantic AST with symbolic `object`, validates residual boolean Semantic AST expressions against the selected Filter Schema, and compiles those expressions into the persistence query predicate.
 
 Package/module ownership and public SDK boundaries are governed by [issue #54](https://github.com/taskmigo/specification/issues/54) and are not redefined here.
 
 The following capabilities are outside the scope of this SRS:
 
-- An external `filterBy` grammar.
+- An external `filterBy` contract, including its client syntax and exact Embedded Language Compilation Profile.
 - Nested/relationship Object filtering.
 - Additional authorization target kinds beyond `target.api`.
 - Language features not specified by the [Embedded Language feature](../003.%20Embedded%20Language/README.md).
@@ -31,20 +31,21 @@ The following capabilities are outside the scope of this SRS:
 
 ## 1.3 Definitions, Acronyms, and Abbreviations
 
-| Term                   | Definition                                                                                              |
-| ---------------------- | ------------------------------------------------------------------------------------------------------- |
-| Authorization Snapshot | Immutable authorization state used for one request or authorization operation.                          |
-| Embedded Language      | Language used to compile and evaluate Statement `policy` source.                                        |
-| Filter AST             | Persistence-neutral boolean predicate representation used for Object Authorization and query filtering. |
-| Semantic AST           | Typed semantic representation produced by the Embedded Language compiler and consumed by Authorization. |
-| Request Authorization  | Authorization based only on the available request, principal, and applicable Request Statements.        |
-| Object Authorization   | Database-side visibility filtering based on symbolic object fields and applicable Object Statements.    |
-| Statement              | Named authorization rule with an effect, scope, API target, and policy.                                 |
+| Term                   | Definition                                                                                                                   |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Authorization Snapshot | Immutable authorization state used for one request or authorization operation.                                               |
+| Embedded Language      | Language used to compile and evaluate Statement `policy` source.                                                             |
+| Filter Schema          | Authorization-owned mapping of policy-visible object fields/operators to persistence-query fields/operators for one resource. |
+| Object Predicate       | Boolean Semantic AST expression used as the persistence-neutral logical predicate for Object Authorization.                  |
+| Semantic AST           | Typed semantic representation produced by the Embedded Language compiler and consumed by Authorization.                      |
+| Request Authorization  | Authorization based only on the available request, principal, and applicable Request Statements.                             |
+| Object Authorization   | Database-side visibility filtering based on symbolic object fields and applicable Object Statements.                         |
+| Statement              | Named authorization rule with an effect, scope, API target, and policy.                                                      |
 
 ## 1.4 References and Baseline
 
 - The linked standard's software-requirements information-item guidance is used as a tailored framework.
-- The [Embedded Language feature](../003.%20Embedded%20Language/README.md) defines the source language, Semantic AST, type system, evaluation, and partial evaluation used by Authorization.
+- The [Embedded Language feature](../003.%20Embedded%20Language/README.md) defines source modes, Compilation Profiles, Semantic AST, the type system, evaluation, and partial evaluation used by Authorization.
 - The linked issue defines module ownership and public SDK boundaries outside the scope of this SRS.
 - Baseline: The server `next` source review recorded in the preceding authorization specification, used only to identify legacy authorization behavior that the requirements replace or preserve. The source repository and exact baseline commit are not included here, so this document does not claim a fresh runtime verification.
 
