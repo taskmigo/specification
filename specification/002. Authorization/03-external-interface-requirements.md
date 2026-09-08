@@ -40,7 +40,7 @@ Traceability: [Embedded Language Contract](02-overall-description.md#223-embedde
 
 Every Statement `policy` SHALL satisfy the [Embedded Language source contract](../003.%20Embedded%20Language/03-external-interface-requirements.md#31-source-contract) in `PROGRAM` mode.
 
-The Authorization policy Compilation Profile SHALL enable the current Embedded Language feature families defined by ENV-004. `EXPRESSION`-mode source without the required `PROGRAM` statement structure SHALL NOT satisfy the Statement policy contract.
+The Authorization policy Compilation Profile SHALL enable the current feature families defined by the [Embedded Language Compilation Profile](../003.%20Embedded%20Language/03-external-interface-requirements.md#env-004--compilation-profile). `EXPRESSION`-mode source without the required `PROGRAM` statement structure SHALL NOT satisfy the Statement policy contract.
 
 Authorization SHALL NOT require a specific static Embedded Language program result type as a prerequisite for Statement activation. A program that is otherwise valid Embedded Language SHALL NOT be rejected before activation solely because its static result type is not `Bool`.
 
