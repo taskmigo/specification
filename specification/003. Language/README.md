@@ -1,7 +1,7 @@
 ---
 metadata:
-  version: 0.4.0
-  changelog: Added PROGRAM and EXPRESSION modes, restricted feature profiles, collection quantifiers, and bounded intrinsics.
+  version: 0.5.0
+  changelog: Renames Embedded Language to Language and aligns the feature identity with the `language` module.
 ---
 
 <!-- markdownlint-disable MD041 -->

@@ -1,17 +1,17 @@
 # 4. Functional and Behavioral Requirements
 
-## 4.1 Embedded Language Compilation
+## 4.1 Language Compilation
 
 ### POLICY-001 — Compilation model
 
-Authorization SHALL compile Statement `policy` through Embedded Language `PROGRAM` mode into typed Semantic AST using an Authorization-owned Compilation Profile.
+Authorization SHALL compile Statement `policy` through Language `PROGRAM` mode into typed Semantic AST using an Authorization-owned Compilation Profile.
 
 The profile MAY enable canonical collection quantifiers and `len(...)` and SHALL be included in compiled-artifact identity.
 
 Request Authorization SHALL evaluate Semantic AST; Object Authorization SHALL partially evaluate it. Authorization SHALL NOT execute source through a general-purpose script runtime.
 
 Verification: Inspect compilation/execution boundaries and profile identity.
-Traceability: [Embedded Language](../003.%20Embedded%20Language/README.md); STMT-003.
+Traceability: [Language](../003.%20Language/README.md); STMT-003.
 
 ### POLICY-002 — Environment contract
 
@@ -38,14 +38,14 @@ Every authorization operation SHALL obtain current effective Statement state fro
 A compiled-artifact cache SHALL NOT determine effective Statements, suppress the required database lookup, or make correctness depend on TTL, invalidation, or synchronization.
 
 Verification: Change Statement state and compilation identities independently.
-Traceability: [Embedded Language compiled artifact metadata](../003.%20Embedded%20Language/05-data-and-information-requirements.md#data-003--compiled-artifact-metadata); PERF-004.
+Traceability: [Language compiled artifact metadata](../003.%20Language/05-data-and-information-requirements.md#data-003--compiled-artifact-metadata); PERF-004.
 
 ### POLICY-005 — Constant folding
 
 Constant policy results and subexpressions SHALL be folded when semantics are unchanged.
 
 Verification: Inspect constant true/false and quantified constant cases.
-Traceability: [Embedded Language constant folding](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#partial-002--constant-folding-and-boolean-simplification); OBJ-005.
+Traceability: [Language constant folding](../003.%20Language/04-functional-and-behavioral-requirements.md#partial-002--constant-folding-and-boolean-simplification); OBJ-005.
 
 ## 4.2 Request Authorization
 
@@ -87,7 +87,7 @@ Object Authorization SHALL partially evaluate policy Semantic AST using known `p
 A concrete `Bool` or residual `Bool` expression SHALL become the logical Object Authorization Predicate. Non-`Bool` concrete/residual results and evaluation failures SHALL fail closed before queryability or persistence translation.
 
 Verification: Partially evaluate constant, nested, quantified, conditional, and non-`Bool` policies.
-Traceability: STMT-004; [Embedded Language partial evaluation](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#45-partial-evaluation).
+Traceability: STMT-004; [Language partial evaluation](../003.%20Language/04-functional-and-behavioral-requirements.md#45-partial-evaluation).
 
 ### OBJ-002 — Object Authorization Schema scope
 

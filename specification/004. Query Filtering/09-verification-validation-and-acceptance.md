@@ -23,8 +23,8 @@ Verification SHALL demonstrate:
 1. `object.name` maps to a differently named persistence field without exposing that persistence name to the client.
 2. `object.user.name` maps through a persistence join or custom query projection.
 3. `FilteredQuery<CustomerListQuery>` resolves the correct Query Schema without a string target annotation.
-4. `all(object.user.emails, email => len(email) > 10)` preserves the Embedded Language result when translated by a supported persistence adapter.
+4. `all(object.user.emails, email => len(email) > 10)` preserves the Language result when translated by a supported persistence adapter.
 5. Persistence-only names are rejected and absent from client diagnostics.
 6. Client filtering executes before pagination without unrestricted JVM row filtering.
 
-Embedded Language evidence SHALL satisfy the [Embedded Language verification matrix](../003.%20Embedded%20Language/09-verification-validation-and-acceptance.md#91-verification-and-conformance-matrix).
+Language evidence SHALL satisfy the [Language verification matrix](../003.%20Language/09-verification-validation-and-acceptance.md#91-verification-and-conformance-matrix).

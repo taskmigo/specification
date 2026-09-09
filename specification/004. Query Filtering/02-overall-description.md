@@ -7,7 +7,7 @@ HTTP filterBy
     ↓
 QuerySchema<Q>
     ↓
-Embedded Language EXPRESSION compilation
+Language EXPRESSION compilation
     ↓
 QueryPredicate<Q>
     ↓

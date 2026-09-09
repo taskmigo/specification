@@ -4,7 +4,7 @@
 
 Authorization security behavior is defined by [policy isolation](07-constraints.md#72-security-and-isolation), [Statement validation](03-external-interface-requirements.md#31-statement-contract), [Request input boundaries](03-external-interface-requirements.md#32-authorization-inputs-and-operation-snapshot), and [fail-closed behavior](07-constraints.md#73-fail-closed-behavior).
 
-The Embedded Language compiler/evaluator boundary SHALL additionally satisfy the [Embedded Language constraints](../003.%20Embedded%20Language/07-constraints.md).
+The Language compiler/evaluator boundary SHALL additionally satisfy the [Language constraints](../003.%20Language/07-constraints.md).
 
 ## 6.2 Consistency
 
@@ -40,10 +40,10 @@ Traceability: PERF-001; SNAPSHOT-001.
 
 The authorization system SHALL support a principal with approximately 500 effective Statements targeting the same API, including a case where no early constant result can terminate evaluation.
 
-The scenario SHALL use bounded database round trips and SHALL exercise target matching plus Embedded Language evaluation/partial evaluation.
+The scenario SHALL use bounded database round trips and SHALL exercise target matching plus Language evaluation/partial evaluation.
 
 Verification: Run the approximately 500-Statement scenario with query-count instrumentation.
-Traceability: [Embedded Language partial-evaluation performance](../003.%20Embedded%20Language/06-quality-and-performance-requirements.md#perf-002--dependency-aware-partial-evaluation); PERF-002.
+Traceability: [Language partial-evaluation performance](../003.%20Language/06-quality-and-performance-requirements.md#perf-002--dependency-aware-partial-evaluation); PERF-002.
 
 ### PERF-004 — Database source of truth on every operation
 
@@ -51,7 +51,7 @@ Every authorization operation SHALL resolve the relevant effective Statements fr
 
 The authorization system SHALL NOT use cross-request Statement, effective-Statement, principal-resolution, or Authorization Snapshot caches as authoritative authorization state.
 
-A derived compiled Embedded Language artifact MAY be reused only under POLICY-004 and SHALL NOT substitute for the database Statement lookup.
+A derived compiled Language artifact MAY be reused only under POLICY-004 and SHALL NOT substitute for the database Statement lookup.
 
 Verification: Run sequential operations after a committed policy change and confirm each performs required database resolution.
 Traceability: SNAPSHOT-001; POLICY-004.

@@ -37,10 +37,10 @@ For:
 all(object.user.emails, email => len(email) > 10)
 ```
 
-persistence translation SHALL preserve Embedded Language quantifier semantics regardless of the supported physical collection representation.
+persistence translation SHALL preserve Language quantifier semantics regardless of the supported physical collection representation.
 
 Verification: Translate membership and quantifiers over a supported collection mapping and reject unsupported schema/adapter combinations before unrestricted row loading.
-Traceability: SCHEMA-003; [Embedded Language collection semantics](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#type-005--collection-quantifiers-and-length); PERSIST-003.
+Traceability: SCHEMA-003; [Language collection semantics](../003.%20Language/04-functional-and-behavioral-requirements.md#type-005--collection-quantifiers-and-length); PERSIST-003.
 
 ### QRY-005 — Persistence execution before pagination
 
@@ -73,7 +73,7 @@ none(collection, item => predicate)
   -> no item exists for which predicate is true
 ```
 
-Adapters SHALL preserve Embedded Language empty-list and null semantics and account for persistence three-valued logic where applicable.
+Adapters SHALL preserve Language empty-list and null semantics and account for persistence three-valued logic where applicable.
 
-Verification: Compare direct Embedded Language results with persistence results for empty, matching, violating, and nullable cases supported by the Query Schema.
-Traceability: QRY-004; [Embedded Language quantifier semantics](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#type-005--collection-quantifiers-and-length).
+Verification: Compare direct Language results with persistence results for empty, matching, violating, and nullable cases supported by the Query Schema.
+Traceability: QRY-004; [Language quantifier semantics](../003.%20Language/04-functional-and-behavioral-requirements.md#type-005--collection-quantifiers-and-length).

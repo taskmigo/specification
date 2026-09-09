@@ -1,7 +1,7 @@
 ---
 metadata:
-  version: 0.5.0
-  changelog: Defines typed Request and Object Authorization APIs with authorization-owned object schemas and predicates.
+  version: 0.5.2
+  changelog: Renames the consumed Embedded Language feature to Language while preserving Authorization semantics and module allocation.
 ---
 
 <!-- markdownlint-disable MD041 -->
@@ -17,7 +17,7 @@ metadata:
 | 5       | Data and Information Requirements                 | Authorization state, object schema identity, and lifecycle               | [05-data-and-information-requirements.md](05-data-and-information-requirements.md)               |
 | 6       | Quality and Performance Requirements              | Security, consistency, performance, and freshness                        | [06-quality-and-performance-requirements.md](06-quality-and-performance-requirements.md)         |
 | 7       | Constraints                                       | Spring integration, policy isolation, patterns, and fail-closed behavior | [07-constraints.md](07-constraints.md)                                                           |
-| 8       | Requirements Allocation and Dependencies          | Ownership across Authorization, Embedded Language, web, and resources    | [08-requirements-allocation-and-dependencies.md](08-requirements-allocation-and-dependencies.md) |
+| 8       | Requirements Allocation and Dependencies          | Ownership across Authorization, Language, web, and resources             | [08-requirements-allocation-and-dependencies.md](08-requirements-allocation-and-dependencies.md) |
 | 9       | Verification, Validation, and Acceptance Evidence | Verification objectives and conformance conditions                       | [09-verification-validation-and-acceptance.md](09-verification-validation-and-acceptance.md)     |
 | 10      | Traceability and Unresolved Issues                | Requirement traceability and unresolved decisions                        | [10-traceability-and-unresolved-issues.md](10-traceability-and-unresolved-issues.md)             |
 | 11      | Appendices                                        | Authorization examples                                                   | [11-appendices.md](11-appendices.md)                                                             |

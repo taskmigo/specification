@@ -22,12 +22,12 @@ Traceability: AUTH-API-003 through AUTH-API-006; OBJ-003.
 
 ### TECH-003 — Authorization policy isolation
 
-Policy source is untrusted compiler input. Authorization SHALL satisfy Embedded Language isolation constraints and SHALL NOT expose repositories, Spring/ApplicationContext objects, JPA entities, filesystems, networks, processes, reflection, arbitrary host objects, or privileged call surfaces through the policy Environment Schema.
+Policy source is untrusted compiler input. Authorization SHALL satisfy Language isolation constraints and SHALL NOT expose repositories, Spring/ApplicationContext objects, JPA entities, filesystems, networks, processes, reflection, arbitrary host objects, or privileged call surfaces through the policy Environment Schema.
 
-Canonical bounded Embedded Language intrinsics MAY be enabled but SHALL NOT dispatch to arbitrary host behavior.
+Canonical bounded Language intrinsics MAY be enabled but SHALL NOT dispatch to arbitrary host behavior.
 
 Verification: Attempt forbidden host/resource access from direct and restricted-lambda policy expressions.
-Traceability: [Embedded Language isolation](../003.%20Embedded%20Language/07-constraints.md#74-isolation-and-host-access); RES-002.
+Traceability: [Language isolation](../003.%20Language/07-constraints.md#74-isolation-and-host-access); RES-002.
 
 ## 7.3 Fail-Closed Behavior
 

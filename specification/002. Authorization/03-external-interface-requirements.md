@@ -32,7 +32,7 @@ Traceability: POLICY-001.
 
 ### STMT-003 — Required policy program
 
-Every Statement `policy` SHALL satisfy the Embedded Language source contract in `PROGRAM` mode under the Authorization policy Compilation Profile.
+Every Statement `policy` SHALL satisfy the Language source contract in `PROGRAM` mode under the Authorization policy Compilation Profile.
 
 Authorization SHALL NOT reject a policy before activation solely because its static result type is not `Bool`.
 
@@ -41,18 +41,18 @@ General function declarations/calls, modules, standalone/first-class lambdas, an
 A policy failing parsing, profile validation, binding, control-flow validation, typing, scope validation, complexity limits, or required Object queryability validation SHALL NOT become active.
 
 Verification: Activate valid multiple-result-type programs; test bounded quantifiers; reject general callable/module syntax, fall-through, unavailable roots, and unsupported Object paths/operators.
-Traceability: [Embedded Language Compilation Profile](../003.%20Embedded%20Language/03-external-interface-requirements.md#env-004--compilation-profile); POLICY-001 through POLICY-003.
+Traceability: [Language Compilation Profile](../003.%20Language/03-external-interface-requirements.md#env-004--compilation-profile); POLICY-001 through POLICY-003.
 
 ### STMT-004 — Boolean decision contract
 
-Authorization SHALL enforce Boolean policy results when a policy is evaluated or partially evaluated, not as a generic Embedded Language compilation restriction.
+Authorization SHALL enforce Boolean policy results when a policy is evaluated or partially evaluated, not as a generic Language compilation restriction.
 
 For Request Authorization, direct evaluation SHALL yield `Bool`; a concrete non-`Bool` result SHALL raise an authorization runtime exception and fail closed.
 
 For Object Authorization, concrete `true`/`false` or a residual Semantic AST expression statically typed `Bool` SHALL be accepted; concrete/residual non-`Bool` results SHALL raise an authorization runtime exception and fail closed before queryability or persistence processing.
 
 Verification: Activate valid non-`Bool` policies and verify runtime fail-closed behavior in each scope.
-Traceability: [Embedded Language typed result](../003.%20Embedded%20Language/04-functional-and-behavioral-requirements.md#lang-002--typed-source-result); REQ-001; OBJ-001.
+Traceability: [Language typed result](../003.%20Language/04-functional-and-behavioral-requirements.md#lang-002--typed-source-result); REQ-001; OBJ-001.
 
 ### STMT-005 — Effect semantics
 
@@ -117,10 +117,10 @@ Traceability: INPUT-001.
 
 ### RES-002 — No privileged resource-loading call
 
-Authorization SHALL NOT provide `resource(...)` or another privileged business-resource-loading intrinsic. General call syntax remains invalid under Embedded Language.
+Authorization SHALL NOT provide `resource(...)` or another privileged business-resource-loading intrinsic. General call syntax remains invalid under Language.
 
 Verification: Reject policies attempting `resource(...)` while permitting only canonical language intrinsics.
-Traceability: [Embedded Language bounded intrinsic syntax](../003.%20Embedded%20Language/03-external-interface-requirements.md#syntax-004--static-paths-and-bounded-intrinsic-syntax).
+Traceability: [Language bounded intrinsic syntax](../003.%20Language/03-external-interface-requirements.md#syntax-004--static-paths-and-bounded-intrinsic-syntax).
 
 ### RES-003 — No Request resource resolution
 
@@ -161,7 +161,7 @@ Traceability: AUTH-API-002.
 
 ### AUTH-API-001 — Typed Request Authorization input
 
-The public API SHALL accept typed principal/request values rather than caller-constructed Embedded Language root maps, with behavior equivalent to:
+The public API SHALL accept typed principal/request values rather than caller-constructed Language root maps, with behavior equivalent to:
 
 ```java
 public record AuthorizationPrincipal(UUID id, String username) {}

@@ -22,10 +22,10 @@ Traceability: PERSIST-001.
 
 ### TECH-003 — No direct persistence access from source
 
-Embedded Language source SHALL NOT receive JPA entities, Spring container objects, Criteria objects, repositories, or persistence mapping functions.
+Language source SHALL NOT receive JPA entities, Spring container objects, Criteria objects, repositories, or persistence mapping functions.
 
 Verification: Inspect the Environment Schema and attempt forbidden references.
-Traceability: SEC-001; [Embedded Language isolation](../003.%20Embedded%20Language/07-constraints.md#74-isolation-and-host-access).
+Traceability: SEC-001; [Language isolation](../003.%20Language/07-constraints.md#74-isolation-and-host-access).
 
 ## 7.3 Failure Behavior
 
