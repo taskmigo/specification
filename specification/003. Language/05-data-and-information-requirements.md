@@ -6,7 +6,7 @@
 
 Values supplied to evaluation SHALL be treated as immutable for the duration of the evaluation operation.
 
-The Embedded Language SHALL NOT expose mutable host objects directly to source expressions. Supplied values SHALL be represented through the typed value boundary defined by the Environment Schema.
+The Language SHALL NOT expose mutable host objects directly to source expressions. Supplied values SHALL be represented through the typed value boundary defined by the Environment Schema.
 
 Verification: Supply mutable host data through an adapter, mutate the host object during a test, and confirm the source-visible value does not gain mutation capabilities.
 Traceability: EVAL-IF-001; [Isolation and Host Access](07-constraints.md#74-isolation-and-host-access).
@@ -29,7 +29,7 @@ A compiled source artifact SHALL contain the Semantic AST or be associated with 
 At minimum, the identity SHALL cover:
 
 - The source content or a collision-resistant source fingerprint.
-- The Embedded Language version.
+- The Language version.
 - The Environment Schema identity or compatible revision fingerprint.
 - The selected `PROGRAM` or `EXPRESSION` compilation mode.
 - The enabled feature-family set from the Compilation Profile.
@@ -49,8 +49,8 @@ Traceability: DIAG-001; LANG-001; LANG-005.
 
 ## 5.3 Lifecycle and Persistence
 
-The Embedded Language does not prescribe where source or compiled artifacts are persisted.
+The Language does not prescribe where source or compiled artifacts are persisted.
 
 A compiled artifact MAY be cached as derived data when the artifact identity satisfies DATA-002 and DATA-003.
 
-Retention, deletion, and regulatory requirements are Not applicable because no independent Embedded Language persistence store is specified.
+Retention, deletion, and regulatory requirements are Not applicable because no independent Language persistence store is specified.

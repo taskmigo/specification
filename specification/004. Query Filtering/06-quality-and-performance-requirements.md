@@ -4,7 +4,7 @@
 
 ### QUAL-001 — Deterministic logical semantics
 
-For identical Query Schema, Embedded Language version/profile, source, and known inputs, filter compilation and logical predicate composition SHALL produce equivalent semantics.
+For identical Query Schema, Language version/profile, source, and known inputs, filter compilation and logical predicate composition SHALL produce equivalent semantics.
 
 Verification: Repeat compilation/composition and compare results modulo non-semantic metadata.
 Traceability: FILTER-002; PRED-002.
@@ -34,7 +34,7 @@ Traceability: QRY-005.
 
 ### PERF-002 — Compiled filter reuse
 
-A compiled `filterBy` artifact MAY be reused only when source content, Embedded Language version/profile, Environment Schema identity, and Query Schema identity are compatible.
+A compiled `filterBy` artifact MAY be reused only when source content, Language version/profile, Environment Schema identity, and Query Schema identity are compatible.
 
 Verification: Change each identity input and confirm stale compiled filters are not reused.
-Traceability: DATA-001; [Embedded Language compiled artifact metadata](../003.%20Embedded%20Language/05-data-and-information-requirements.md#data-003--compiled-artifact-metadata).
+Traceability: DATA-001; [Language compiled artifact metadata](../003.%20Language/05-data-and-information-requirements.md#data-003--compiled-artifact-metadata).

@@ -1,7 +1,7 @@
 ---
 metadata:
-  version: 0.2.0
-  changelog: Defines standalone filterBy contracts over API-visible query paths with nested and collection filtering.
+  version: 0.2.2
+  changelog: Renames the consumed Embedded Language feature to Language while preserving Query Filtering semantics and module allocation.
 ---
 
 <!-- markdownlint-disable MD041 -->
@@ -17,7 +17,7 @@ metadata:
 | 5       | Data and Information Requirements                 | Query paths, schemas, predicate identity, and lifecycle             | [05-data-and-information-requirements.md](05-data-and-information-requirements.md)               |
 | 6       | Quality and Performance Requirements              | Determinism, isolation, caching, and database execution             | [06-quality-and-performance-requirements.md](06-quality-and-performance-requirements.md)         |
 | 7       | Constraints                                       | Spring integration, persistence, isolation, and failure behavior    | [07-constraints.md](07-constraints.md)                                                           |
-| 8       | Requirements Allocation and Dependencies          | Ownership across Query Filtering, Embedded Language, web, resources | [08-requirements-allocation-and-dependencies.md](08-requirements-allocation-and-dependencies.md) |
+| 8       | Requirements Allocation and Dependencies          | Ownership across Query Filtering, Language, web, resources          | [08-requirements-allocation-and-dependencies.md](08-requirements-allocation-and-dependencies.md) |
 | 9       | Verification, Validation, and Acceptance Evidence | Verification objectives and acceptance conditions                   | [09-verification-validation-and-acceptance.md](09-verification-validation-and-acceptance.md)     |
 | 10      | Traceability and Unresolved Issues                | Requirement traceability and unresolved decisions                   | [10-traceability-and-unresolved-issues.md](10-traceability-and-unresolved-issues.md)             |
 | 11      | Appendices                                        | Query examples                                                      | [11-appendices.md](11-appendices.md)                                                             |

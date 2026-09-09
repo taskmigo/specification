@@ -115,7 +115,7 @@ Traceability: REF-001; LANG-006.
 
 ### ENV-002 — Schema-defined root namespace
 
-The Embedded Language SHALL NOT reserve or create application root names. Every non-local root SHALL exist only because the Environment Schema declares it.
+The Language SHALL NOT reserve or create application root names. Every non-local root SHALL exist only because the Environment Schema declares it.
 
 Verification: Compile the same source against schemas with different root namespaces and confirm reference acceptance follows the supplied schema.
 Traceability: ENV-001.

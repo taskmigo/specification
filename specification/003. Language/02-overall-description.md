@@ -2,7 +2,7 @@
 
 ## 2.1 Product Perspective
 
-The Embedded Language is a language subsystem between source text and execution inputs. The subsystem owns source parsing, Compilation Profile enforcement, binding, static typing, applicable control-flow validation, Semantic AST construction, direct evaluation, and partial evaluation.
+The Language is a language subsystem between source text and execution inputs. The subsystem owns source parsing, Compilation Profile enforcement, binding, static typing, applicable control-flow validation, Semantic AST construction, direct evaluation, and partial evaluation.
 
 The required boundary is:
 
@@ -21,7 +21,7 @@ ANTLR parse-tree types SHALL remain a frontend concern. Evaluation and partial e
 
 ## 2.2 Product Functions
 
-The Embedded Language provides:
+The Language provides:
 
 - Deterministic parsing of canonical `PROGRAM` and `EXPRESSION` sources.
 - Consumer-defined profiles that restrict enabled feature families without defining another language.
@@ -65,7 +65,7 @@ The restricted lambda introduces one lexical element binding scoped to the quant
 
 ## 2.3 Stakeholders and Users
 
-The language is consumed by source authors and Taskmigo components that compile or execute Embedded Language sources. Consumer-specific purposes remain outside the language contract.
+The language is consumed by source authors and Taskmigo components that compile or execute Language sources. Consumer-specific purposes remain outside the language contract.
 
 ## 2.4 Operational Context and Scenarios
 

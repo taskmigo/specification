@@ -2,7 +2,7 @@
 
 ## 1.1 Purpose
 
-This Software Requirements Specification (SRS) defines Statement-based Request and Object Authorization using Embedded Language policies, operation-scoped authorization state, authorization-owned object schemas, and database-side Object predicates.
+This Software Requirements Specification (SRS) defines Statement-based Request and Object Authorization using Language policies, operation-scoped authorization state, authorization-owned object schemas, and database-side Object predicates.
 
 This document is tailored to the software-requirements information-item guidance in [ISO/IEC/IEEE 29148:2018](https://committee.iso.org/standard/72089.html). It does not claim full conformance to the standard.
 
@@ -13,7 +13,7 @@ The authorization model SHALL:
 - Preserve default-deny Request Authorization with DENY overriding ALLOW.
 - Resolve relevant effective Statements from the database for every authorization operation.
 - Use one immutable operation-scoped authorization state for Request and Object Authorization.
-- Compile Statement policies with [Embedded Language](../003.%20Embedded%20Language/README.md) `PROGRAM` mode.
+- Compile Statement policies with [Language](../003.%20Language/README.md) `PROGRAM` mode.
 - Evaluate Request policies using concrete `principal` and `request` values only.
 - Partially evaluate Object policies with symbolic `object` values.
 - Define Object Authorization Schemas over API-visible object paths, including declared nested and collection paths.
@@ -38,7 +38,7 @@ Additional authorization target kinds beyond `target.api` remain outside this SR
 
 ## 1.4 References
 
-- The [Embedded Language feature](../003.%20Embedded%20Language/README.md) defines language syntax, Semantic AST, typing, Compilation Profiles, evaluation, partial evaluation, and bounded collection intrinsics.
+- The [Language feature](../003.%20Language/README.md) defines language syntax, Semantic AST, typing, Compilation Profiles, evaluation, partial evaluation, and bounded collection intrinsics.
 - The linked issue defines package/module ownership and public SDK boundaries outside this SRS.
 
 ## 1.5 Overview

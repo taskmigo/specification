@@ -94,7 +94,7 @@ Traceability: QRY-003; DATA-002.
 
 ### FILTER-001 — HTTP input
 
-Collection endpoints supporting Query Filtering SHALL accept an optional HTTP query parameter named `filterBy` containing one Embedded Language `EXPRESSION` source.
+Collection endpoints supporting Query Filtering SHALL accept an optional HTTP query parameter named `filterBy` containing one Language `EXPRESSION` source.
 
 Missing or blank `filterBy` SHALL be equivalent to a constant-true Query Predicate.
 
@@ -111,12 +111,12 @@ public interface FilterByCompiler {
 }
 ```
 
-Compilation SHALL use Embedded Language `EXPRESSION` mode, a Query Filtering Compilation Profile, and an Environment Schema exposing exactly one application root named `object` whose structured paths derive from `QuerySchema<Q>`.
+Compilation SHALL use Language `EXPRESSION` mode, a Query Filtering Compilation Profile, and an Environment Schema exposing exactly one application root named `object` whose structured paths derive from `QuerySchema<Q>`.
 
 The compiled source result type SHALL be `Bool`. A non-`Bool` source SHALL be invalid client filter input.
 
 Verification: Compile valid Boolean filters and reject statements, unavailable roots, disabled features, unknown paths, and non-Boolean expressions.
-Traceability: [Embedded Language source modes](../003.%20Embedded%20Language/03-external-interface-requirements.md#syntax-001--canonical-source-modes); QRY-001.
+Traceability: [Language source modes](../003.%20Language/03-external-interface-requirements.md#syntax-001--canonical-source-modes); QRY-001.
 
 ### FILTER-003 — Client error boundary
 

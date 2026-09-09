@@ -42,7 +42,7 @@ Object Authorization SHALL produce a typed `ObjectAuthorizationPredicate<Q>` usi
 
 The predicate SHALL preserve API-visible logical paths until the resource-owned authorization persistence boundary.
 
-### 2.2.3 Embedded Language Contract
+### 2.2.3 Language Contract
 
 Authorization SHALL compile policies in `PROGRAM` mode, supply an Authorization-owned Compilation Profile and scope-dependent Environment Schema, evaluate Request policies, partially evaluate Object policies, and enforce Boolean authorization semantics at runtime as defined by STMT-004.
 

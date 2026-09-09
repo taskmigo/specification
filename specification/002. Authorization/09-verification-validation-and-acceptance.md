@@ -27,4 +27,4 @@ Verification SHALL demonstrate:
 6. Object Authorization executes before pagination without unrestricted JVM row filtering.
 7. Spring Security and MVC integration reuse the same operation context.
 
-Embedded Language evidence SHALL satisfy the [Embedded Language verification matrix](../003.%20Embedded%20Language/09-verification-validation-and-acceptance.md#91-verification-and-conformance-matrix).
+Language evidence SHALL satisfy the [Language verification matrix](../003.%20Language/09-verification-validation-and-acceptance.md#91-verification-and-conformance-matrix).
