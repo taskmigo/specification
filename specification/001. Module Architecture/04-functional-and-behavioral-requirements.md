@@ -4,10 +4,12 @@
 
 ### ARCH-MOD-001 — Foundation role
 
-`foundation` SHALL contain only framework-neutral primitives and contracts whose meaning remains valid independently of any one Taskmigo feature capability.
+`foundation` SHALL be a shared physical library containing only feature-neutral Taskmigo primitives and contracts plus third-party libraries intentionally established as common dependencies for multiple Taskmigo modules.
 
-Verification: Remove each feature capability conceptually from the architecture and confirm every exported `foundation` contract remains meaningful without that feature.
-Traceability: [Architectural Boundary Test](02-overall-description.md#24-architectural-boundary-test).
+`foundation` MAY expose those common third-party libraries transitively to consuming modules. It SHALL NOT use dependency sharing as a reason to own capability-specific semantics, resource contracts, adapters, or persistence mappings.
+
+Verification: Inspect `foundation` exports and dependency declarations, remove each feature capability conceptually from the architecture, and confirm every Taskmigo-owned exported contract remains meaningful while every re-exported third-party dependency is intentionally part of the common technical baseline.
+Traceability: [Architectural Boundary Test](02-overall-description.md#24-architectural-boundary-test); [Shared foundation dependencies](07-constraints.md#arch-con-003--shared-foundation-dependencies).
 
 ### ARCH-MOD-002 — Capability ownership
 
@@ -70,3 +72,19 @@ Executable application modules SHALL compose published capability, infrastructur
 
 Verification: Inspect application-local contracts and confirm reusable semantics are allocated to the appropriate lower-level module.
 Traceability: [Composition-only application boundary](03-external-interface-requirements.md#arch-if-005--composition-only-application-boundary).
+
+## 4.4 Logical Module Boundaries
+
+### ARCH-MOD-010 — Spring Modulith application-module model
+
+Each capability, resource, infrastructure, or adapter package boundary that participates in a Spring application and can be represented by [Spring Modulith](https://docs.spring.io/spring-modulith/reference/) SHALL be modeled as a Spring Modulith application module rather than relying only on developer convention.
+
+Verification: Build the Spring Modulith `ApplicationModules` model for each executable application and confirm the expected Taskmigo logical modules are discovered or explicitly declared.
+Traceability: [Spring Modulith primary enforcement](07-constraints.md#arch-con-010--spring-modulith-primary-enforcement).
+
+### ARCH-MOD-011 — Published interfaces and explicit dependency contracts
+
+A Spring Modulith application module SHALL expose cross-module types only through its module root package or explicitly declared named interfaces. Its declared allowed Taskmigo module dependencies SHALL be no broader than the relationships permitted by [Section 8.2](08-requirements-allocation-and-dependencies.md#82-allowed-dependency-model).
+
+Verification: Inspect module metadata and verify cross-module references against the Spring Modulith module model.
+Traceability: [Explicit interfaces and dependencies](07-constraints.md#arch-con-011--explicit-interfaces-and-dependencies).

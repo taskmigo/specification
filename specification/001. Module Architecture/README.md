@@ -1,7 +1,7 @@
 ---
 metadata:
-  version: 0.1.0
-  changelog: Defines Taskmigo module boundaries, dependency direction, foundation constraints, and capability ownership.
+  version: 0.2.0
+  changelog: Adopts Spring Modulith as the primary module-boundary mechanism, ArchUnit for intra-module package linting, and foundation as a shared dependency library.
 ---
 
 <!-- markdownlint-disable MD041 -->
@@ -16,7 +16,7 @@ metadata:
 | 4       | Functional and Behavioral Requirements            | Module ownership and dependency-direction requirements          | [04-functional-and-behavioral-requirements.md](04-functional-and-behavioral-requirements.md)     |
 | 5       | Data and Information Requirements                 | Module identity and contract metadata requirements              | [05-data-and-information-requirements.md](05-data-and-information-requirements.md)               |
 | 6       | Quality and Performance Requirements              | Maintainability, isolation, and dependency quality requirements | [06-quality-and-performance-requirements.md](06-quality-and-performance-requirements.md)         |
-| 7       | Constraints                                       | Mandatory module and framework dependency constraints           | [07-constraints.md](07-constraints.md)                                                           |
+| 7       | Constraints                                       | Mandatory module, dependency, and enforcement constraints       | [07-constraints.md](07-constraints.md)                                                           |
 | 8       | Requirements Allocation and Dependencies          | Ownership and allowed dependency relationships                  | [08-requirements-allocation-and-dependencies.md](08-requirements-allocation-and-dependencies.md) |
 | 9       | Verification, Validation, and Acceptance Evidence | Architecture verification objectives and acceptance conditions  | [09-verification-validation-and-acceptance.md](09-verification-validation-and-acceptance.md)     |
 | 10      | Traceability and Unresolved Issues                | Cross-specification traceability and unresolved decisions       | [10-traceability-and-unresolved-issues.md](10-traceability-and-unresolved-issues.md)             |
