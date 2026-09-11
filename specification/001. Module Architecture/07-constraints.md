@@ -6,22 +6,24 @@
 
 `foundation` SHALL NOT declare a project dependency on `language`, `query`, `authorization`, `identity`, `database`, `web`, any executable application module, or any future feature capability module.
 
-Verification: Inspect the `foundation` build configuration and transitive project dependency graph and confirm no prohibited project dependency exists.
+Verification: Inspect the `foundation` build configuration and transitive project dependency graph and confirm no prohibited Taskmigo project dependency exists.
 Traceability: [Foundation](02-overall-description.md#221-foundation); [Foundation role](04-functional-and-behavioral-requirements.md#arch-mod-001--foundation-role).
 
 ### ARCH-CON-002 — No feature semantics in foundation
 
 `foundation` SHALL NOT own types or behavior whose meaning depends on Query Filtering, Authorization, Language, Identity, HTTP, persistence topology, or another feature-specific domain.
 
-Verification: Inspect exported `foundation` packages and classify each public type using the [Architectural Boundary Test](02-overall-description.md#24-architectural-boundary-test).
+Verification: Inspect exported `foundation` packages and classify each public Taskmigo-owned type using the [Architectural Boundary Test](02-overall-description.md#24-architectural-boundary-test).
 Traceability: ARCH-MOD-001; ARCH-MOD-002.
 
-### ARCH-CON-003 — Framework isolation
+### ARCH-CON-003 — Shared foundation dependencies
 
-`foundation` SHALL NOT require Spring Framework, Spring Boot, Spring Modulith, Spring Data, JPA, ANTLR, HTTP frameworks, or application-framework lifecycle behavior as part of its public API or runtime initialization.
+`foundation` MAY declare and re-export third-party libraries that are intentionally established as common technical dependencies for multiple Taskmigo modules. A shared third-party dependency SHALL remain feature-neutral and SHALL NOT require `foundation` to depend on a higher-level Taskmigo project module.
 
-Verification: Inspect `foundation` compile/runtime dependencies and execute representative contracts without framework bootstrapping.
-Traceability: [Foundation contract neutrality](03-external-interface-requirements.md#arch-if-001--foundation-contract-neutrality); ARCH-QUAL-004.
+A library used only by one capability, resource, adapter, or executable application SHALL remain with that owner unless an architectural decision intentionally promotes the library into the project-wide technical baseline.
+
+Verification: Inspect `foundation` dependency exposure and consumers and confirm re-exported libraries are intentionally shared while capability-specific libraries remain scoped to their owners.
+Traceability: [Foundation role](04-functional-and-behavioral-requirements.md#arch-mod-001--foundation-role); ARCH-QUAL-002.
 
 ## 7.2 Capability Constraints
 
@@ -68,3 +70,32 @@ Executable application modules SHALL NOT be dependencies of reusable foundation,
 
 Verification: Inspect the project dependency graph and confirm executable application modules are dependency leaves.
 Traceability: ARCH-MOD-009.
+
+## 7.4 Boundary Enforcement Constraints
+
+### ARCH-CON-010 — Spring Modulith primary enforcement
+
+Every Taskmigo logical package boundary that can be represented as a [Spring Modulith](https://docs.spring.io/spring-modulith/reference/) application module SHALL use Spring Modulith as its primary automated module-boundary mechanism.
+
+Automated architecture tests SHALL construct the applicable `ApplicationModules` model and invoke `verify()` or an equivalent Spring Modulith verification path so module cycles, references to internal packages, and explicit allowed-dependency violations fail the build.
+
+Verification: Run the Spring Modulith architecture verification for each executable composition and confirm representative cycle, internal-package, and disallowed-dependency violations are rejected.
+Traceability: ARCH-MOD-010; ARCH-QUAL-003; ARCH-VER-005.
+
+### ARCH-CON-011 — Explicit interfaces and dependencies
+
+Spring Modulith application modules SHALL remain closed by default and SHALL NOT use open-module configuration as a general bypass for architectural boundaries. Cross-module access SHALL target the module root API package or a deliberately declared `@NamedInterface`.
+
+A module with outgoing Taskmigo module dependencies SHALL constrain those dependencies with `@ApplicationModule(allowedDependencies = ...)` so the declaration is no broader than [Section 8.2](08-requirements-allocation-and-dependencies.md#82-allowed-dependency-model). When only a named interface is required, the allowed dependency SHALL target that named interface rather than the whole module API.
+
+Verification: Inspect module metadata and run Spring Modulith verification to confirm internal-package access, undeclared dependencies, and overly broad interface use are rejected.
+Traceability: ARCH-MOD-011; ARCH-VER-005.
+
+### ARCH-CON-012 — ArchUnit package-boundary linting
+
+When two or more architectural package boundaries reside within the same physical build module, or a required package-access rule is not directly represented by Spring Modulith verification, automated [ArchUnit](https://www.archunit.org/getting-started) rules SHALL enforce the remaining package dependency restrictions.
+
+ArchUnit SHALL supplement rather than replace Spring Modulith for any boundary Spring Modulith can represent.
+
+Verification: Add representative forbidden package references within one physical module and confirm the ArchUnit architecture test fails.
+Traceability: ARCH-QUAL-003; ARCH-VER-006.

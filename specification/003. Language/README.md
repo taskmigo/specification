@@ -1,7 +1,7 @@
 ---
 metadata:
-  version: 0.5.0
-  changelog: Renames Embedded Language to Language and aligns the feature identity with the `language` module.
+  version: 0.6.0
+  changelog: Clarifies that the Semantic AST has no independent version field and uses Language/compiler artifact identity for compatibility.
 ---
 
 <!-- markdownlint-disable MD041 -->

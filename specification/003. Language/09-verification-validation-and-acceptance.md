@@ -12,7 +12,7 @@ Verification SHALL cover:
 - REF-001: Lexical/nested static reference resolution and rejection of dynamic/general callable references.
 - EVAL-001–EVAL-002: Known-input evaluation, short-circuiting, quantifier evaluation, and determinism.
 - PARTIAL-001–PARTIAL-005: Unknown preservation, simplification, residual typing, dependency metadata, and quantifier specialization.
-- DATA-001–DATA-004: Immutable values, schema/artifact identity, source/profile metadata, and source locations.
+- DATA-001–DATA-004: Immutable values, schema/artifact identity, source/profile metadata, no independent Semantic AST version, and source locations.
 - QUAL-001–QUAL-003: Deterministic semantics, bounded termination, and parser-independent Semantic AST dependencies.
 - PERF-001–PERF-003: Compiler limits, dependency-aware specialization, and exact artifact reuse.
 - DIAG-001: All required diagnostic categories, including feature errors for quantifier/length capabilities.
@@ -30,3 +30,4 @@ Verification SHALL demonstrate:
 6. Restricted lambdas cannot escape or be used as general function values.
 7. Partial evaluation preserves symbolic quantified predicates and specializes captured known outer values.
 8. Compiled-artifact reuse does not cross incompatible schemas, modes, or feature sets.
+9. Semantic AST nodes and compiled artifacts do not require an independent Semantic AST version field.

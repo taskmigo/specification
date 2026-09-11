@@ -35,9 +35,11 @@ At minimum, the identity SHALL cover:
 - The enabled feature-family set from the Compilation Profile.
 - The compiler contract required to preserve Semantic AST semantics.
 
+The Semantic AST SHALL NOT define, persist, or require an independent Semantic AST version field. Compatibility of a compiled artifact SHALL be determined by the Language/compiler contract and the artifact identity above rather than by separately versioning the Semantic AST model.
+
 An artifact compiled under one mode or feature profile SHALL NOT be treated as an exact compiled-artifact match for an incompatible mode or feature profile, even when the source text and Environment Schema are unchanged.
 
-Verification: Change each identity input independently, including mode and enabled feature families, and confirm a stale or less-restricted artifact cannot be treated as an exact match.
+Verification: Change each identity input independently, including mode and enabled feature families, and confirm a stale or less-restricted artifact cannot be treated as an exact match. Inspect Semantic AST and compiled-artifact representations and confirm no independent Semantic AST version is required.
 Traceability: [Compilation Reuse](06-quality-and-performance-requirements.md#63-compilation-reuse); LANG-001; ENV-004.
 
 ### DATA-004 — Source locations
