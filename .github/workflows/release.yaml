@@ -23,6 +23,7 @@ jobs:
       - run: npm run markdown:check
 
   release:
+    name: Release
     runs-on: ubuntu-latest
     needs:
       - quality-gate
