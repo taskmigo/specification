@@ -2,16 +2,16 @@
 
 ## 8.1 Ownership Allocation
 
-| Module                  | Required ownership                                                                                                                                                                 |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `foundation`            | Feature-neutral shared primitives and contracts plus third-party libraries intentionally established as common technical dependencies across Taskmigo modules.                     |
-| `language`              | Language syntax, compilation, typing, Semantic AST, evaluation, partial evaluation, and language diagnostics.                                                                      |
-| `query`                 | Query Schema and Predicate contracts, `FilteredQuery`, `filterBy` compilation, and query validation.                                                                               |
-| `authorization`         | Authorization context and state, Statement semantics, Request Authorization, Object Authorization contracts, and authorization-specific language integration.                      |
-| `identity`              | User, group, membership, and identity-resource semantics plus resource-specific query and persistence integration.                                                                 |
-| `database`              | Shared persistence infrastructure without resource-specific domain ownership.                                                                                                      |
-| `web`                   | HTTP, Spring MVC, Spring Security, and public web error adaptation.                                                                                                                |
-| Executable applications | Composition of published module contracts for one runnable application.                                                                                                            |
+| Module                  | Required ownership                                                                                                                                             |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `foundation`            | Feature-neutral shared primitives and contracts plus third-party libraries intentionally established as common technical dependencies across Taskmigo modules. |
+| `language`              | Language syntax, compilation, typing, Semantic AST, evaluation, partial evaluation, and language diagnostics.                                                  |
+| `query`                 | Query Schema and Predicate contracts, `FilteredQuery`, `filterBy` compilation, and query validation.                                                           |
+| `authorization`         | Authorization context and state, Statement semantics, Request Authorization, Object Authorization contracts, and authorization-specific language integration.  |
+| `identity`              | User, group, membership, and identity-resource semantics plus resource-specific query and persistence integration.                                             |
+| `database`              | Shared persistence infrastructure without resource-specific domain ownership.                                                                                  |
+| `web`                   | HTTP, Spring MVC, Spring Security, and public web error adaptation.                                                                                            |
+| Executable applications | Composition of published module contracts for one runnable application.                                                                                        |
 
 ## 8.2 Allowed Dependency Model
 
@@ -60,11 +60,11 @@ Traceability: [Constraints](07-constraints.md).
 
 The architecture constraints SHALL be allocated to enforcement mechanisms as follows:
 
-| Concern                                                                 | Primary enforcement                                                                                                                         |
-| ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| Physical Taskmigo project dependencies                                  | Build dependency graph plus specification review.                                                                                           |
-| Logical application-module cycles and access to module internals        | Spring Modulith verification.                                                                                                                |
-| Explicit module dependencies and published named interfaces             | Spring Modulith `@ApplicationModule(allowedDependencies = ...)`, `@NamedInterface`, and verification.                                        |
-| Package boundaries inside one physical module not fully modeled above   | [ArchUnit](https://www.archunit.org/getting-started) architecture rules.                                                                     |
+| Concern                                                               | Primary enforcement                                                                                   |
+| --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Physical Taskmigo project dependencies                                | Build dependency graph plus specification review.                                                     |
+| Logical application-module cycles and access to module internals      | Spring Modulith verification.                                                                         |
+| Explicit module dependencies and published named interfaces           | Spring Modulith `@ApplicationModule(allowedDependencies = ...)`, `@NamedInterface`, and verification. |
+| Package boundaries inside one physical module not fully modeled above | [ArchUnit](https://www.archunit.org/getting-started) architecture rules.                              |
 
 ArchUnit rules MAY duplicate a critical Spring Modulith boundary as defense in depth, but they SHALL NOT be used as a substitute for declaring a representable Spring Modulith application-module boundary.
