@@ -4,9 +4,9 @@
 
 ### ARCH-VER-001 — Foundation dependency verification
 
-Architecture verification SHALL confirm that `foundation` has no project dependency on any higher-level Taskmigo module and is not used as a distribution path for unrelated build/tooling dependencies.
+Architecture verification SHALL confirm that `foundation` has no project dependency on any higher-level Taskmigo module and that every third-party dependency it re-exports satisfies [ARCH-CON-003](07-constraints.md#arch-con-003--shared-foundation-dependencies).
 
-Verification: Inspect the resolved build dependency graph, `foundation` dependencies, and representative consumers.
+Verification: Inspect the resolved build dependency graph, `foundation` dependency exposure, and representative consumers.
 Traceability: ARCH-CON-001; ARCH-CON-003.
 
 ### ARCH-VER-002 — Capability boundary verification
@@ -46,32 +46,21 @@ Every physical module containing two or more architectural package boundaries no
 Verification: Introduce a representative forbidden cross-package dependency inside the physical module and confirm the ArchUnit rule rejects it.
 Traceability: ARCH-CON-012; ARCH-QUAL-003.
 
-### ARCH-VER-007 — Build convention verification
-
-Architecture verification SHALL confirm that the Gradle wrapper, Java toolchain, cross-cutting build-tool versions, dependency scopes, and plugin versions match [Section 12](12-build-conventions-and-tooling-baseline.md).
-
-Verification SHALL also confirm that representative projects do not redeclare convention-provided dependencies merely for availability and that build-only tools do not leak onto production runtime classpaths.
-
-Verification: Inspect or automate resolved Gradle configurations for representative reusable libraries and executable applications.
-Traceability: ARCH-CON-013; ARCH-CON-014; ARCH-CON-015; ARCH-CON-016.
-
 ## 9.2 Acceptance Conditions
 
-A change affecting module ownership, project dependencies, architectural package boundaries, or the build convention baseline is acceptable only when:
+A change affecting module ownership, project dependencies, or architectural package boundaries is acceptable only when:
 
 - Every new Taskmigo project dependency edge is permitted by [Section 8.2](08-requirements-allocation-and-dependencies.md#82-allowed-dependency-model).
 - No prohibited relationship from [Section 8.3](08-requirements-allocation-and-dependencies.md#83-prohibited-dependencies) is introduced.
 - Every public feature-specific contract remains owned by its defining capability or resource module.
-- `foundation` continues to pass the [Architectural Boundary Test](02-overall-description.md#24-architectural-boundary-test) and is not used as a dependency-distribution shortcut.
+- `foundation` continues to pass the [Architectural Boundary Test](02-overall-description.md#24-architectural-boundary-test), including the classification of shared third-party dependencies.
 - Every representable logical module boundary passes Spring Modulith verification.
 - Every applicable intra-physical-module package boundary passes its ArchUnit rules.
-- Convention-provided build dependencies use the fixed versions and scopes in Section 12 and are not redundantly redeclared by consumers.
-- Production runtime classpaths do not contain build-only tools unless an owning module independently requires that artifact at runtime.
 - Applicable automated architecture, build, and specification checks pass.
 
 ## 9.3 Validation
 
-The architecture SHALL be considered valid for future feature growth when a new independent capability can be introduced without moving its semantics or build-tool dependencies into `foundation`, while still receiving the repository's standard Java build behavior through the convention layer and enforcing the new capability's logical boundaries automatically.
+The architecture SHALL be considered valid for future feature growth when a new independent capability can be introduced without moving its semantics into `foundation`, while still allowing intentional project-wide technical libraries to be shared through `foundation` and enforcing the new capability's logical boundaries automatically.
 
-Verification: Review at least one representative future-capability design against the dependency model, build-convention model, and boundary-enforcement model or demonstrate the condition when the next independent capability is introduced.
-Traceability: ARCH-QUAL-001; ARCH-QUAL-003; ARCH-QUAL-005.
+Verification: Review at least one representative future-capability design against the dependency model and boundary-enforcement model or demonstrate the condition when the next independent capability is introduced.
+Traceability: ARCH-QUAL-001; ARCH-QUAL-003.
