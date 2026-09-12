@@ -13,6 +13,7 @@
 | Web adaptation                          | ARCH-MOD-008 • ARCH-CON-008                                                                            | Feature specifications exposing public web behavior.      |
 | Application composition                 | ARCH-MOD-009 • ARCH-CON-009                                                                            | Executable application specifications and configuration.  |
 | Logical module boundary enforcement     | ARCH-MOD-010 • ARCH-MOD-011 • ARCH-CON-010 • ARCH-CON-011 • ARCH-CON-012 • ARCH-VER-005 • ARCH-VER-006 | All JVM implementation modules.                           |
+| Java build convention baseline          | ARCH-MOD-012 • ARCH-MOD-013 • ARCH-CON-013 through ARCH-CON-016 • ARCH-QUAL-005 • ARCH-VER-007         | All JVM implementation modules.                           |
 
 ## 10.2 Unresolved Issues
 

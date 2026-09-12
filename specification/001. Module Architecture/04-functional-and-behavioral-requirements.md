@@ -4,12 +4,12 @@
 
 ### ARCH-MOD-001 — Foundation role
 
-`foundation` SHALL be a shared physical library containing only feature-neutral Taskmigo primitives and contracts plus third-party libraries intentionally established as common dependencies for multiple Taskmigo modules.
+`foundation` SHALL be a shared physical library containing only feature-neutral Taskmigo-owned primitives and contracts.
 
-`foundation` MAY expose those common third-party libraries transitively to consuming modules. It SHALL NOT use dependency sharing as a reason to own capability-specific semantics, resource contracts, adapters, or persistence mappings.
+`foundation` SHALL NOT act as the repository's third-party dependency distribution mechanism. Cross-cutting build and tooling dependencies SHALL be supplied through build conventions, while runtime or capability dependencies SHALL be declared by the module that owns the behavior requiring them.
 
-Verification: Inspect `foundation` exports and dependency declarations, remove each feature capability conceptually from the architecture, and confirm every Taskmigo-owned exported contract remains meaningful while every re-exported third-party dependency is intentionally part of the common technical baseline.
-Traceability: [Architectural Boundary Test](02-overall-description.md#24-architectural-boundary-test); [Shared foundation dependencies](07-constraints.md#arch-con-003--shared-foundation-dependencies).
+Verification: Inspect `foundation` exports and dependency declarations, remove each feature capability conceptually from the architecture, and confirm every Taskmigo-owned exported contract remains meaningful and no unrelated build/tooling dependency is re-exported through `foundation`.
+Traceability: [Architectural Boundary Test](02-overall-description.md#24-architectural-boundary-test); [Foundation constraints](07-constraints.md#71-foundation-constraints).
 
 ### ARCH-MOD-002 — Capability ownership
 
@@ -88,3 +88,23 @@ A Spring Modulith application module SHALL expose cross-module types only throug
 
 Verification: Inspect module metadata and verify cross-module references against the Spring Modulith module model.
 Traceability: [Explicit interfaces and dependencies](07-constraints.md#arch-con-011--explicit-interfaces-and-dependencies).
+
+## 4.5 Build Convention Ownership
+
+### ARCH-MOD-012 — Build convention ownership
+
+Cross-cutting Java build behavior shared by multiple Taskmigo projects SHALL be owned by repository build logic implemented as reusable Gradle convention plugins or an equivalent centrally maintained mechanism.
+
+The shared convention layer SHALL include the Java language/toolchain baseline, nullness annotation availability, Error Prone and NullAway configuration, formatting, style checks, and common architecture-test tooling defined by [Section 12](12-build-conventions-and-tooling-baseline.md).
+
+Verification: Inspect representative module build files and confirm repeated build-tool configuration is supplied by the convention layer rather than copied into every module.
+Traceability: [Build Convention Layer](02-overall-description.md#225-build-convention-layer); ARCH-CON-013.
+
+### ARCH-MOD-013 — Dependency declaration expresses ownership
+
+A Taskmigo project dependency SHALL exist because the consumer uses a semantic, infrastructure, resource, or adapter contract owned by that project. A project dependency SHALL NOT be introduced solely to inherit unrelated third-party build/tool dependencies.
+
+Third-party libraries required by runtime or feature behavior SHALL be declared by the owning module with the narrowest correct Gradle scope. Cross-cutting build-only dependencies SHALL be applied through build conventions.
+
+Verification: Inspect project dependencies and representative third-party declarations and confirm project edges reflect Taskmigo ownership rather than dependency-distribution convenience.
+Traceability: ARCH-MOD-001; [Dependency scope discipline](07-constraints.md#arch-con-014--dependency-scope-discipline).

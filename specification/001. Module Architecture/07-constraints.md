@@ -16,13 +16,13 @@ Traceability: [Foundation](02-overall-description.md#221-foundation); [Foundatio
 Verification: Inspect exported `foundation` packages and classify each public Taskmigo-owned type using the [Architectural Boundary Test](02-overall-description.md#24-architectural-boundary-test).
 Traceability: ARCH-MOD-001; ARCH-MOD-002.
 
-### ARCH-CON-003 — Shared foundation dependencies
+### ARCH-CON-003 — Foundation is not dependency distribution
 
-`foundation` MAY declare and re-export third-party libraries that are intentionally established as common technical dependencies for multiple Taskmigo modules. A shared third-party dependency SHALL remain feature-neutral and SHALL NOT require `foundation` to depend on a higher-level Taskmigo project module.
+`foundation` SHALL NOT declare or re-export a third-party library solely to make that library available to unrelated Taskmigo modules.
 
-A library used only by one capability, resource, adapter, or executable application SHALL remain with that owner unless an architectural decision intentionally promotes the library into the project-wide technical baseline.
+Cross-cutting build-only dependencies such as nullness annotations, compiler analyzers, formatters, style checkers, and architecture-test libraries SHALL be provided by build conventions. Runtime or feature dependencies SHALL be declared by the module that owns the behavior requiring them.
 
-Verification: Inspect `foundation` dependency exposure and consumers and confirm re-exported libraries are intentionally shared while capability-specific libraries remain scoped to their owners.
+Verification: Inspect `foundation` dependencies and representative consumer classpaths and confirm no dependency exists only as a transitive distribution convenience.
 Traceability: [Foundation role](04-functional-and-behavioral-requirements.md#arch-mod-001--foundation-role); ARCH-QUAL-002.
 
 ## 7.2 Capability Constraints
@@ -99,3 +99,41 @@ ArchUnit SHALL supplement rather than replace Spring Modulith for any boundary S
 
 Verification: Add representative forbidden package references within one physical module and confirm the ArchUnit architecture test fails.
 Traceability: ARCH-QUAL-003; ARCH-VER-006.
+
+## 7.5 Build Convention Constraints
+
+### ARCH-CON-013 — Single build-convention source
+
+Project-wide Java build configuration SHALL be defined once in repository build logic and consumed through named convention plugins or an equivalent centralized mechanism.
+
+The convention layer SHALL NOT become a runtime dependency and SHALL NOT contain feature semantics.
+
+Verification: Inspect module build scripts and production classpaths and confirm shared build configuration is centralized and build logic is absent at runtime.
+Traceability: ARCH-MOD-012; ARCH-QUAL-005.
+
+### ARCH-CON-014 — Dependency scope discipline
+
+The narrowest correct Gradle scope SHALL be used for every cross-cutting build dependency.
+
+JSpecify SHALL use `compileOnlyApi` for reusable Java libraries whose published API carries JSpecify nullness metadata and `compileOnly` for executable or non-published Java projects. Error Prone and NullAway SHALL use the Error Prone tool configuration. Spotless and the Error Prone Gradle integration SHALL remain plugin/build-logic dependencies. Checkstyle SHALL remain on the Checkstyle tool configuration. Spring Modulith annotations SHALL be compile-only where runtime use is unnecessary, while Spring Modulith and ArchUnit verification libraries SHALL remain test dependencies.
+
+Verification: Inspect resolved compile, runtime, tool, plugin, and test classpaths for representative projects and confirm the scopes above.
+Traceability: [Tooling Catalog](12-build-conventions-and-tooling-baseline.md#122-fixed-tooling-catalog).
+
+### ARCH-CON-015 — Fixed build-tool versions
+
+Every cross-cutting tool or library listed in [Section 12.2](12-build-conventions-and-tooling-baseline.md#122-fixed-tooling-catalog) SHALL use the exact specified version. Dynamic selectors such as `latest.release`, `+`, or version ranges SHALL NOT be used for the build baseline.
+
+A version change SHALL be reviewed as an explicit build-baseline change, including license and Java compatibility review.
+
+Verification: Inspect the Gradle wrapper, version catalog, and convention-plugin dependencies and confirm exact versions match Section 12.2.
+Traceability: ARCH-VER-007.
+
+### ARCH-CON-016 — No redundant build-tool declarations
+
+A project that receives a cross-cutting tool or library through the applicable convention plugin SHALL NOT redeclare the same dependency merely for availability.
+
+A direct declaration is permitted only when the project intentionally changes scope or requires behavior not supplied by the convention, and that exception SHALL be evident in the build file.
+
+Verification: Inspect representative module build scripts and dependency reports and confirm duplicate JSpecify, Error Prone, NullAway, Spotless, Checkstyle, Spring Modulith test, and ArchUnit declarations are absent.
+Traceability: ARCH-QUAL-005; ARCH-VER-007.
