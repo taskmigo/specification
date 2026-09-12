@@ -12,18 +12,18 @@ This catalog covers repository-wide build and verification tools only. Capabilit
 
 The following versions and scopes are normative for the initial convention baseline:
 
-| Tool or library | Fixed version | Required scope / boundary | License at this version |
-| --- | ---: | --- | --- |
-| Gradle Build Tool / Wrapper | `9.7.1` | Repository build launcher only; wrapper distribution SHALL be checksum-pinned. | Apache License 2.0 |
-| Java toolchain | `26` | Gradle Java toolchain language version. Vendor SHALL remain unspecified by this specification. | Provider-specific; no JDK distribution license is mandated here. |
-| `org.jspecify:jspecify` | `1.0.1` | `compileOnlyApi` for reusable Java libraries; `compileOnly` for executable/non-published Java projects. SHALL NOT be obtained transitively through `foundation`. | Apache License 2.0 |
-| `net.ltgt.errorprone` Gradle plugin | `5.1.0` | Build-logic/plugin classpath only. | Apache License 2.0 |
-| `com.google.errorprone:error_prone_core` | `2.50.0` | Error Prone tool configuration only; SHALL NOT be a production runtime dependency. | Apache License 2.0 |
-| `com.uber.nullaway:nullaway` | `0.14.0` | Error Prone tool configuration only; JSpecify mode SHALL be enabled for NullMarked Taskmigo code. | MIT License |
-| `com.diffplug.spotless` Gradle plugin | `8.10.1` | Build-logic/plugin classpath only; owns repository formatting tasks and Java formatting/import cleanup configuration. | Apache License 2.0 |
-| `com.puppycrawl.tools:checkstyle` | `14.1.0` | Checkstyle tool configuration only. | GNU Lesser General Public License 2.1 |
-| Spring Modulith | `2.1.0` | BOM/version alignment for Modulith artifacts; module metadata SHOULD be compile-only where possible and verification support SHALL be test-scoped. | Apache License 2.0 |
-| `com.tngtech.archunit:archunit-junit5` | `1.4.2` | `testImplementation` only for supplemental package-boundary architecture tests. | Apache License 2.0; redistributed ASM components are BSD-licensed. |
+| Tool or library                          | Fixed version | Required scope / boundary                                                                                                                                        | License at this version                                            |
+| ---------------------------------------- | ------------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Gradle Build Tool / Wrapper              |       `9.7.1` | Repository build launcher only; wrapper distribution SHALL be checksum-pinned.                                                                                   | Apache License 2.0                                                 |
+| Java toolchain                           |          `26` | Gradle Java toolchain language version. Vendor SHALL remain unspecified by this specification.                                                                   | Provider-specific; no JDK distribution license is mandated here.   |
+| `org.jspecify:jspecify`                  |       `1.0.1` | `compileOnlyApi` for reusable Java libraries; `compileOnly` for executable/non-published Java projects. SHALL NOT be obtained transitively through `foundation`. | Apache License 2.0                                                 |
+| `net.ltgt.errorprone` Gradle plugin      |       `5.1.0` | Build-logic/plugin classpath only.                                                                                                                               | Apache License 2.0                                                 |
+| `com.google.errorprone:error_prone_core` |      `2.50.0` | Error Prone tool configuration only; SHALL NOT be a production runtime dependency.                                                                               | Apache License 2.0                                                 |
+| `com.uber.nullaway:nullaway`             |      `0.14.0` | Error Prone tool configuration only; JSpecify mode SHALL be enabled for NullMarked Taskmigo code.                                                                | MIT License                                                        |
+| `com.diffplug.spotless` Gradle plugin    |      `8.10.1` | Build-logic/plugin classpath only; owns repository formatting tasks and Java formatting/import cleanup configuration.                                            | Apache License 2.0                                                 |
+| `com.puppycrawl.tools:checkstyle`        |      `14.1.0` | Checkstyle tool configuration only.                                                                                                                              | GNU Lesser General Public License 2.1                              |
+| Spring Modulith                          |       `2.1.0` | BOM/version alignment for Modulith artifacts; module metadata SHOULD be compile-only where possible and verification support SHALL be test-scoped.               | Apache License 2.0                                                 |
+| `com.tngtech.archunit:archunit-junit5`   |       `1.4.2` | `testImplementation` only for supplemental package-boundary architecture tests.                                                                                  | Apache License 2.0; redistributed ASM components are BSD-licensed. |
 
 The Java toolchain row fixes the Java language/runtime level used for compilation but deliberately does not select a JDK vendor. Repository automation MAY select a vendor for CI reproducibility, but such vendor selection SHALL be documented separately with its distribution license.
 
