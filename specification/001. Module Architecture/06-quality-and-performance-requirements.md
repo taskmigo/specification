@@ -4,26 +4,19 @@
 
 ### ARCH-QUAL-001 — Independent capability evolution
 
-A capability module SHALL be evolvable without requiring unrelated capability modules to accept that capability's semantics, public contracts, runtime libraries, or build-tool dependencies through `foundation`.
+A capability module SHALL be evolvable without requiring unrelated capability modules to accept that capability's semantics, public contracts, or capability-specific libraries through `foundation`.
 
-Repository-wide build conventions MAY apply cross-cutting compile-time and verification tools without transferring feature ownership or creating Taskmigo project-module dependencies.
+Project-wide technical libraries intentionally shared through `foundation` MAY be visible transitively to unrelated modules without transferring feature ownership.
 
-Verification: Inspect project and third-party dependencies and confirm shared build tooling is delivered by build conventions while feature/runtime dependencies remain owned by the module that uses them.
-Traceability: [Foundation role](04-functional-and-behavioral-requirements.md#arch-mod-001--foundation-role); [Build convention ownership](04-functional-and-behavioral-requirements.md#arch-mod-012--build-convention-ownership).
+Verification: Inspect transitive dependencies from `foundation` and confirm that shared dependencies are part of the common technical baseline rather than dependencies introduced solely for one capability.
+Traceability: [Foundation role](04-functional-and-behavioral-requirements.md#arch-mod-001--foundation-role); [Shared foundation dependencies](07-constraints.md#arch-con-003--shared-foundation-dependencies).
 
-### ARCH-QUAL-002 — Third-party dependency discipline
+### ARCH-QUAL-002 — Shared dependency discipline
 
-A third-party dependency required by feature or runtime behavior SHALL remain scoped to the owning capability, resource, adapter, infrastructure module, or application. A third-party dependency used only to compile, analyze, format, lint, or verify code across multiple projects SHALL be supplied through build conventions rather than re-exported from a runtime project.
+Third-party dependencies intentionally used as a common technical baseline across multiple Taskmigo modules MAY be centralized and re-exported by `foundation`. Capability-specific third-party dependencies SHALL remain scoped to the owning capability or adapter unless an architectural decision establishes them as project-wide dependencies.
 
-Verification: Inspect dependency declarations and resolved classpaths and confirm build-only tools are absent from production runtime classpaths unless independently required by owned runtime behavior.
-Traceability: ARCH-MOD-013; [Dependency scope discipline](07-constraints.md#arch-con-014--dependency-scope-discipline).
-
-### ARCH-QUAL-005 — Build-file signal-to-noise
-
-A normal Taskmigo module build file SHOULD primarily communicate the module type and intentional behavior dependencies. Project-wide Java version, nullness, static-analysis, formatting, style, and shared architecture-test configuration SHOULD NOT require repeated declarations in each module.
-
-Verification: Inspect representative `foundation`, capability, resource, adapter, and application build files and confirm common build configuration is inherited from the convention layer.
-Traceability: ARCH-MOD-012; [Build Conventions and Tooling Baseline](12-build-conventions-and-tooling-baseline.md).
+Verification: Inspect dependency declarations and consumers and confirm every dependency re-exported by `foundation` is intentionally shared, while capability-specific libraries remain local to their owners.
+Traceability: ARCH-QUAL-001; [Shared foundation dependencies](07-constraints.md#arch-con-003--shared-foundation-dependencies).
 
 ## 6.2 Testability
 
@@ -38,9 +31,9 @@ Traceability: [Prohibited Dependencies](08-requirements-allocation-and-dependenc
 
 ### ARCH-QUAL-004 — Foundation runtime neutrality
 
-Consuming feature-neutral `foundation` contracts SHALL NOT require initialization of a dependency-injection container, HTTP runtime, persistence runtime, parser runtime, executable application runtime, or build-time analysis tool.
+Consuming feature-neutral `foundation` contracts SHALL NOT require initialization of a dependency-injection container, HTTP runtime, persistence runtime, parser runtime, or executable application runtime merely because `foundation` also distributes shared libraries.
 
-Verification: Exercise representative feature-neutral `foundation` contracts without starting application frameworks and inspect the runtime classpath to confirm build-only tooling is absent.
+Verification: Exercise representative feature-neutral `foundation` contracts without starting application frameworks and confirm shared dependency distribution does not impose runtime initialization.
 Traceability: [Foundation contract neutrality](03-external-interface-requirements.md#arch-if-001--foundation-contract-neutrality).
 
 ## 6.4 Performance
