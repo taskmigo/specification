@@ -1,7 +1,7 @@
 ---
 metadata:
-  version: 0.2.0
-  changelog: Adopts Spring Modulith as the primary module-boundary mechanism, ArchUnit for intra-module package linting, and foundation as a shared dependency library.
+  version: 0.3.0
+  changelog: Separates build and tooling conventions from foundation ownership and fixes the Java build-tool baseline with explicit scopes, versions, and licenses.
 ---
 
 <!-- markdownlint-disable MD041 -->
@@ -21,7 +21,8 @@ metadata:
 | 9       | Verification, Validation, and Acceptance Evidence | Architecture verification objectives and acceptance conditions  | [09-verification-validation-and-acceptance.md](09-verification-validation-and-acceptance.md)     |
 | 10      | Traceability and Unresolved Issues                | Cross-specification traceability and unresolved decisions       | [10-traceability-and-unresolved-issues.md](10-traceability-and-unresolved-issues.md)             |
 | 11      | Appendices                                        | Dependency model and module examples                            | [11-appendices.md](11-appendices.md)                                                             |
+| 12      | Build Conventions and Tooling Baseline            | Reproducible Java build conventions, versions, scopes, licenses | [12-build-conventions-and-tooling-baseline.md](12-build-conventions-and-tooling-baseline.md)     |
 
 ## Read order
 
-Read the documents in section-number order from 1 through 11. Use [Section 4](04-functional-and-behavioral-requirements.md) for normative module ownership, [Section 7](07-constraints.md) for mandatory architectural constraints, and [Section 8](08-requirements-allocation-and-dependencies.md) for the allowed dependency model.
+Read the documents in section-number order from 1 through 12. Use [Section 4](04-functional-and-behavioral-requirements.md) for normative module ownership, [Section 7](07-constraints.md) for mandatory architectural and build constraints, [Section 8](08-requirements-allocation-and-dependencies.md) for the allowed dependency model, and [Section 12](12-build-conventions-and-tooling-baseline.md) for the fixed cross-cutting Java build-tool baseline.
