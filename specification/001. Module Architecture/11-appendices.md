@@ -28,18 +28,18 @@ A direct Taskmigo project edge MAY be omitted when the consumer does not use the
 
 The following examples are supporting guidance for the [Architectural Boundary Test](02-overall-description.md#24-architectural-boundary-test):
 
-| Candidate                                      | Classification        | Reason                                                                                                  |
-| ---------------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------- |
-| Generic offset-pagination value                | Foundation candidate. | Its meaning is independent of a specific Taskmigo feature.                                              |
-| JSpecify annotations                           | Build convention.     | They are cross-cutting compile-time metadata and do not represent Taskmigo semantic ownership.          |
-| Error Prone or NullAway                        | Build convention.     | They analyze compilation and SHALL NOT create a Taskmigo project dependency or runtime dependency.      |
-| Query Predicate                                | `query`.              | Its meaning is defined by Query Filtering semantics.                                                    |
-| Authorization Snapshot                         | `authorization`.      | Its meaning is defined by Authorization semantics.                                                      |
-| Language compiler                              | `language`.           | Its meaning is defined by the language capability.                                                      |
-| User Query Schema                              | `identity`.           | It is resource-specific query metadata for an identity resource.                                       |
-| Spring MVC `FilteredQuery` resolver            | `web`.                | It adapts Query Filtering to the web framework.                                                         |
-| JPA binder for a User Query Predicate          | `identity`.           | It translates an identity-resource contract to identity persistence topology.                           |
-| Runtime library used by one capability         | Owning module.        | Runtime behavior dependencies belong with the capability, resource, adapter, infrastructure, or app.   |
+| Candidate                              | Classification        | Reason                                                                                               |
+| -------------------------------------- | --------------------- | ---------------------------------------------------------------------------------------------------- |
+| Generic offset-pagination value        | Foundation candidate. | Its meaning is independent of a specific Taskmigo feature.                                           |
+| JSpecify annotations                   | Build convention.     | They are cross-cutting compile-time metadata and do not represent Taskmigo semantic ownership.       |
+| Error Prone or NullAway                | Build convention.     | They analyze compilation and SHALL NOT create a Taskmigo project dependency or runtime dependency.   |
+| Query Predicate                        | `query`.              | Its meaning is defined by Query Filtering semantics.                                                 |
+| Authorization Snapshot                 | `authorization`.      | Its meaning is defined by Authorization semantics.                                                   |
+| Language compiler                      | `language`.           | Its meaning is defined by the language capability.                                                   |
+| User Query Schema                      | `identity`.           | It is resource-specific query metadata for an identity resource.                                     |
+| Spring MVC `FilteredQuery` resolver    | `web`.                | It adapts Query Filtering to the web framework.                                                      |
+| JPA binder for a User Query Predicate  | `identity`.           | It translates an identity-resource contract to identity persistence topology.                        |
+| Runtime library used by one capability | Owning module.        | Runtime behavior dependencies belong with the capability, resource, adapter, infrastructure, or app. |
 
 ## 11.3 Future Module Classification
 
