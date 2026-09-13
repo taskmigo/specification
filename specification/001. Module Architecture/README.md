@@ -1,7 +1,7 @@
 ---
 metadata:
-  version: 0.4.0
-  changelog: Revert v0.3.0
+  version: 0.5.0
+  changelog: Resolves Role ownership between authorization semantics and identity resource integration while preserving existing dependency boundaries.
 ---
 
 <!-- markdownlint-disable MD041 -->

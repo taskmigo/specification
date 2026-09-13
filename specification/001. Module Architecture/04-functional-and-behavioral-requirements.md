@@ -38,8 +38,10 @@ Traceability: [Query Filtering](../004.%20Query%20Filtering/README.md).
 
 `authorization` SHALL own authorization policy semantics, authorization contexts and snapshots, Request Authorization decisions, Statement authorization semantics, Object Authorization Schemas, Object Authorization Predicates, and Authorization-specific Language integration.
 
-Verification: Inspect Authorization public contracts and engine behavior and confirm they are not located in `foundation`, `identity`, or `web`.
-Traceability: [Authorization](../002.%20Authorization/README.md).
+`authorization` SHALL also own Role semantics that affect authorization behavior, including Role contracts, Role hierarchy rules, and the semantics of Role-to-Statement aggregation. Persistence and resource-lifecycle implementations MAY live in a resource-owning module provided they consume these Authorization-owned contracts and SHALL NOT redefine those semantics.
+
+Verification: Inspect Authorization public contracts and engine behavior, including Role contracts and hierarchy behavior, and confirm authorization semantics are not redefined in `foundation`, `identity`, or `web`.
+Traceability: [Authorization](../002.%20Authorization/README.md); ARCH-MOD-006; ARCH-MOD-007.
 
 ### ARCH-MOD-006 — Resource persistence ownership
 
@@ -52,9 +54,11 @@ Traceability: [Resource-owned persistence translation](03-external-interface-req
 
 `identity` SHALL own Taskmigo identity resources such as users, groups, and membership relationships together with their resource-specific persistence and query integration.
 
-Authorization concepts whose meaning is defined by policy evaluation SHALL remain owned by `authorization`, even when they refer to identity resources.
+`identity` MAY own Role resource lifecycle, persistence, and API-facing resource integration when Roles are managed through the identity resource surface. In that case, it SHALL consume Authorization-owned Role contracts and hierarchy semantics and SHALL NOT redefine authorization-policy aggregation behavior.
 
-Verification: Inspect identity-resource ownership and confirm authorization-engine semantics are not moved into `identity` merely because they operate on users or groups.
+Authorization concepts whose meaning is defined by policy evaluation SHALL remain owned by `authorization`, even when they refer to identity resources or are persisted through identity-owned resource infrastructure.
+
+Verification: Inspect identity-resource ownership and any Role resource implementation and confirm authorization-engine and Role-hierarchy semantics remain owned by `authorization` while resource-specific persistence and query mappings remain with the resource-owning module.
 Traceability: ARCH-MOD-005; ARCH-MOD-006.
 
 ## 4.3 Adapter and Application Ownership

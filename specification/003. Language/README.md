@@ -1,7 +1,7 @@
 ---
 metadata:
-  version: 0.6.0
-  changelog: Clarifies that the Semantic AST has no independent version field and uses Language/compiler artifact identity for compatibility.
+  version: 0.6.1
+  changelog: Aligns unresolved-issue version metadata with the current Language specification without changing language semantics.
 ---
 
 <!-- markdownlint-disable MD041 -->

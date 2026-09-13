@@ -2,16 +2,18 @@
 
 ## 8.1 Ownership Allocation
 
-| Module                  | Required ownership                                                                                                                                             |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `foundation`            | Feature-neutral shared primitives and contracts plus third-party libraries intentionally established as common technical dependencies across Taskmigo modules. |
-| `language`              | Language syntax, compilation, typing, Semantic AST, evaluation, partial evaluation, and language diagnostics.                                                  |
-| `query`                 | Query Schema and Predicate contracts, `FilteredQuery`, `filterBy` compilation, and query validation.                                                           |
-| `authorization`         | Authorization context and state, Statement semantics, Request Authorization, Object Authorization contracts, and authorization-specific language integration.  |
-| `identity`              | User, group, membership, and identity-resource semantics plus resource-specific query and persistence integration.                                             |
-| `database`              | Shared persistence infrastructure without resource-specific domain ownership.                                                                                  |
-| `web`                   | HTTP, Spring MVC, Spring Security, and public web error adaptation.                                                                                            |
-| Executable applications | Composition of published module contracts for one runnable application.                                                                                        |
+| Module                  | Required ownership                                                                                                                                                                                                  |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `foundation`            | Feature-neutral shared primitives and contracts plus third-party libraries intentionally established as common technical dependencies across Taskmigo modules.                                                      |
+| `language`              | Language syntax, compilation, typing, Semantic AST, evaluation, partial evaluation, and language diagnostics.                                                                                                       |
+| `query`                 | Query Schema and Predicate contracts, `FilteredQuery`, `filterBy` compilation, and query validation.                                                                                                                |
+| `authorization`         | Authorization context and state, Statement semantics, Request Authorization, Object Authorization contracts, Role authorization contracts and hierarchy semantics, and authorization-specific language integration. |
+| `identity`              | User, group, membership, and identity-resource semantics plus resource-specific query and persistence integration; Role resource lifecycle/persistence when exposed through the identity resource surface.          |
+| `database`              | Shared persistence infrastructure without resource-specific domain ownership.                                                                                                                                       |
+| `web`                   | HTTP, Spring MVC, Spring Security, and public web error adaptation.                                                                                                                                                 |
+| Executable applications | Composition of published module contracts for one runnable application.                                                                                                                                             |
+
+When `identity` implements Role resource lifecycle or persistence, it SHALL consume Authorization-owned Role contracts and hierarchy semantics rather than redefine authorization-policy aggregation behavior.
 
 ## 8.2 Allowed Dependency Model
 
@@ -51,9 +53,10 @@ Traceability: [Constraints](07-constraints.md).
 
 ## 8.4 Cross-Specification Allocation
 
-- [Authorization](../002.%20Authorization/README.md) SHALL allocate Authorization-owned behavior to `authorization`, resource-specific Object Authorization schemas and binders to the owning resource module, and web adaptation to `web`.
+- [Authorization](../002.%20Authorization/README.md) SHALL allocate Authorization-owned behavior to `authorization`, including Role authorization contracts and hierarchy semantics; resource-specific Object Authorization schemas and binders remain with the owning resource module, and web adaptation remains with `web`.
 - [Language](../003.%20Language/README.md) SHALL allocate its language behavior to `language` and consumer semantics to the consuming capability.
 - [Query Filtering](../004.%20Query%20Filtering/README.md) SHALL allocate Query Filtering contracts and compilation to `query`, resource-specific schemas and persistence mappings to the resource-owning module, and Spring MVC adaptation to `web`.
+- Identity resource implementations MAY provide Role lifecycle and persistence while consuming Authorization-owned Role semantics, consistent with ARCH-MOD-005 through ARCH-MOD-007.
 - Future feature specifications SHALL identify their owning module and dependencies consistently with this specification.
 
 ## 8.5 Enforcement Allocation
