@@ -16,9 +16,15 @@ ObjectAuthorizationPredicate<Q>
 resource-owned authorization predicate binder
         ↓
 database before pagination
+
+Request/Object Authorization
+        ↓
+Authorization Log persistence
+        ↓
+protected offset-paginated log API
 ```
 
-The authorization capability SHALL keep HTTP adaptation, policy semantics, object queryability, and persistence translation behind explicit interfaces.
+The authorization capability SHALL keep HTTP adaptation, policy semantics, object queryability, persistence translation, and Authorization Log retrieval behind explicit interfaces.
 
 ## 2.2 Product Functions
 
@@ -28,9 +34,10 @@ The authorization system provides:
 - Database-side Object Authorization using opaque Object Authorization Predicates.
 - Direct and inherited User, Group, Role, and Statement semantics.
 - One operation-scoped immutable authorization state shared across Request and Object Authorization.
-- `PROGRAM` policy compilation and Semantic AST evaluation/partial evaluation.
-- Object Authorization Schema validation for API-visible nested/composed object paths and supported operators.
+- Runtime `PROGRAM` policy compilation and Semantic AST evaluation/partial evaluation.
+- Runtime Object Authorization Schema validation for API-visible nested/composed object paths and supported operators.
 - Fail-closed behavior for authorization failures.
+- Persisted Request/Object Authorization outcome logging and protected offset-paginated log retrieval.
 
 ### 2.2.1 Resolution and Operation Context
 
@@ -44,7 +51,9 @@ The predicate SHALL preserve API-visible logical paths until the resource-owned 
 
 ### 2.2.3 Language Contract
 
-Authorization SHALL compile policies in `PROGRAM` mode, supply an Authorization-owned Compilation Profile and scope-dependent Environment Schema, evaluate Request policies, partially evaluate Object policies, and enforce Boolean authorization semantics at runtime as defined by STMT-004.
+Authorization SHALL compile policies in `PROGRAM` mode when authorization executes, supply an Authorization-owned Compilation Profile and scope-dependent Environment Schema, evaluate Request policies, partially evaluate Object policies, and enforce Boolean authorization semantics at runtime as defined by STMT-004.
+
+Statement creation and update SHALL NOT require policy compilation, target-to-schema resolution, or Object queryability validation.
 
 ### 2.2.4 Request Input Boundary
 
@@ -54,19 +63,24 @@ Request Authorization SHALL expose only supported `principal` and `request` valu
 
 Spring Security adaptation SHALL remain in `web`. Authorization SHALL expose typed transport-neutral inputs/results and an opaque `AuthorizationContext`. Spring MVC integration MAY expose that context as a controller argument for the current request.
 
+### 2.2.6 Authorization Logging
+
+Each Request or Object Authorization attempt SHALL produce one Authorization Log outcome classified as allowed, denied, or error and identified as Request or Object Authorization. Authorization semantic failures SHALL be logged as errors while preserving fail-closed authorization behavior.
+
 ## 2.3 Stakeholders and Users
 
-The capability is consumed by policy authors, Spring Security/web adapters, resource-owning modules, persistence adapters, and operators or reviewers of authorization changes.
+The capability is consumed by policy authors, Spring Security/web adapters, resource-owning modules, persistence adapters, and operators or reviewers of authorization activity and changes.
 
 ## 2.4 Operational Scenarios
 
 The following scenarios are supporting context:
 
 1. Spring Security adapts an authenticated HTTP request to typed Authorization principal/request inputs.
-2. Request Authorization resolves Statements, creates one Authorization Context, and returns a Request decision.
-3. A resource operation uses the same context and its Object Authorization Schema to derive an Object Authorization Predicate.
+2. Request Authorization resolves Statements, compiles and evaluates applicable policies at runtime, creates one Authorization Context, returns a Request decision, and persists the Request Authorization outcome.
+3. A resource operation uses the same context and its Object Authorization Schema to derive an Object Authorization Predicate and persists the Object Authorization outcome.
 4. A resource-owned binder translates the Object Authorization Predicate to a persistence predicate before pagination.
-5. The next authorization operation re-resolves database state and observes committed changes.
+5. An authorized operator retrieves Authorization Logs through offset pagination.
+6. The next authorization operation re-resolves database state and observes committed changes.
 
 ## 2.5 Out of Scope
 

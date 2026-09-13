@@ -2,7 +2,7 @@
 
 ## 1.1 Purpose
 
-This Software Requirements Specification (SRS) defines Statement-based Request and Object Authorization using Language policies, operation-scoped authorization state, authorization-owned object schemas, and database-side Object predicates.
+This Software Requirements Specification (SRS) defines Statement-based Request and Object Authorization using Language policies, operation-scoped authorization state, authorization-owned object schemas, database-side Object predicates, and persisted Authorization Logs.
 
 This document is tailored to the software-requirements information-item guidance in [ISO/IEC/IEEE 29148:2018](https://committee.iso.org/standard/72089.html). It does not claim full conformance to the standard.
 
@@ -13,13 +13,15 @@ The authorization model SHALL:
 - Preserve default-deny Request Authorization with DENY overriding ALLOW.
 - Resolve relevant effective Statements from the database for every authorization operation.
 - Use one immutable operation-scoped authorization state for Request and Object Authorization.
-- Compile Statement policies with [Language](../003.%20Language/README.md) `PROGRAM` mode.
+- Compile Statement policies with [Language](../003.%20Language/README.md) `PROGRAM` mode when authorization executes rather than semantically validating policies when Statements are created or updated.
 - Evaluate Request policies using concrete `principal` and `request` values only.
 - Partially evaluate Object policies with symbolic `object` values.
 - Define Object Authorization Schemas over API-visible object paths, including declared nested and collection paths.
 - Produce opaque Object Authorization Predicates for resource-owned persistence translation.
 - Apply Object Authorization before pagination without unrestricted JVM row filtering.
 - Expose an opaque Authorization Context rather than internal snapshots or Semantic AST.
+- Persist Authorization Logs that distinguish Request and Object Authorization and classify allowed, denied, and error outcomes.
+- Expose protected offset-paginated Authorization Log retrieval.
 
 Package/module ownership and dependency boundaries are governed by [Module Architecture](../001.%20Module%20Architecture/README.md) and are not redefined here.
 
@@ -28,6 +30,7 @@ Additional authorization target kinds beyond `target.api` remain outside this SR
 ## 1.3 Definitions, Acronyms, and Abbreviations
 
 - **Authorization Context:** Opaque operation-scoped public handle carrying authorization state required by subsequent Object Authorization.
+- **Authorization Log:** Persisted record of one Request or Object Authorization outcome, including its authorization type, outcome, severity, request identity, and relevant diagnostic context.
 - **Authorization Snapshot:** Internal immutable authorization state materialized once for one operation.
 - **Object Authorization Field:** Typed API-visible object path with operators accepted for Object Authorization persistence translation.
 - **Object Authorization Predicate:** Opaque typed Boolean predicate produced by Object Authorization.

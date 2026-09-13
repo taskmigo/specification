@@ -2,13 +2,17 @@
 
 ## 6.1 Security
 
-Authorization security behavior is defined by [policy isolation](07-constraints.md#72-security-and-isolation), [Statement validation](03-external-interface-requirements.md#31-statement-contract), [Request input boundaries](03-external-interface-requirements.md#32-authorization-inputs-and-operation-snapshot), and [fail-closed behavior](07-constraints.md#73-fail-closed-behavior).
+Authorization security behavior is defined by [policy isolation](07-constraints.md#72-security-and-isolation), [runtime Statement policy validation](04-functional-and-behavioral-requirements.md#policy-003--deferred-semantic-validation), [Request input boundaries](03-external-interface-requirements.md#32-authorization-inputs-and-operation-snapshot), and [fail-closed behavior](07-constraints.md#73-fail-closed-behavior).
+
+Authorization Log retrieval SHALL remain protected by Request Authorization under LOG-API-001, and persisted/public diagnostics SHALL satisfy the data-minimization constraints in LOG-DATA-001.
 
 The Language compiler/evaluator boundary SHALL additionally satisfy the [Language constraints](../003.%20Language/07-constraints.md).
 
 ## 6.2 Consistency
 
 Operation state consistency SHALL satisfy SNAPSHOT-001 through SNAPSHOT-004.
+
+Authorization Log persistence SHALL record the outcome determined for the corresponding authorization invocation and SHALL NOT alter that outcome under LOG-005.
 
 ## 6.3 Performance Requirements
 
@@ -40,10 +44,10 @@ Traceability: PERF-001; SNAPSHOT-001.
 
 The authorization system SHALL support a principal with approximately 500 effective Statements targeting the same API, including a case where no early constant result can terminate evaluation.
 
-The scenario SHALL use bounded database round trips and SHALL exercise target matching plus Language evaluation/partial evaluation.
+The scenario SHALL use bounded database round trips and SHALL exercise target matching plus runtime Language compilation/evaluation or artifact reuse and partial evaluation.
 
 Verification: Run the approximately 500-Statement scenario with query-count instrumentation.
-Traceability: [Language partial-evaluation performance](../003.%20Language/06-quality-and-performance-requirements.md#perf-002--dependency-aware-partial-evaluation); PERF-002.
+Traceability: [Language partial-evaluation performance](../003.%20Language/06-quality-and-performance-requirements.md#perf-002--dependency-aware-partial-evaluation); PERF-002; POLICY-004.
 
 ### PERF-004 — Database source of truth on every operation
 
