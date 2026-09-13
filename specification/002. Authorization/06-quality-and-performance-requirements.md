@@ -53,8 +53,10 @@ The authorization system SHALL NOT use cross-request Statement, effective-Statem
 
 A derived compiled Language artifact MAY be reused only under POLICY-004 and SHALL NOT substitute for the database Statement lookup.
 
-Verification: Run sequential operations after a committed policy change and confirm each performs required database resolution.
-Traceability: SNAPSHOT-001; POLICY-004.
+After the current Statement has been loaded, the database-owned effective Statement revision defined by STATE-001 MAY serve as the Statement freshness component for Authorization-layer derived-artifact reuse when the remaining compilation identities are compatible as defined by STATE-002.
+
+Verification: Run sequential operations after a committed policy change and confirm each performs required database resolution, observes the new Statement revision, and does not reuse the stale derived artifact.
+Traceability: SNAPSHOT-001; POLICY-004; STATE-001; STATE-002.
 
 ### PERF-005 — No distributed-cache correctness dependency
 

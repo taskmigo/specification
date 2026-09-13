@@ -1,7 +1,7 @@
 ---
 metadata:
-  version: 0.5.2
-  changelog: Renames the consumed Embedded Language feature to Language while preserving Authorization semantics and module allocation.
+  version: 0.6.0
+  changelog: Aligns DB-owned Statement revision tracking and adapter-derived Object Authorization target resolution with the runtime implementation.
 ---
 
 <!-- markdownlint-disable MD041 -->

@@ -21,7 +21,7 @@ The authorization model SHALL:
 - Apply Object Authorization before pagination without unrestricted JVM row filtering.
 - Expose an opaque Authorization Context rather than internal snapshots or Semantic AST.
 
-Package/module ownership and public SDK boundaries are governed by [issue #54](https://github.com/taskmigo/specification/issues/54) and are not redefined here.
+Package/module ownership and dependency boundaries are governed by [Module Architecture](../001.%20Module%20Architecture/README.md) and are not redefined here.
 
 Additional authorization target kinds beyond `target.api` remain outside this SRS.
 
@@ -39,7 +39,7 @@ Additional authorization target kinds beyond `target.api` remain outside this SR
 ## 1.4 References
 
 - The [Language feature](../003.%20Language/README.md) defines language syntax, Semantic AST, typing, Compilation Profiles, evaluation, partial evaluation, and bounded collection intrinsics.
-- The linked issue defines package/module ownership and public SDK boundaries outside this SRS.
+- [Module Architecture](../001.%20Module%20Architecture/README.md) defines package/module ownership, dependency direction, and adapter boundaries.
 
 ## 1.5 Overview
 

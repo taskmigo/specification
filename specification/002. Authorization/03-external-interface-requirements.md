@@ -15,7 +15,7 @@ target:
     path: <full-match path regex>
 policy: |
   const readable = request.method == "GET";
-  return principal.enabled && readable;
+  return principal.username != "" && readable;
 ```
 
 The canonical Statement SHALL contain the fields and nesting shown above. `target.api` is the only target shape specified by this SRS.
