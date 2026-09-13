@@ -1,7 +1,7 @@
 ---
 metadata:
-  version: 0.2.0
-  changelog: Adopts Spring Modulith as the primary module-boundary mechanism, ArchUnit for intra-module package linting, and foundation as a shared dependency library.
+  version: 0.4.0
+  changelog: Revert v0.3.0
 ---
 
 <!-- markdownlint-disable MD041 -->
