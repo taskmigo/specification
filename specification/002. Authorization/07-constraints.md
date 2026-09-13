@@ -11,12 +11,12 @@ Traceability: OBJ-005.
 
 ### TECH-002 — Integration pattern discipline
 
-Authorization SHOULD use framework patterns only where they reduce coupling. Relevant patterns include Strategy for Request/Object evaluation, Composite for Object predicate composition, Adapter for Spring Security/web boundaries, and Registry through Spring-managed Object Authorization Schemas.
+Authorization SHOULD use framework patterns only where they reduce coupling. Relevant patterns include Strategy for Request/Object evaluation, Composite for Object predicate composition, and Adapter for Spring Security/web boundaries.
 
 A pattern SHALL NOT expose Semantic AST or persistence query structures through public authorization interfaces.
 
-Verification: Review public/internal boundaries for unnecessary pattern-only abstractions.
-Traceability: AUTH-API-003 through AUTH-API-006; OBJ-003.
+Verification: Review public/internal boundaries for unnecessary pattern-only abstractions and confirm Object target applicability uses the framework-neutral resolver contract rather than a transport-specific registry.
+Traceability: AUTH-API-003 through AUTH-API-006; OBJ-003; TARGET-001; TARGET-002.
 
 ## 7.2 Security and Isolation
 
