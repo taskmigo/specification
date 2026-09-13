@@ -1,7 +1,7 @@
 ---
 metadata:
-  version: 0.2.2
-  changelog: Renames the consumed Embedded Language feature to Language while preserving Query Filtering semantics and module allocation.
+  version: 0.2.3
+  changelog: Removes stale Embedded Language terminology and aligns Query Filtering traceability metadata with the current Language dependency.
 ---
 
 <!-- markdownlint-disable MD041 -->

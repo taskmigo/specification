@@ -8,6 +8,7 @@
 | Language module isolation               | ARCH-MOD-003 • ARCH-CON-004                                                                            | [Language](../003.%20Language/README.md).                 |
 | Query capability ownership              | ARCH-MOD-004 • ARCH-CON-005                                                                            | [Query Filtering](../004.%20Query%20Filtering/README.md). |
 | Authorization capability ownership      | ARCH-MOD-005 • ARCH-CON-006                                                                            | [Authorization](../002.%20Authorization/README.md).       |
+| Role semantics and resource integration | ARCH-MOD-005 • ARCH-MOD-006 • ARCH-MOD-007 • ARCH-VER-003                                              | Authorization and Identity resource integration.          |
 | Resource-specific persistence ownership | ARCH-MOD-006 • ARCH-CON-007                                                                            | Authorization and Query Filtering resource integrations.  |
 | Identity resource ownership             | ARCH-MOD-007                                                                                           | Future Identity specification.                            |
 | Web adaptation                          | ARCH-MOD-008 • ARCH-CON-008                                                                            | Feature specifications exposing public web behavior.      |
@@ -16,10 +17,6 @@
 
 ## 10.2 Unresolved Issues
 
-### ARCH-TBR-001 — Role resource ownership
+No unresolved module-ownership issue is recorded for version 0.5.0.
 
-The canonical ownership of the Role resource is TBR. It SHALL be resolved by its domain semantics: a Role defined primarily as an authorization-policy aggregation belongs to `authorization`; a Role with independent identity-management lifecycle semantics may belong to `identity` while its authorization semantics remain in `authorization`.
-
-Resolution condition: Resolve when the Role contract and lifecycle are next materially revised or when an Identity specification is introduced.
-
-Owner: Taskmigo architecture maintainers.
+Role ownership is resolved by ARCH-MOD-005 through ARCH-MOD-007: `authorization` owns Role authorization contracts, hierarchy rules, and policy-aggregation semantics; a resource-owning module such as `identity` MAY own Role lifecycle, persistence, query mapping, and API-facing resource integration while consuming those Authorization-owned semantics.

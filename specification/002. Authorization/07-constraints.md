@@ -1,22 +1,24 @@
 # 7. Constraints
 
-## 7.1 Pattern Discipline
+## 7.1 Boundary Discipline
 
-### TECH-001 — Constant identity behavior
+### TECH-001 — Explicit constant predicate semantics
 
-Internal authorization abstractions SHOULD use constant/identity objects where they remove sentinel branching without changing the external Statement contract.
+Authorization SHALL represent constant policy and predicate outcomes through normal authorization contracts and SHALL NOT require callers or persistence binders to interpret `null`, sentinel values, or implementation-specific node types as constant `true` or `false`.
 
-Verification: Inspect constant policy/predicate implementations.
-Traceability: OBJ-005.
+`ObjectAuthorizationPredicate<Q>` constant-state behavior exposed by AUTH-API-004 SHALL remain valid through predicate composition and persistence binding.
 
-### TECH-002 — Integration pattern discipline
+Verification: Exercise constant-true and constant-false Object Authorization results through composition and persistence binding without relying on sentinel/null conventions.
+Traceability: AUTH-API-004; OBJ-005.
 
-Authorization SHOULD use framework patterns only where they reduce coupling. Relevant patterns include Strategy for Request/Object evaluation, Composite for Object predicate composition, and Adapter for Spring Security/web boundaries.
+### TECH-002 — Integration boundary discipline
 
-A pattern SHALL NOT expose Semantic AST or persistence query structures through public authorization interfaces.
+Core Authorization SHALL remain independent of transport-specific and persistence-specific implementation types. Spring Security/web adaptation SHALL remain behind the web adapter boundary, Object target applicability SHALL cross the framework-neutral resolver contract, and persistence translation SHALL remain resource-owned.
 
-Verification: Review public/internal boundaries for unnecessary pattern-only abstractions and confirm Object target applicability uses the framework-neutral resolver contract rather than a transport-specific registry.
-Traceability: AUTH-API-003 through AUTH-API-006; OBJ-003; TARGET-001; TARGET-002.
+Authorization public interfaces SHALL NOT expose Semantic AST or persistence query structures. Internal class decomposition and design-pattern choices are non-normative provided these boundaries and observable contracts are preserved.
+
+Verification: Review public and module boundaries, confirm Object target applicability uses the framework-neutral resolver contract, and confirm no Spring MVC, JPA, Semantic AST, or persistence-query implementation type leaks through core Authorization interfaces.
+Traceability: AUTH-API-003 through AUTH-API-006; OBJ-003; TARGET-001; TARGET-002; ARCH-MOD-005; ARCH-MOD-008.
 
 ## 7.2 Security and Isolation
 

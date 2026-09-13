@@ -15,7 +15,7 @@ Verification SHALL cover:
 - REQ-001–REQ-003: Default-deny, deny-overrides, non-`Bool` fail-closed behavior, short-circuiting, and Request input boundary.
 - OBJ-001–OBJ-005: Partial evaluation, nested/composed/collection Object Authorization Schema paths, opaque predicates, queryability, database execution, and composition.
 - PERF-001–PERF-005: Graph/query performance, per-operation freshness, revision-aware derived-artifact reuse, cache independence, and stress behavior.
-- TECH-001–TECH-004: Pattern discipline, policy isolation, fail-closed behavior, and persistence-translation failure.
+- TECH-001–TECH-004: Explicit constant semantics, integration boundaries, policy isolation, fail-closed behavior, and persistence-translation failure.
 
 ## 9.2 Acceptance Conditions
 

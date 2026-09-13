@@ -6,7 +6,7 @@ Each normative requirement has a stable identifier and observable verification o
 
 ## 10.2 Unresolved Issues
 
-No unresolved language-semantic conflict is recorded for version 0.4.0.
+No unresolved language-semantic conflict is recorded for version 0.6.1.
 
 Concrete deployment values for configurable compiler limits are implementation/configuration decisions provided every active configuration preserves finite limits.
 

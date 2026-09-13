@@ -20,8 +20,10 @@ Traceability: ARCH-CON-004; ARCH-CON-005; ARCH-CON-006.
 
 Architecture verification SHALL inspect representative Query Schemas, Object Authorization Schemas, and persistence binders and confirm resource-specific mappings are owned by the resource module rather than generic capability modules.
 
-Verification: Inspect representative identity resources and any additional resource modules introduced by feature specifications.
-Traceability: ARCH-MOD-006; ARCH-CON-007.
+When a Role resource is implemented through `identity`, verification SHALL additionally confirm that Role contracts and hierarchy semantics are imported from `authorization`, while Role persistence, query mapping, and resource lifecycle remain resource-owned and do not redefine authorization-policy aggregation behavior.
+
+Verification: Inspect representative identity resources, Role contracts/hierarchy implementation, Role persistence integration, and any additional resource modules introduced by feature specifications.
+Traceability: ARCH-MOD-005; ARCH-MOD-006; ARCH-MOD-007; ARCH-CON-007.
 
 ### ARCH-VER-004 — Adapter boundary verification
 
@@ -53,6 +55,7 @@ A change affecting module ownership, project dependencies, or architectural pack
 - Every new Taskmigo project dependency edge is permitted by [Section 8.2](08-requirements-allocation-and-dependencies.md#82-allowed-dependency-model).
 - No prohibited relationship from [Section 8.3](08-requirements-allocation-and-dependencies.md#83-prohibited-dependencies) is introduced.
 - Every public feature-specific contract remains owned by its defining capability or resource module.
+- Authorization-owned Role contracts and hierarchy semantics are not redefined by a resource module that implements Role persistence or lifecycle.
 - `foundation` continues to pass the [Architectural Boundary Test](02-overall-description.md#24-architectural-boundary-test), including the classification of shared third-party dependencies.
 - Every representable logical module boundary passes Spring Modulith verification.
 - Every applicable intra-physical-module package boundary passes its ArchUnit rules.
