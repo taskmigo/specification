@@ -23,25 +23,27 @@ The canonical Statement SHALL contain the fields and nesting shown above. `targe
 Verification: Inspect persistence/API representation and run serialization contract tests.
 Traceability: [Scope](01-introduction.md#12-scope); POLICY-001.
 
-### STMT-002 — Required policy
+### STMT-002 — Required policy field
 
-`policy` SHALL be required, non-null, and non-blank. Invalid values SHALL NOT become active.
+`policy` SHALL be required, non-null, and non-blank as part of the canonical Statement structure.
 
-Verification: Test create/update with missing, null, empty, and whitespace-only policy.
-Traceability: POLICY-001.
+Creating or updating a Statement SHALL NOT compile, bind, type-check, execute, or perform Object queryability validation on `policy`, and SHALL NOT require resolving the Statement target to an Object Authorization Schema.
 
-### STMT-003 — Required policy program
+Verification: Test create/update with structurally valid but semantically invalid Language source and confirm persistence succeeds; separately reject missing, null, empty, and whitespace-only policy values as structural contract violations.
+Traceability: POLICY-003.
 
-Every Statement `policy` SHALL satisfy the Language source contract in `PROGRAM` mode under the Authorization policy Compilation Profile.
+### STMT-003 — Runtime policy program
 
-Authorization SHALL NOT reject a policy before activation solely because its static result type is not `Bool`.
+When a target-matching Statement participates in authorization, its `policy` SHALL satisfy the Language source contract in `PROGRAM` mode under the Authorization policy Compilation Profile and the Environment Schema for the current authorization scope.
 
-General function declarations/calls, modules, standalone/first-class lambdas, and entry-point wrappers SHALL remain invalid. Restricted collection lambdas and canonical intrinsics MAY be used when enabled by the Authorization profile and valid under the policy Environment Schema.
+Authorization SHALL NOT reject a persisted policy solely because its static result type is not `Bool`. Boolean enforcement SHALL occur when the policy is evaluated or partially evaluated under STMT-004.
 
-A policy failing parsing, profile validation, binding, control-flow validation, typing, scope validation, complexity limits, or required Object queryability validation SHALL NOT become active.
+General function declarations/calls, modules, standalone/first-class lambdas, and entry-point wrappers SHALL remain invalid. Restricted collection lambdas and canonical intrinsics MAY be used when enabled by the Authorization profile and valid under the current Environment Schema.
 
-Verification: Activate valid multiple-result-type programs; test bounded quantifiers; reject general callable/module syntax, fall-through, unavailable roots, and unsupported Object paths/operators.
-Traceability: [Language Compilation Profile](../003.%20Language/03-external-interface-requirements.md#env-004--compilation-profile); POLICY-001 through POLICY-003.
+A runtime failure in parsing, profile validation, binding, control-flow validation, typing, scope validation, complexity limits, or Object queryability validation SHALL be an Authorization error, SHALL fail closed, and SHALL be logged under LOG-003.
+
+Verification: Persist semantically invalid policy source without pre-validation, then execute matching Request and Object Authorization and verify runtime error logging plus fail-closed behavior.
+Traceability: [Language Compilation Profile](../003.%20Language/03-external-interface-requirements.md#env-004--compilation-profile); POLICY-001 through POLICY-003; LOG-003.
 
 ### STMT-004 — Boolean decision contract
 
@@ -51,7 +53,7 @@ For Request Authorization, direct evaluation SHALL yield `Bool`; a concrete non-
 
 For Object Authorization, concrete `true`/`false` or a residual Semantic AST expression statically typed `Bool` SHALL be accepted; concrete/residual non-`Bool` results SHALL raise an authorization runtime exception and fail closed before queryability or persistence processing.
 
-Verification: Activate valid non-`Bool` policies and verify runtime fail-closed behavior in each scope.
+Verification: Persist valid non-`Bool` policies and verify runtime fail-closed behavior in each scope.
 Traceability: [Language typed result](../003.%20Language/04-functional-and-behavioral-requirements.md#lang-002--typed-source-result); REQ-001; OBJ-001.
 
 ### STMT-005 — Effect semantics
@@ -63,17 +65,19 @@ Traceability: REQ-001.
 
 ### STMT-006 — Target semantics
 
-`target.api.method` SHALL preserve exact-method-or-`*` behavior. `target.api.path` SHALL use full-match regular-expression semantics against the request path without query string. Target validation/regex compilation SHALL occur before repeated matching within an operation.
+`target.api.method` SHALL preserve exact-method-or-`*` behavior. `target.api.path` SHALL use full-match regular-expression semantics against the request path without query string. Target regex compilation and matching validation SHALL occur at runtime before repeated matching within an authorization operation.
 
-Verification: Test exact/wildcard methods, full path matching, and matcher reuse.
-Traceability: PERF-004.
+A malformed target encountered by an authorization operation SHALL be treated as an Authorization error, SHALL fail closed, and SHALL be logged under LOG-003.
+
+Verification: Test exact/wildcard methods, full path matching, matcher reuse, and runtime malformed-target failure.
+Traceability: PERF-004; LOG-003.
 
 ### STMT-007 — Canonical persistence and API contract
 
-The canonical model SHALL persist/expose `effect`, `scope`, `target.api.method`, `target.api.path`, and `policy`.
+The canonical model SHALL persist/expose `effect`, `scope`, `target.api.method`, `target.api.path`, and `policy` without requiring authorization semantic validation at create/update time.
 
-Verification: Inspect schema/API/bootstrap/execution paths.
-Traceability: STMT-001.
+Verification: Inspect schema/API/bootstrap/execution paths and persist semantically invalid policy or target source for runtime validation.
+Traceability: STMT-001 through STMT-003.
 
 ## 3.2 Authorization Inputs and Operation Snapshot
 
@@ -89,17 +93,17 @@ object (Object Authorization only)
 
 Minimum request paths SHALL include `request.method`, `request.path`, and `request.pathVariables`. Minimum principal paths SHALL include `principal.id` and `principal.username`.
 
-Object paths SHALL derive from the applicable `ObjectAuthorizationSchema<Q>` and MAY include nested structured and collection paths permitted by that schema.
+Object paths SHALL derive from the `ObjectAuthorizationSchema<Q>` supplied to the current Object Authorization operation and MAY include nested structured and collection paths permitted by that schema.
 
-Verification: Validate scope-dependent roots and nested Object Authorization Schema paths.
+Verification: Validate scope-dependent roots and nested Object Authorization Schema paths at runtime.
 Traceability: AUTH-API-004; POLICY-002.
 
 ### INPUT-002 — Object root and Request boundary
 
-For Request scope, `object` SHALL be absent and references SHALL fail before activation. For Object scope, `object` SHALL remain symbolic during partial evaluation and its path/type contract SHALL derive from `ObjectAuthorizationSchema<Q>`.
+For Request scope, `object` SHALL be absent and runtime references to it SHALL fail closed. For Object scope, `object` SHALL remain symbolic during partial evaluation and its path/type contract SHALL derive from the `ObjectAuthorizationSchema<Q>` supplied to the current Object Authorization operation.
 
-Verification: Reject Request `object` references and partially evaluate Object policies with nested/collection symbolic fields.
-Traceability: OBJ-001; OBJ-002.
+Verification: Persist Request policies referencing `object` and verify runtime fail-closed behavior; partially evaluate Object policies with nested/collection symbolic fields.
+Traceability: OBJ-001; OBJ-002; LOG-003.
 
 ### INPUT-003 — Request input availability
 
@@ -112,15 +116,15 @@ Traceability: REQ-003.
 
 A `resources` root SHALL NOT be part of the Authorization Environment Schema.
 
-Verification: Reject Request/Object policies referencing `resources`.
-Traceability: INPUT-001.
+Verification: Execute Request/Object policies referencing `resources` and verify fail-closed runtime errors.
+Traceability: INPUT-001; LOG-003.
 
 ### RES-002 — No privileged resource-loading call
 
 Authorization SHALL NOT provide `resource(...)` or another privileged business-resource-loading intrinsic. General call syntax remains invalid under Language.
 
-Verification: Reject policies attempting `resource(...)` while permitting only canonical language intrinsics.
-Traceability: [Language bounded intrinsic syntax](../003.%20Language/03-external-interface-requirements.md#syntax-004--static-paths-and-bounded-intrinsic-syntax).
+Verification: Execute policies attempting `resource(...)` while permitting only canonical language intrinsics and verify fail-closed runtime errors.
+Traceability: [Language bounded intrinsic syntax](../003.%20Language/03-external-interface-requirements.md#syntax-004--static-paths-and-bounded-intrinsic-syntax); LOG-003.
 
 ### RES-003 — No Request resource resolution
 
@@ -272,3 +276,34 @@ A custom repository adapter MAY be used when one JPA root is not an appropriate 
 
 Verification: Bind simple, nested, computed, and collection Object Authorization predicates without exposing entity types through core Authorization APIs.
 Traceability: OBJ-002; OBJ-004.
+
+## 3.4 Authorization Log HTTP API
+
+### LOG-API-001 — Authorization Log retrieval
+
+The v0 HTTP API SHALL expose `GET /api/v0/authorization/logs` to retrieve persisted Authorization Logs.
+
+The endpoint SHALL itself be subject to normal Request Authorization and SHALL NOT bypass authorization because it exposes authorization diagnostics.
+
+Verification: Request the endpoint with granted and denied principals and confirm normal Request Authorization applies.
+Traceability: LOG-001; TECH-003.
+
+### LOG-API-002 — Offset pagination
+
+`GET /api/v0/authorization/logs` SHALL use the v0 offset-pagination contract with one-based `page` and `pageSize` query parameters. The default values SHALL be `page=1` and `pageSize=20`; `pageSize` SHALL accept values from 1 through 100 inclusive.
+
+The response SHALL expose the returned log items together with offset pagination metadata containing the current page, page size, total matching items, and total pages.
+
+Logs SHALL be ordered deterministically by `createdAt` descending and then `id` descending before pagination.
+
+Verification: Exercise default, boundary, invalid, empty, first, middle, and final pages and verify deterministic ordering plus pagination metadata.
+Traceability: LOG-DATA-001.
+
+### LOG-API-003 — Public log representation
+
+The public Authorization Log representation SHALL expose, at minimum, `id`, `createdAt`, `authorizationType`, `outcome`, `level`, request method, request path, and the principal identifier when available.
+
+Object Authorization logs SHALL additionally identify the Object Authorization type or query surface when available. Error logs SHALL expose a stable error code and a safe diagnostic message and SHALL NOT expose stack traces or internal persistence/compiler implementation details.
+
+Verification: Serialize Request/Object allowed, denied, and error records and inspect redaction of internal exception details.
+Traceability: LOG-DATA-001; LOG-002; LOG-003.

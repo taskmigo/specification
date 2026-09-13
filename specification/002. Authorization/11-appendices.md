@@ -32,9 +32,15 @@ return object.account.status == "ACTIVE"
     && all(object.user.emails, email => len(email) > 10);
 ```
 
-After known principal/request values are specialized, the residual Boolean semantics are returned as `ObjectAuthorizationPredicate<Q>`.
+The Statement may be persisted without resolving this schema. When Object Authorization executes with the schema above, known principal/request values are specialized and the residual Boolean semantics are returned as `ObjectAuthorizationPredicate<Q>`.
 
-## 11.3 Persistence Binding
+## 11.3 Authorization Log Outcome Examples
+
+A successful Request Authorization grant is recorded as `REQUEST` + `ALLOWED` + `INFO`. An ordinary Request denial is recorded as `REQUEST` + `DENIED` + `WARNING`. A policy compilation or evaluation failure is recorded as `ERROR` + `ERROR` for the corresponding authorization type and fails closed.
+
+A successfully produced Object Authorization predicate that is not constant false is recorded as `OBJECT` + `ALLOWED` + `INFO`. A constant-false final predicate is recorded as `OBJECT` + `DENIED` + `WARNING`.
+
+## 11.4 Persistence Binding
 
 A resource-owned binder may map:
 

@@ -26,42 +26,38 @@ Traceability: POLICY-004; PERF-004.
 
 After current Statement state has been loaded from the database, Authorization MAY use the effective Statement revision from STATE-001 as the Statement-revision component of derived execution-artifact identity.
 
-Reuse SHALL additionally require compatible Language/compiler identity, Environment Schema identity, Compilation Profile identity, and applicable Object Authorization Schema identities as required by POLICY-004.
+Reuse SHALL additionally require compatible Language/compiler identity, scope Environment Schema identity, Compilation Profile identity, and, for Object Authorization, the identity of the `ObjectAuthorizationSchema<Q>` supplied to the current operation as required by POLICY-004.
 
 The effective Statement revision is an Authorization-layer freshness signal. It SHALL NOT replace the exact-source and compilation-contract metadata required inside a Language compiled artifact by [Language DATA-003](../003.%20Language/05-data-and-information-requirements.md#data-003--compiled-artifact-metadata).
 
-Verification: Reuse a derived artifact for the same database revision, then independently change the Statement revision, compiler contract, Environment Schema, Compilation Profile, and applicable Object Authorization Schema identity and confirm each incompatible case prevents reuse.
+Verification: Reuse a derived artifact for the same database revision, then independently change the Statement revision, compiler contract, Environment Schema, Compilation Profile, and supplied Object Authorization Schema identity and confirm each incompatible case prevents reuse.
 Traceability: POLICY-004; [Language DATA-003](../003.%20Language/05-data-and-information-requirements.md#data-003--compiled-artifact-metadata).
 
-## 5.2 Object Target Applicability Metadata
+## 5.2 Authorization Log Data
 
-### TARGET-001 — Framework-neutral applicability resolver
+### LOG-DATA-001 — Persisted Authorization Log record
 
-Core Authorization SHALL obtain the Object Authorization Schemas applicable to a Statement API target through a framework-neutral target-resolution contract with behavior equivalent to:
+Each persisted Authorization Log SHALL have a unique `id` and `createdAt` timestamp and SHALL record:
 
-```java
-public interface ObjectAuthorizationTargetResolver {
-    List<ObjectAuthorizationSchema<?>> applicable(String method, String path);
-}
-```
+- An `authorizationType` of `REQUEST` or `OBJECT`.
+- An `outcome` of `ALLOWED`, `DENIED`, or `ERROR`.
+- A `level` of `INFO`, `WARNING`, or `ERROR` consistent with LOG-002 and LOG-003.
+- The request HTTP method and path used by the authorization operation.
+- The principal identifier when one is available to the authorization operation.
+- The Object Authorization type or query-surface identifier when `authorizationType` is `OBJECT` and that identifier is available.
+- A stable error code and safe diagnostic message when `outcome` is `ERROR`.
 
-`applicable(method, path)` SHALL return every Object Authorization Schema whose application route may be governed by the supplied Statement target under STMT-006 target semantics.
+Fields that do not apply to an outcome or authorization type MAY be absent or null. Persisted/public diagnostic text SHALL NOT include stack traces, secrets, raw credentials, or internal persistence/compiler implementation details.
 
-Core Authorization SHALL NOT require a transport-specific route registry as part of its Object Authorization Schema contract. Applications without transport-derived target metadata MAY provide an application-composed resolver through the same contract.
+Verification: Persist all Request/Object outcome variants and inspect required fields, enum constraints, conditional fields, and diagnostic redaction.
+Traceability: LOG-001 through LOG-004; LOG-API-003.
 
-Verification: Resolve exact-method, wildcard-method, matching-regex, and non-matching targets through the target resolver without exposing Spring MVC types to core Authorization.
-Traceability: STMT-006; POLICY-003; AUTH-API-004; ARCH-MOD-005.
+### LOG-DATA-002 — Log ordering identity
 
-### TARGET-002 — Spring MVC-derived target metadata
+Authorization Log persistence SHALL preserve `createdAt` and unique `id` values sufficient for deterministic ordering by `createdAt` descending and then `id` descending as required by LOG-API-002.
 
-In a Spring MVC application, `web` SHALL derive Object Authorization target applicability from the application's actual MVC handler mappings rather than requiring callers to duplicate HTTP method/path registrations in Authorization configuration.
-
-A handler participating in Object Authorization SHALL expose exactly one typed `ObjectAuthorizationPredicate<Q>` parameter or an equivalent typed integration point. The generic object type `Q` SHALL identify the registered `ObjectAuthorizationSchema<Q>` associated with that handler route.
-
-Handlers without an Object Authorization predicate integration point SHALL NOT contribute Object Authorization target metadata. Versioned MVC mappings SHALL be resolved to their effective application route pattern before Statement target matching.
-
-Verification: Add or change a versioned MVC handler route with a typed `ObjectAuthorizationPredicate<Q>` parameter and confirm target applicability follows the handler mapping without adding a second manual route registration.
-Traceability: AUTH-API-005; TARGET-001; ARCH-MOD-008.
+Verification: Persist multiple logs with identical or near-identical timestamps and confirm repeated paginated reads use deterministic ordering.
+Traceability: LOG-API-002.
 
 ## 5.3 Data Integrity and Lifecycle
 
@@ -69,7 +65,9 @@ Statement state read from the database SHALL be authoritative for the current op
 
 Authorization Snapshot, Authorization Context, and request-derived Object Authorization Predicates SHALL remain operation-scoped and SHALL NOT be reused as authorization input for unrelated later operations.
 
+Authorization Logs SHALL be historical outputs of authorization operations and SHALL NOT participate in effective Statement resolution or authorization decisions.
+
 Policy inputs SHALL NOT expose repositories, entities, or arbitrary host APIs.
 
-Verification: Execute sequential operations with changed Statement/schema state and inspect isolation.
-Traceability: SNAPSHOT-002; SNAPSHOT-004; TECH-003.
+Verification: Execute sequential operations with changed Statement/schema state, inspect snapshot isolation, and confirm persisted logs do not affect subsequent decisions.
+Traceability: SNAPSHOT-002; SNAPSHOT-004; LOG-005; TECH-003.
