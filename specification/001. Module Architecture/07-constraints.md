@@ -4,69 +4,73 @@
 
 ### ARCH-CON-001 — Foundation dependency floor
 
-`foundation` SHALL NOT declare a project dependency on `language`, `query`, `authorization`, `identity`, `database`, `web`, any executable application module, or any future feature capability module.
+`foundation` SHALL NOT declare a project dependency on `language`, `query`, `access-control`, `identity`, `database`, `web`, any executable application module, or any future bounded-context or feature-capability module.
 
 Verification: Inspect the `foundation` build configuration and transitive project dependency graph and confirm no prohibited Taskmigo project dependency exists.
-Traceability: [Foundation](02-overall-description.md#221-foundation); [Foundation role](04-functional-and-behavioral-requirements.md#arch-mod-001--foundation-role).
+Traceability: [Shared Technical Modules](02-overall-description.md#224-shared-technical-modules); [Foundation role](04-functional-and-behavioral-requirements.md#arch-mod-001--foundation-role).
 
-### ARCH-CON-002 — No feature semantics in foundation
+### ARCH-CON-002 — No domain semantics in foundation
 
-`foundation` SHALL NOT own types or behavior whose meaning depends on Query Filtering, Authorization, Language, Identity, HTTP, persistence topology, or another feature-specific domain.
+`foundation` SHALL NOT own types or behavior whose meaning depends on Access Control, Query Filtering, Language, Identity, HTTP, persistence topology, or another bounded context or feature-specific domain.
 
-Verification: Inspect exported `foundation` packages and classify each public Taskmigo-owned type using the [Architectural Boundary Test](02-overall-description.md#24-architectural-boundary-test).
+Verification: Inspect exported `foundation` packages and classify each public Taskmigo-owned type using the [Architectural Boundary Test](02-overall-description.md#26-architectural-boundary-test).
 Traceability: ARCH-MOD-001; ARCH-MOD-002.
 
 ### ARCH-CON-003 — Shared foundation dependencies
 
-`foundation` MAY declare and re-export third-party libraries that are intentionally established as common technical dependencies for multiple Taskmigo modules. A shared third-party dependency SHALL remain feature-neutral and SHALL NOT require `foundation` to depend on a higher-level Taskmigo project module.
+`foundation` MAY declare and re-export third-party libraries intentionally established as common technical dependencies for multiple Taskmigo modules. A shared third-party dependency SHALL remain domain-neutral and SHALL NOT require `foundation` to depend on a higher-level Taskmigo project module.
 
-A library used only by one capability, resource, adapter, or executable application SHALL remain with that owner unless an architectural decision intentionally promotes the library into the project-wide technical baseline.
+A library used only by one bounded context, supporting capability, adapter, or executable application SHALL remain with that owner unless an architectural decision intentionally promotes the library into the project-wide technical baseline.
 
-Verification: Inspect `foundation` dependency exposure and consumers and confirm re-exported libraries are intentionally shared while capability-specific libraries remain scoped to their owners.
+Verification: Inspect `foundation` dependency exposure and consumers and confirm re-exported libraries are intentionally shared while context-specific libraries remain scoped to their owners.
 Traceability: [Foundation role](04-functional-and-behavioral-requirements.md#arch-mod-001--foundation-role); ARCH-QUAL-002.
 
-## 7.2 Capability Constraints
+## 7.2 Context and Capability Constraints
 
 ### ARCH-CON-004 — Language consumer neutrality
 
-`language` SHALL NOT depend on `query`, `authorization`, `identity`, `web`, or resource-specific persistence modules. Consumer-specific roots, schemas, compilation profiles, and runtime values SHALL be supplied through Language contracts without importing consumer semantics into the `language` module.
+`language` SHALL NOT depend on `query`, `access-control`, `identity`, `web`, or resource-specific persistence modules. Consumer-specific roots, schemas, compilation profiles, and runtime values SHALL be supplied through Language contracts without importing consumer semantics into `language`.
 
 Verification: Inspect `language` project dependencies and public packages and confirm consumer-specific semantics remain external.
 Traceability: ARCH-MOD-003; [Language](../003.%20Language/README.md).
 
 ### ARCH-CON-005 — Query independence
 
-`query` SHALL NOT depend on `authorization`, `identity`, `web`, or resource-specific persistence modules. Query Filtering MAY depend on `foundation` and `language` to implement its specification.
+`query` SHALL NOT depend on `access-control`, `identity`, `web`, or resource-specific persistence modules. Query Filtering MAY depend on `foundation` and `language` to implement its specification.
 
-Verification: Inspect Query Filtering project dependencies and confirm resource and authorization semantics are absent.
+Verification: Inspect Query Filtering project dependencies and confirm resource and Access Control semantics are absent.
 Traceability: ARCH-MOD-004; [Query Filtering](../004.%20Query%20Filtering/README.md).
 
-### ARCH-CON-006 — Authorization independence
+### ARCH-CON-006 — Access Control independence
 
-`authorization` SHALL NOT depend on `identity`, `query`, `web`, or resource-specific persistence modules for its core authorization semantics. Authorization MAY depend on `foundation` and `language`.
+Core Access Control policy evaluation SHALL NOT depend on Identity domain types, web adapters, or another resource context's private persistence model. The `access-control` module MAY depend on `foundation`, `language`, `query`, shared persistence infrastructure, and published subject-resolution contracts required for its owned Role, Statement, binding, and authorization-resource behavior.
 
-Verification: Inspect Authorization project dependencies and confirm authorization decisions and predicates can be defined independently of concrete identity-resource persistence.
-Traceability: ARCH-MOD-005; [Authorization](../002.%20Authorization/README.md).
+Access Control SHALL represent principals or subjects from another bounded context through opaque published references or ports rather than importing that context's entities or repositories.
+
+Verification: Inspect `access-control` project dependencies, imports, authorization decision behavior, and subject integration and confirm no Identity entity or private repository is required by Access Control semantics.
+Traceability: ARCH-MOD-005; ARCH-MOD-014; [Authorization](../002.%20Authorization/README.md).
 
 ### ARCH-CON-007 — Resource ownership does not invert dependencies
 
-A resource-owning module MAY depend on `query`, `authorization`, `database`, and lower-level modules as required by its specification, but those lower-level modules SHALL NOT depend back on that resource-owning module.
+A resource-owning bounded context MAY depend on reusable supporting capabilities and shared infrastructure required by its specification, but those lower-level capabilities SHALL NOT depend back on the resource context's private domain or persistence model.
 
-Verification: Inspect the project dependency graph and confirm no cycle or upward dependency from lower-level capability modules to their resource consumers.
+A context consuming another context's published contract SHALL NOT gain access to the owner's internal packages solely because both contexts run in the same process.
+
+Verification: Inspect the project dependency graph and Spring Modulith model and confirm no prohibited cycle or private-package dependency exists.
 Traceability: ARCH-MOD-006; [Allowed Dependency Model](08-requirements-allocation-and-dependencies.md#82-allowed-dependency-model).
 
 ## 7.3 Adapter and Application Constraints
 
 ### ARCH-CON-008 — Web is an adapter
 
-`web` SHALL NOT be a dependency of `foundation`, `language`, `query`, `authorization`, `identity`, or `database`.
+`web` SHALL NOT be a dependency of `foundation`, `language`, `query`, `access-control`, `identity`, `database`, or another reusable lower-level module.
 
-Verification: Inspect project dependencies and confirm `web` is only consumed at application-composition level or acts as a consumer of lower-level modules.
+Verification: Inspect project dependencies and confirm `web` is only consumed at executable application composition or acts as a consumer of lower-level published contracts.
 Traceability: ARCH-MOD-008.
 
 ### ARCH-CON-009 — Applications are dependency leaves
 
-Executable application modules SHALL NOT be dependencies of reusable foundation, capability, resource, infrastructure, or adapter modules.
+Executable application modules SHALL NOT be dependencies of reusable foundation, supporting-capability, bounded-context, infrastructure, or adapter modules.
 
 Verification: Inspect the project dependency graph and confirm executable application modules are dependency leaves.
 Traceability: ARCH-MOD-009.
@@ -75,16 +79,16 @@ Traceability: ARCH-MOD-009.
 
 ### ARCH-CON-010 — Spring Modulith primary enforcement
 
-Every Taskmigo logical package boundary that can be represented as a [Spring Modulith](https://docs.spring.io/spring-modulith/reference/) application module SHALL use Spring Modulith as its primary automated module-boundary mechanism.
+Every Taskmigo bounded-context or logical package boundary representable as a [Spring Modulith](https://docs.spring.io/spring-modulith/reference/) application module SHALL use Spring Modulith as its primary automated module-boundary mechanism.
 
 Automated architecture tests SHALL construct the applicable `ApplicationModules` model and invoke `verify()` or an equivalent Spring Modulith verification path so module cycles, references to internal packages, and explicit allowed-dependency violations fail the build.
 
 Verification: Run the Spring Modulith architecture verification for each executable composition and confirm representative cycle, internal-package, and disallowed-dependency violations are rejected.
-Traceability: ARCH-MOD-010; ARCH-QUAL-003; ARCH-VER-005.
+Traceability: ARCH-MOD-010; ARCH-QUAL-004; ARCH-VER-005.
 
 ### ARCH-CON-011 — Explicit interfaces and dependencies
 
-Spring Modulith application modules SHALL remain closed by default and SHALL NOT use open-module configuration as a general bypass for architectural boundaries. Cross-module access SHALL target the module root API package or a deliberately declared `@NamedInterface`.
+Spring Modulith application modules SHALL remain closed by default and SHALL NOT use open-module configuration as a general bypass for bounded-context boundaries. Cross-module access SHALL target the module root API package or a deliberately declared `@NamedInterface`.
 
 A module with outgoing Taskmigo module dependencies SHALL constrain those dependencies with `@ApplicationModule(allowedDependencies = ...)` so the declaration is no broader than [Section 8.2](08-requirements-allocation-and-dependencies.md#82-allowed-dependency-model). When only a named interface is required, the allowed dependency SHALL target that named interface rather than the whole module API.
 
@@ -98,4 +102,33 @@ When two or more architectural package boundaries reside within the same physica
 ArchUnit SHALL supplement rather than replace Spring Modulith for any boundary Spring Modulith can represent.
 
 Verification: Add representative forbidden package references within one physical module and confirm the ArchUnit architecture test fails.
-Traceability: ARCH-QUAL-003; ARCH-VER-006.
+Traceability: ARCH-QUAL-004; ARCH-VER-006.
+
+## 7.5 Tactical DDD Constraints
+
+### ARCH-CON-013 — Tactical layer direction
+
+Within a bounded context that uses explicit domain, application, and infrastructure or adapter packages, domain packages SHALL NOT depend on application, infrastructure, web, ORM entity, Spring MVC, or executable application packages. Application packages SHALL NOT depend on inbound web adapters or executable applications. Infrastructure packages MAY depend inward on published application or domain ports required to implement them.
+
+Equivalent package naming MAY be used when the same dependency direction is mechanically enforceable.
+
+Verification: Run ArchUnit rules over representative bounded contexts and confirm forbidden outward dependencies from domain and application packages fail the build.
+Traceability: ARCH-MOD-012; ARCH-VER-006.
+
+### ARCH-CON-014 — Persistence isolation
+
+A bounded context SHALL NOT read, join, navigate through ORM relationships into, or write another bounded context's private persistence tables as an integration mechanism.
+
+Cross-context database foreign keys MAY exist only when explicitly justified as a storage-integrity mechanism and SHALL NOT make private persistence structures a callable domain interface. Cross-context behavior SHALL continue to use published contracts or events.
+
+Verification: Inspect repositories, ORM mappings, query specifications, and schema ownership and confirm cross-context behavior does not rely on another context's private persistence model.
+Traceability: ARCH-MOD-013; ARCH-QUAL-003; ARCH-IF-006.
+
+### ARCH-CON-015 — Cross-context integration contracts
+
+A bounded context SHALL NOT import another bounded context's private domain, application, or infrastructure packages. Synchronous integration SHALL use an explicit published API or port. Asynchronous integration SHALL use an explicit published event contract.
+
+Integration events SHALL NOT expose private ORM entities, mutable aggregate instances, framework request objects, or persistence-specific query structures.
+
+Verification: Inspect all cross-context imports, synchronous calls, and event payloads and confirm only published interfaces are consumed.
+Traceability: ARCH-MOD-014; ARCH-MOD-015; ARCH-IF-002; ARCH-IF-003.

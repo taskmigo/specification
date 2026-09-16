@@ -2,70 +2,120 @@
 
 ## 2.1 Architectural Context
 
-Taskmigo is expected to gain additional capabilities over time. The module architecture therefore separates reusable technical foundations from capability semantics, resource ownership, framework adaptation, and executable application composition.
+Taskmigo SHALL organize domain semantics by bounded context before mapping those semantics to physical build modules, packages, databases, framework adapters, or executable applications. A physical module name MAY remain stable while its role is clarified by the bounded-context model.
 
-The dependency model is intentionally asymmetric. Lower-level modules expose stable contracts upward; higher-level modules SHALL NOT force their feature semantics back into lower-level modules. The `foundation` library MAY intentionally distribute project-wide third-party libraries to consumers, but this shared dependency role SHALL NOT make `foundation` the owner of feature semantics.
+The architecture distinguishes domain contexts from reusable supporting capabilities and technical modules. Domain contexts own business terminology, invariants, aggregates, lifecycle behavior, and resource-specific persistence. Supporting capabilities provide reusable semantic models without inheriting ownership of the business resources that consume them. Technical modules provide framework, persistence, or composition facilities without becoming domain owners.
 
-Logical package boundaries are enforced primarily with [Spring Modulith](https://docs.spring.io/spring-modulith/reference/). [ArchUnit](https://www.archunit.org/getting-started) supplements that model for package boundaries that coexist within one physical build module or for architectural package rules that require additional static checks.
+Logical boundaries are enforced primarily with [Spring Modulith](https://docs.spring.io/spring-modulith/reference/). [ArchUnit](https://www.archunit.org/getting-started) supplements that model for tactical layer dependencies, package boundaries that coexist within one physical build module, and architectural package rules that require additional static checks.
 
-## 2.2 Module Categories
+## 2.2 Domain and Module Categories
 
-### 2.2.1 Foundation
+### 2.2.1 Access Control Bounded Context
 
-`foundation` is the dependency floor and shared technical library. It contains feature-neutral primitives and contracts that are reusable across unrelated capabilities and MAY declare or re-export third-party libraries that are intentionally established as common dependencies for multiple Taskmigo modules.
+The Access Control bounded context SHALL be implemented by the `access-control` module. The existing Authorization API namespace MAY remain `io.taskmigo.authorization`; the physical module identity reflects the bounded context rather than the narrower operation name. Access Control owns authorization policy semantics, Role, Statement, Role hierarchy, Role binding, effective authorization state, Request Authorization decisions, Object Authorization predicates, and authorization-specific Language integration.
 
-A third-party dependency being convenient or already present is insufficient to make it a foundation concern. Capability-specific libraries and adapters remain with the owning capability unless the architecture intentionally establishes them as project-wide dependencies.
+Role is part of the Access Control ubiquitous language. Its lifecycle, persistence contract, hierarchy invariants, and policy aggregation semantics SHALL have one canonical owner in Access Control rather than being divided between Access Control and Identity.
 
-### 2.2.2 Standalone Capability Modules
+### 2.2.2 Identity Bounded Context
 
-The following capabilities are independently meaningful and SHALL have module ownership separate from `foundation`:
+The Identity bounded context SHALL be implemented by the `identity` module unless a future specification intentionally changes the physical mapping. Identity owns users, groups, membership relationships, identity-resource lifecycle, identity-resource query schemas, and identity-resource persistence translation.
 
-- `language` owns Language syntax, compilation, typing, evaluation, partial evaluation, and language-level diagnostics.
-- `query` owns Query Filtering contracts and client `filterBy` compilation.
-- `authorization` owns authorization semantics, policy interpretation, authorization context, request decisions, and object authorization predicates.
-- `identity` owns identity resources such as users, groups, and membership relationships.
+Identity MAY consume Access Control published contracts to bind Roles to identity subjects or to expose coordinated application use cases. Identity SHALL NOT redefine Role, Statement, policy aggregation, or Role hierarchy semantics.
 
-Additional capabilities SHALL follow the same ownership model when introduced.
+### 2.2.3 Reusable Supporting Capabilities
 
-### 2.2.3 Infrastructure Modules
+The following reusable capabilities remain independently owned but SHALL NOT be modeled as business bounded contexts merely to apply tactical DDD patterns:
 
-`database` owns shared persistence infrastructure that is not specific to one capability. Resource-specific persistence mappings SHALL remain with the resource-owning capability rather than moving into `database` merely because they use persistence technology.
+- `language` owns Language syntax, compilation modes and profiles, typing, Semantic AST, evaluation, partial evaluation, and language diagnostics.
+- `query` owns Query Schemas, Query Fields, Query Paths, Query Predicates, `FilteredQuery`, `filterBy` compilation, and query validation.
 
-### 2.2.4 Adapter and Application Modules
+Language and Query Filtering SHALL remain consumer-neutral. Their consumers own resource-specific schemas, adapters, and persistence translations.
 
-`web` owns HTTP, Spring MVC, and Spring Security adaptation for public web behavior. Executable applications such as `bootstrap` and `worker` compose capabilities and infrastructure without becoming owners of their underlying domain semantics.
+### 2.2.4 Shared Technical Modules
 
-## 2.3 Dependency Direction
+`foundation` is the dependency floor and shared technical library. It contains feature-neutral primitives and contracts plus third-party libraries intentionally established as common dependencies for multiple Taskmigo modules.
 
-The intended Taskmigo project dependency direction is:
+`database` owns shared persistence infrastructure that is not specific to one bounded context or resource. Domain entities, aggregate repositories, resource-specific mappings, and domain query translation SHALL remain with their owning context.
+
+### 2.2.5 Adapter and Application Modules
+
+`web` owns HTTP, Spring MVC, Spring Security, and public error adaptation. Executable applications such as `bootstrap` and `worker` compose published domain, supporting-capability, infrastructure, and adapter contracts without becoming canonical owners of reusable domain semantics.
+
+## 2.3 Context Map
+
+The normative semantic relationships are:
 
 ```text
-foundation
-   ↑
-language             database
-   ↑                   ↑
-query   authorization  │
-   \       /           │
-    \     /            │
-     identity/resource-owning modules
-                ↑
-               web
-                ↑
-      bootstrap / worker / future apps
+                         ┌────────────────────┐
+                         │       web          │
+                         │ inbound adaptation │
+                         └─────────┬──────────┘
+                                   │
+                    ┌──────────────┴──────────────┐
+                    ▼                             ▼
+          ┌──────────────────┐          ┌──────────────────┐
+          │     Identity     │          │  Access Control  │
+          │ User / Group /   │─────────▶│ Role / Statement │
+          │ Membership       │ published│ Policy / Decision│
+          └────────┬─────────┘ contract └────────┬─────────┘
+                   │                             │
+                   ▼                             ▼
+                query                         language
+                   │                             │
+                   └─────────────┬───────────────┘
+                                 ▼
+                    shared technical modules
+                    foundation / database
 ```
 
-The diagram is illustrative. Third-party libraries intentionally re-exported by `foundation` are shared technical dependencies and do not change the Taskmigo project-module direction. The normative allowed and prohibited dependencies are defined in [Section 7](07-constraints.md) and [Section 8](08-requirements-allocation-and-dependencies.md).
+The diagram describes semantic ownership rather than requiring every illustrated relationship to be a direct build dependency. The normative dependency model is defined in [Section 8.2](08-requirements-allocation-and-dependencies.md#82-allowed-dependency-model).
 
-## 2.4 Architectural Boundary Test
+Future product domains such as task, project, workspace, or notification SHALL be introduced as independent bounded contexts when they own distinct business terminology, invariants, lifecycle, or persistence. They SHALL integrate through published contracts or events and SHALL NOT obtain ownership by placing code in `foundation`, `database`, or application modules.
 
-A Taskmigo-owned type is a candidate for `foundation` only when its meaning remains valid after removing any one feature capability such as Authorization, Query Filtering, Language, or Identity from the product.
+## 2.4 Tactical DDD Model
 
-A third-party library is a candidate for shared distribution through `foundation` only when it is intentionally part of the common technical baseline for multiple modules and does not introduce feature ownership into `foundation`.
+A bounded context containing state-changing domain behavior SHALL organize responsibilities so domain semantics are independent from application orchestration and technical implementation. The conceptual dependency direction is:
 
-Feature-specific terminology, behavior, lifecycle, validation, compilation, policy semantics, query semantics, framework adaptation, and persistence mappings fail this boundary test and SHALL be owned outside `foundation`.
+```text
+inbound adapters
+      │
+      ▼
+application
+      │
+      ▼
+   domain
+      ▲
+      │
+infrastructure
+```
 
-## 2.5 Boundary Enforcement Model
+The package names MAY vary when an equivalent enforceable structure is used. The following responsibilities SHALL remain distinct:
 
-A physical build module and a Spring Modulith application module do not need to map one-to-one. Taskmigo SHALL use Spring Modulith for every logical application-module boundary that can be represented by its module model, allowed-dependency declarations, named interfaces, and verification rules.
+- The domain layer owns aggregates, entities, value objects, domain services, domain policies, and domain-facing ports required to express invariants.
+- The application layer coordinates use cases, transaction boundaries, domain objects, ports, and publication of completed domain outcomes.
+- The infrastructure layer implements persistence, messaging, framework integration, and external-system ports without defining domain invariants.
+- Inbound adapters translate external protocols into application use cases and SHALL NOT become the canonical owner of domain behavior.
 
-When multiple architectural package boundaries reside inside one physical module, automated ArchUnit rules SHALL enforce the package access restrictions that remain inside that physical boundary. ArchUnit supplements rather than replaces Spring Modulith for boundaries Spring Modulith can represent.
+Reusable supporting capabilities such as `language` and `query` MAY use a capability-appropriate internal structure instead of artificial aggregate, repository, or entity abstractions.
+
+## 2.5 Aggregate and Persistence Ownership
+
+An aggregate and its state-changing invariants SHALL have exactly one owning bounded context. Another context MAY refer to the aggregate through an opaque identifier, a published contract, or an integration event but SHALL NOT mutate the aggregate through shared persistence structures.
+
+Persistence topology is an implementation detail of the owning context. Closure tables, JPA entities, database indexes, join tables, cache keys, and similar structures SHALL NOT define the ubiquitous language unless the owning domain specification explicitly makes the concept part of domain semantics.
+
+A bounded context SHALL NOT use direct reads, joins, foreign-key navigation through ORM mappings, or writes against another context's private persistence tables as an integration contract.
+
+## 2.6 Architectural Boundary Test
+
+A Taskmigo-owned type is a candidate for `foundation` only when its meaning remains valid after removing any one domain context or reusable supporting capability from the product.
+
+A third-party library is a candidate for shared distribution through `foundation` only when it is intentionally part of the common technical baseline for multiple modules and does not introduce domain ownership into `foundation`.
+
+Domain terminology, aggregate behavior, lifecycle rules, policy semantics, query semantics, framework adaptation, resource-specific persistence, and cross-context integration logic fail this boundary test and SHALL be owned outside `foundation`.
+
+## 2.7 Boundary Enforcement Model
+
+A physical build module, bounded context, and Spring Modulith application module do not need to map one-to-one. Taskmigo SHALL use Spring Modulith for every bounded-context or logical application-module boundary representable by its module model, allowed-dependency declarations, named interfaces, event publication, and verification rules.
+
+ArchUnit SHALL enforce tactical dependency rules and any package restrictions not fully represented by Spring Modulith. ArchUnit supplements rather than replaces Spring Modulith for boundaries Spring Modulith can represent.

@@ -1,6 +1,6 @@
 # 11. Appendices
 
-## 11.1 Reference Dependency Model
+## 11.1 Reference Context and Dependency Model
 
 The following model is non-normative and illustrates the requirements in [Section 7](07-constraints.md) and [Section 8](08-requirements-allocation-and-dependencies.md):
 
@@ -9,50 +9,98 @@ foundation
    ↑
    ├────────────── language
    │                    ↑
-   │              ┌─────┴─────┐
-   │              │           │
-   │            query   authorization
-   │              │           │
-   └──── database ┴─────┬─────┘
-                        ↑
-                     identity
-                        ↑
-                       web
-                        ↑
-              bootstrap / worker
+   │              ┌─────┴──────────┐
+   │              │                │
+   │            query        access-control
+   │              │                │
+   └──── database ┴────────────────┤
+                                   ↑
+                                identity
+                                   ↑
+                                  web
+                                   ↑
+                         bootstrap / worker
 ```
 
-A direct Taskmigo project edge MAY be omitted when the consumer does not use the corresponding contract. Common third-party libraries MAY additionally flow from `foundation` to its consumers under [ARCH-CON-003](07-constraints.md#arch-con-003--shared-foundation-dependencies).
+The `identity` → `access-control` edge represents consumption of published Access Control contracts and implementation of Access-Control-owned SPIs. It SHALL NOT permit `access-control` to depend back on Identity private packages. A direct Taskmigo project edge MAY be omitted when the consumer does not use the corresponding contract.
 
-## 11.2 Foundation Classification Examples
+Common third-party libraries MAY additionally flow from `foundation` to its consumers under [ARCH-CON-003](07-constraints.md#arch-con-003--shared-foundation-dependencies).
 
-The following examples are supporting guidance for the [Architectural Boundary Test](02-overall-description.md#24-architectural-boundary-test):
+## 11.2 Context Map Example
 
-| Candidate                                      | Classification        | Reason                                                                                         |
-| ---------------------------------------------- | --------------------- | ---------------------------------------------------------------------------------------------- |
-| Generic offset-pagination value                | Foundation candidate. | Its meaning is independent of a specific Taskmigo feature.                                     |
-| Common third-party utility used across modules | Foundation candidate. | It may be re-exported when intentionally established as part of the shared technical baseline. |
-| Query Predicate                                | `query`.              | Its meaning is defined by Query Filtering semantics.                                           |
-| Authorization Snapshot                         | `authorization`.      | Its meaning is defined by Authorization semantics.                                             |
-| Language compiler                              | `language`.           | Its meaning is defined by the language capability.                                             |
-| User Query Schema                              | `identity`.           | It is resource-specific query metadata for an identity resource.                               |
-| Spring MVC `FilteredQuery` resolver            | `web`.                | It adapts Query Filtering to the web framework.                                                |
-| JPA binder for a User Query Predicate          | `identity`.           | It translates an identity-resource contract to identity persistence topology.                  |
+The following conceptual model illustrates canonical ownership:
 
-## 11.3 Future Module Classification
+```text
+Identity bounded context                   Access Control bounded context
+────────────────────────                   ──────────────────────────────
+User                                       Role
+Group                                      Statement
+Membership                                 RoleHierarchy
+GroupHierarchy                             SubjectBinding
+                                           AuthorizationDecision
+        │                                           ▲
+        └──── implements subject-resolution SPI ────┘
+```
 
-A future independent capability SHOULD first be modeled as its own capability module. A Taskmigo-owned abstraction MAY move toward `foundation` only when its semantics are demonstrably independent of every owning feature and it satisfies the normative Foundation constraints in [Section 7.1](07-constraints.md#71-foundation-constraints).
+Identity MAY expose application use cases that accept Role or Statement identifiers for user-facing ergonomics. The underlying Access Control mutation SHALL occur through an Access-Control-owned published contract rather than by storing canonical authorization state inside an Identity aggregate.
 
-A third-party library MAY be promoted into `foundation` when it becomes an intentional project-wide technical dependency and satisfies [ARCH-CON-003](07-constraints.md#arch-con-003--shared-foundation-dependencies).
+## 11.3 Tactical Package Example
 
-## 11.4 Boundary Enforcement Examples
+A bounded context MAY use the following layout when it matches the implementation's needs:
 
-The following allocation is supporting guidance for applying the normative enforcement requirements:
+```text
+io.taskmigo.accesscontrol
+├── api
+├── application
+│   ├── role
+│   └── statement
+├── domain
+│   ├── role
+│   ├── statement
+│   └── authorization
+└── infrastructure
+    ├── persistence
+    └── integration
+```
 
-| Boundary condition                                                                                          | Expected enforcement                                                                                                                                      |
-| ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Dependency between [Spring Modulith](https://docs.spring.io/spring-modulith/reference/) application modules | Spring Modulith module model, explicit allowed dependencies, and `verify()`.                                                                              |
-| Access to an additional published package of another application module                                     | Spring Modulith named interface plus an allowed dependency targeting that interface.                                                                      |
-| Forbidden access to another application module's internal package                                           | Spring Modulith `verify()`.                                                                                                                               |
-| Distinct architectural packages sharing one physical module                                                 | Spring Modulith where representable, with [ArchUnit](https://www.archunit.org/getting-started) rules for the remaining intra-module package restrictions. |
-| Dependency between separate Taskmigo physical modules                                                       | Build dependency graph, plus Spring Modulith verification when the packages participate in the same executable model.                                     |
+The exact package names are non-normative. The dependency direction defined by [ARCH-CON-013](07-constraints.md#arch-con-013--tactical-layer-direction) is normative.
+
+Reusable supporting capabilities MAY retain structures better matched to their semantics. For example, `language` MAY organize syntax, typing, compilation, Semantic AST, evaluation, and partial evaluation without inventing aggregate or repository abstractions.
+
+## 11.4 Foundation Classification Examples
+
+The following examples are supporting guidance for the [Architectural Boundary Test](02-overall-description.md#26-architectural-boundary-test):
+
+| Candidate                                      | Classification             | Reason                                                                                         |
+| ---------------------------------------------- | -------------------------- | ---------------------------------------------------------------------------------------------- |
+| Generic offset-pagination value                | Foundation candidate.      | Its meaning is independent of a specific Taskmigo bounded context.                             |
+| Common third-party utility used across modules | Foundation candidate.      | It may be re-exported when intentionally established as part of the shared technical baseline. |
+| Query Predicate                                | `query`.                   | Its meaning is defined by Query Filtering semantics.                                           |
+| Authorization Snapshot                         | `access-control`.          | Its meaning is defined by Access Control authorization semantics.                              |
+| Role                                           | `access-control`.          | Role lifecycle, hierarchy, persistence, and policy aggregation are Access Control semantics.   |
+| Language compiler                              | `language`.                | Its meaning is defined by the Language supporting capability.                                  |
+| User Query Schema                              | `identity`.                | It is resource-specific query metadata for an Identity resource.                               |
+| Spring MVC `FilteredQuery` resolver            | `web`.                     | It adapts Query Filtering to the web framework.                                                |
+| JPA binder for a User Query Predicate          | `identity` infrastructure. | It translates an Identity-owned resource contract to Identity persistence topology.            |
+
+## 11.5 Cross-Context Integration Examples
+
+| Need                                                      | Expected integration                                                                                                 |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Identity-facing use case assigns Roles to a User          | Identity application orchestration calls an Access-Control-owned subject-binding API with an opaque User subject id. |
+| Access Control requires a User's effective Group subjects | Access Control invokes its published subject-resolution port; Identity supplies the adapter implementation.          |
+| Audit/history reacts to a Role change                     | Access Control publishes a stable integration event consumed asynchronously by the history owner.                    |
+| Identity displays Role details                            | Identity or web consumes an Access Control published query/API contract rather than reading Role tables.             |
+| Resource persistence applies Object Authorization         | The resource-owning context translates the Access Control predicate into its own persistence query.                  |
+
+## 11.6 Boundary Enforcement Examples
+
+| Boundary condition                                                                                          | Expected enforcement                                                                                                  |
+| ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Dependency between [Spring Modulith](https://docs.spring.io/spring-modulith/reference/) application modules | Spring Modulith module model, explicit allowed dependencies, and `verify()`.                                          |
+| Access to an additional published package of another application module                                     | Spring Modulith named interface plus an allowed dependency targeting that interface.                                  |
+| Forbidden access to another application module's internal package                                           | Spring Modulith `verify()`.                                                                                           |
+| Domain package depending on infrastructure or web                                                           | [ArchUnit](https://www.archunit.org/getting-started) tactical-layer rule.                                             |
+| Distinct architectural packages sharing one physical module                                                 | Spring Modulith where representable, with ArchUnit rules for remaining intra-module restrictions.                     |
+| Dependency between separate Taskmigo physical modules                                                       | Build dependency graph, plus Spring Modulith verification when the packages participate in the same executable model. |
+| Cross-context access through another context's private persistence                                          | Architecture test plus repository/schema ownership review; the integration is rejected.                               |
