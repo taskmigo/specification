@@ -47,7 +47,7 @@ Every bounded context or executable application using explicit domain, applicati
 
 Every physical module containing additional architectural package boundaries not fully enforced by Spring Modulith SHALL also run ArchUnit rules for those remaining package restrictions.
 
-Verification: Introduce representative forbidden domain-to-adapter, application-to-framework/adapter, driving-adapter-to-service/driven-adapter, inbound-port-to-implementation, and outbound-port-to-adapter dependencies and confirm the ArchUnit rules reject them.
+Verification: Introduce representative forbidden domain-to-adapter, application-to-framework/adapter, driving-adapter-to-service/driven-adapter, inbound-port-to-implementation, outbound-port-to-adapter, and context-private-port publication dependencies and confirm the ArchUnit rules reject them.
 Traceability: ARCH-CON-012; ARCH-CON-013; ARCH-QUAL-004.
 
 ### ARCH-VER-007 — Cross-context integration verification
@@ -78,6 +78,7 @@ A change affecting bounded-context ownership, project dependencies, persistence 
 - Driving adapters target inbound ports, and driven adapters implement or adapt owner-published outbound contracts without reversing ownership.
 - Transaction semantics remain application-owned while Spring or persistence-framework transaction mechanics remain in composition or driven adapters.
 - Gradle `api` exposure is limited to dependencies whose types occur in published contracts; framework/runtime dependencies remain implementation-scoped unless the public contract requires them.
+- Query and Object Authorization persistence-neutral model packages remain published neutral contracts, while JPA binding remains inside resource-owned driven adapters.
 - `foundation` continues to pass the [Architectural Boundary Test](02-overall-description.md#26-architectural-boundary-test), including the classification of shared third-party dependencies.
 - Every representable bounded-context or logical module boundary passes Spring Modulith verification.
 - Every applicable tactical or intra-physical-module package boundary passes its ArchUnit rules.

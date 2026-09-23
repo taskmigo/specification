@@ -73,8 +73,9 @@ Traceability: [Constraints](07-constraints.md).
 
 - [Authorization](../002.%20Authorization/README.md) SHALL allocate authorization behavior to the Access Control bounded context, including Role lifecycle, Role hierarchy, Statement lifecycle, subject bindings, policy evaluation, Request Authorization, and Object Authorization contracts.
 - [Language](../003.%20Language/README.md) SHALL allocate Language behavior to `language` and consumer semantics to the consuming bounded context or capability.
-- [Query Filtering](../004.%20Query%20Filtering/README.md) SHALL allocate Query Filtering contracts and compilation to `query`, resource-specific schemas and persistence mappings to the resource-owning bounded context, and Spring MVC adaptation to `web`.
+- [Query Filtering](../004.%20Query%20Filtering/README.md) SHALL allocate Query Filtering contracts and compilation to `query`, persistence-neutral expression/predicate models to `query :: model`, resource-specific schemas and JPA binding to the resource-owning Identity or Access Control driven adapter, and Spring MVC adaptation to `web`.
 - Identity implementations SHALL own User, Group, Membership, and identity-resource behavior while implementing Access Control subject-resolution outbound ports without redefining Access Control semantics.
+- Access Control SHALL own Object Authorization's persistence-neutral expression/predicate model and publish it through the `object-model` named interface for resource-owned driven persistence binders.
 - Future feature specifications SHALL identify their bounded-context or supporting-capability owner and dependencies consistently with this specification.
 
 ## 8.5 Context Integration Model

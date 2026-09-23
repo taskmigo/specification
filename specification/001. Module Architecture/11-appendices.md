@@ -67,7 +67,7 @@ io.taskmigo.authorization.role
         └── persistence
 ```
 
-The exact package names are non-normative. The inbound/outbound port ownership and driving/driven dependency direction defined by [ARCH-CON-013](07-constraints.md#arch-con-013--tactical-layer-direction) are normative. Executable driving adapters and composition roots remain outside the reusable bounded-context application core.
+The exact package names are non-normative. The inbound/outbound port ownership and driving/driven dependency direction defined by [ARCH-CON-013](07-constraints.md#arch-con-013--tactical-layer-direction) are normative. Context-private inbound contracts MAY use an `application.port.in.internal` package and SHALL remain unpublished outside the bounded context. Executable driving adapters and composition roots remain outside the reusable bounded-context application core.
 
 Reusable supporting capabilities MAY retain structures better matched to their semantics. For example, `language` MAY organize syntax, typing, compilation, Semantic AST, evaluation, and partial evaluation without inventing aggregate or repository abstractions.
 
@@ -85,7 +85,9 @@ The following examples are supporting guidance for the [Architectural Boundary T
 | Language compiler                              | `language`.                | Its meaning is defined by the Language supporting capability.                                  |
 | User Query Schema                              | `identity`.                | It is resource-specific query metadata for an Identity resource.                               |
 | Spring MVC `FilteredQuery` resolver            | `web`.                     | It adapts Query Filtering to the web framework.                                                |
-| JPA binder for a User Query Predicate          | Identity driven persistence adapter. | It translates an Identity-owned resource contract to Identity persistence topology.     |
+| Query expression/predicate model                | `query :: model`.                    | It is persistence-neutral and published for resource-owned binders.                      |
+| Object Authorization expression/predicate model | `access-control :: object-model`.    | It is persistence-neutral and published for resource-owned binders.                      |
+| JPA binder for a User Query Predicate            | Identity driven persistence adapter. | It translates an Identity-owned resource contract to Identity persistence topology.      |
 
 ## 11.5 Cross-Context Integration Examples
 

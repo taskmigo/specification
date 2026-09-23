@@ -117,7 +117,9 @@ A driving adapter SHALL invoke an inbound port and SHALL NOT depend on the concr
 
 Application-owned transaction requirements such as atomicity, isolation, retry limits, and post-commit publication SHALL remain expressible without importing Spring transaction APIs into the application core. Spring or persistence-framework transaction mechanics SHALL be implemented by a driven adapter or composition-time mechanism behind an application-owned boundary.
 
-Verification: Inspect representative Access Control, Identity, web, and migration use cases and confirm domain/application code remains framework-neutral, adapters point toward ports, and transaction framework mechanics remain outside the application core.
+Context-private inbound ports MAY be used by application services in neighboring capabilities of the same bounded context. They SHALL remain non-published outside that context unless a deliberate external contract is required.
+
+Verification: Inspect representative Access Control, Identity, web, and migration use cases and confirm domain/application code remains framework-neutral, adapters point toward ports, context-private inbound ports remain internal, and transaction framework mechanics remain outside the application core.
 Traceability: [Tactical DDD Model](02-overall-description.md#24-tactical-ddd-model); ARCH-CON-013.
 
 ### ARCH-MOD-013 — Aggregate ownership

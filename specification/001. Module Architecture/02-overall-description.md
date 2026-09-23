@@ -94,7 +94,9 @@ The package names MAY vary when an equivalent enforceable structure is used. The
 - Composition roots wire inbound ports to application services and outbound ports to driven adapters and MAY depend on concrete framework types required for composition. Executable applications MAY also host runtime-specific driven adapters when they implement published outbound ports required by a bounded context.
 - Spring transaction managers, transaction templates, ORM APIs, and equivalent mechanics SHALL remain outside the framework-neutral application core; the application SHALL own required atomicity, isolation, retry, and post-commit semantics through plain orchestration or an application-owned transaction port.
 
-Reusable supporting capabilities such as `language` and `query` MAY use a capability-appropriate internal structure instead of artificial aggregate, repository, port, or adapter abstractions when no such boundary exists.
+Context-private inbound ports MAY be used between neighboring capabilities inside the same bounded context when publishing the port outside the context would widen the contract unnecessarily. Such ports remain inbound application contracts and SHALL NOT be treated as compatibility aliases.
+
+Reusable supporting capabilities such as `language` and `query` MAY use a capability-appropriate internal structure instead of artificial aggregate, repository, port, or adapter abstractions when no such boundary exists. Query's persistence-neutral expression/predicate representation SHALL remain a neutral published model, while resource-specific JPA binding remains in the Identity and Access Control driven persistence adapters. Object Authorization's persistence-neutral expression/predicate representation SHALL likewise remain an Access-Control-owned neutral model published for resource-owned binders.
 
 ## 2.5 Aggregate and Persistence Ownership
 
@@ -116,4 +118,4 @@ Domain terminology, aggregate behavior, lifecycle rules, policy semantics, query
 
 A physical build module, bounded context, and Spring Modulith application module do not need to map one-to-one. Taskmigo SHALL use Spring Modulith for every bounded-context or logical application-module boundary representable by its module model, allowed-dependency declarations, named interfaces, event publication, and verification rules.
 
-ArchUnit SHALL enforce Onion/Hexagonal dependency direction, port/adapter restrictions, framework neutrality, and any package restrictions not fully represented by Spring Modulith. ArchUnit supplements rather than replaces Spring Modulith for boundaries Spring Modulith can represent.
+ArchUnit SHALL enforce Onion/Hexagonal dependency direction, port/adapter restrictions, framework neutrality, and any package restrictions not fully represented by Spring Modulith. ArchUnit supplements rather than replaces Spring Modulith for boundaries Spring Modulith can represent. Adapter isolation SHALL remain package-enforced inside the current projects unless independent lifecycle, reuse, or materially stronger classpath isolation justifies a separate Gradle project.
