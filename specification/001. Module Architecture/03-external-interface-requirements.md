@@ -13,7 +13,7 @@ Traceability: [Shared Technical Modules](02-overall-description.md#224-shared-te
 
 A public contract whose semantics are defined by one bounded context or reusable supporting capability SHALL be exported by that owner rather than by `foundation`, `database`, `web`, or an executable application.
 
-Another bounded context SHALL consume that contract only through the owner's module root API, an explicitly declared [Spring Modulith](https://docs.spring.io/spring-modulith/reference/) named interface, or a published integration-event contract.
+Another bounded context or executable adapter SHALL consume an owner-provided capability through the owner's inbound port or published API, implement an owner-defined outbound port when the owner requires an external capability, or consume a published integration-event contract. Cross-module contracts SHALL be exposed through the owner's module root API or an explicitly declared [Spring Modulith](https://docs.spring.io/spring-modulith/reference/) named interface.
 
 Verification: Inspect public contracts for Access Control, Identity, Query Filtering, and Language and confirm owner-specific contracts have one canonical publisher and consumers do not import owner-internal packages.
 Traceability: [Domain and Module Categories](02-overall-description.md#22-domain-and-module-categories); [Capability ownership](04-functional-and-behavioral-requirements.md#arch-mod-002--capability-ownership).
@@ -29,7 +29,7 @@ Traceability: [Aggregate and Persistence Ownership](02-overall-description.md#25
 
 ### ARCH-IF-004 — Web adapter boundary
 
-Public HTTP extraction, HTTP error representation, Spring MVC argument resolution, and Spring Security adaptation SHALL be owned by `web` or another explicit adapter module and SHALL NOT be required by domain or supporting-capability contracts.
+Public HTTP extraction, HTTP error representation, Spring MVC argument resolution, and Spring Security adaptation SHALL be owned by the `web` driving adapter and SHALL NOT be required by domain, application, or supporting-capability contracts.
 
 Verification: Inspect reusable module APIs and confirm that their public contracts can be used without importing web-adapter types.
 Traceability: [Adapter and Application Modules](02-overall-description.md#225-adapter-and-application-modules).
@@ -56,7 +56,7 @@ Traceability: [Aggregate and Persistence Ownership](02-overall-description.md#25
 
 ### ARCH-IF-007 — Composition-only application boundary
 
-Executable applications SHALL compose bounded contexts, supporting capabilities, infrastructure, and adapter modules through their published contracts and SHALL NOT become the canonical owner of reusable domain semantics.
+Executable applications SHALL compose bounded contexts, supporting capabilities, and adapters through inbound and outbound ports or other published contracts and SHALL NOT become the canonical owner of reusable domain semantics. Their composition packages MAY depend on concrete framework and adapter implementations solely to wire those contracts. They MAY host runtime-specific driven adapters, such as Object Authorization target resolution, when those adapters implement a published outbound port owned by another capability.
 
 Verification: Inspect executable application modules and confirm reusable semantics are defined in their owning bounded context or supporting capability rather than application-local contracts.
 Traceability: [Adapter and Application Modules](02-overall-description.md#225-adapter-and-application-modules).

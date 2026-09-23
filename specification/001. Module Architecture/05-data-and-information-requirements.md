@@ -6,7 +6,7 @@
 
 Each bounded context, reusable supporting capability, shared technical module, adapter, and executable application SHALL have one stable architectural identity used consistently by build configuration, architecture verification, and specification allocation.
 
-The Access Control bounded context SHALL use `access-control` as its physical project-module identity. Its Authorization API namespace MAY remain `io.taskmigo.authorization` when that name more precisely describes the public operation vocabulary.
+The Access Control bounded context SHALL use `:modules:access-control` as its Gradle project identity. The physical source directory MAY remain `server/modules/authorization`, and the Java API namespace MAY remain `io.taskmigo.authorization`; neither implementation name changes the canonical bounded-context identity.
 
 Verification: Compare module names, bounded-context names, build configuration, and specification references and confirm each semantic owner has one unambiguous physical mapping.
 Traceability: [Domain and Module Categories](02-overall-description.md#22-domain-and-module-categories).
@@ -29,14 +29,14 @@ Traceability: [Aggregate ownership](04-functional-and-behavioral-requirements.md
 
 ### ARCH-DATA-004 — Explicit project dependencies
 
-Inter-module project dependencies SHALL be declared explicitly in build configuration so the allowed dependency model can be verified mechanically.
+Inter-module project dependencies SHALL be declared explicitly in build configuration so the allowed dependency model can be verified mechanically. A reusable `java-library` project SHALL expose another project or third-party API transitively only when types from that dependency occur in its published contract; framework/runtime wiring SHALL use implementation/runtime exposure instead.
 
 Verification: Inspect build configuration and confirm module relationships do not rely on undeclared runtime classpath coupling.
 Traceability: [Allowed Dependency Model](08-requirements-allocation-and-dependencies.md#82-allowed-dependency-model).
 
 ### ARCH-DATA-005 — Published interface metadata
 
-Cross-context published APIs and event contracts SHALL be identifiable through the module root API or explicit Spring Modulith named interfaces. Internal domain, application, and infrastructure packages SHALL remain non-published by default.
+Cross-context published APIs, ports, and event contracts SHALL be identifiable through the module root API or explicit Spring Modulith named interfaces. Internal domain, application-service, and adapter packages SHALL remain non-published by default.
 
 Verification: Inspect Spring Modulith metadata and package exports and confirm cross-context consumers target only published interfaces.
 Traceability: ARCH-MOD-011; ARCH-MOD-014.

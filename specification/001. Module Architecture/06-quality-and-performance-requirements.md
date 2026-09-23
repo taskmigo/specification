@@ -15,7 +15,9 @@ Traceability: [Foundation role](04-functional-and-behavioral-requirements.md#arc
 
 Third-party dependencies intentionally used as a common technical baseline across multiple Taskmigo modules MAY be centralized and re-exported by `foundation`. Context-specific or adapter-specific third-party dependencies SHALL remain scoped to the owning bounded context, supporting capability, or adapter unless an architectural decision establishes them as project-wide dependencies.
 
-Verification: Inspect dependency declarations and consumers and confirm every dependency re-exported by `foundation` is intentionally shared, while context-specific libraries remain local to their owners.
+For reusable `java-library` projects, Gradle `api` exposure SHALL be limited to dependencies whose types are part of published contracts. Spring Boot, Spring Data JPA, and other framework/runtime wiring SHALL remain `implementation` or runtime dependencies unless a published contract necessarily exposes their API. The shared `database` project MAY expose Jakarta Persistence because its public Criteria helper uses Jakarta Criteria types, but SHALL NOT expose the Spring Data JPA starter as a public API dependency.
+
+Verification: Inspect dependency declarations and consumers and confirm every dependency re-exported by `foundation` is intentionally shared, context-specific libraries remain local to their owners, and `api` versus `implementation` exposure matches the types present in published contracts.
 Traceability: ARCH-QUAL-001; [Shared foundation dependencies](07-constraints.md#arch-con-003--shared-foundation-dependencies).
 
 ### ARCH-QUAL-003 — Persistence-model isolation
@@ -42,7 +44,7 @@ Domain semantics and feature-neutral `foundation` contracts SHALL NOT require in
 
 A domain implementation MAY use narrowly scoped framework annotations when an architectural decision establishes them as non-semantic implementation metadata, but correctness of the domain model SHALL NOT depend on adapter or persistence runtime behavior.
 
-Verification: Exercise representative Access Control and Identity domain behavior without starting public HTTP adapters and confirm domain correctness does not require another bounded context's infrastructure.
+Verification: Exercise representative Access Control and Identity domain behavior without starting public HTTP adapters and confirm domain correctness does not require another bounded context's driven adapters or technical runtime.
 Traceability: [Tactical DDD Model](02-overall-description.md#24-tactical-ddd-model); ARCH-CON-013.
 
 ## 6.4 Performance
