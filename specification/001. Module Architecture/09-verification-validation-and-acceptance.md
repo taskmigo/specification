@@ -27,7 +27,7 @@ Traceability: ARCH-MOD-005; ARCH-MOD-006; ARCH-MOD-007; ARCH-MOD-013; ARCH-CON-0
 
 ### ARCH-VER-004 — Adapter boundary verification
 
-Architecture verification SHALL confirm reusable lower-level modules do not depend on executable applications, driving adapters invoke inbound ports instead of concrete application services, and driven adapters satisfy outward dependencies through application-owned outbound ports without becoming owners of domain invariants.
+Architecture verification SHALL confirm reusable lower-level modules do not depend on executable applications, driving adapters invoke inbound ports instead of concrete application services, and driven adapters satisfy owner-published outbound ports or adapt owner contracts without becoming owners of domain invariants. Verification SHALL include Identity's Access-Control-owned subject-resolution adapter and the Web/Migration Access-Control-owned Object Authorization target-resolution adapters.
 
 Verification: Inspect the project/package dependency graph and representative `web`, `worker`, and `migration` adapters for adapter leakage, direct driving-to-driven coupling, and domain logic implemented in outer packages.
 Traceability: ARCH-CON-008; ARCH-CON-009; ARCH-CON-013; ARCH-MOD-008; ARCH-MOD-009.
@@ -75,8 +75,9 @@ A change affecting bounded-context ownership, project dependencies, persistence 
 - No prohibited relationship from [Section 8.3](08-requirements-allocation-and-dependencies.md#83-prohibited-dependencies) is introduced.
 - Every public context-specific contract remains owned and published by its defining bounded context or supporting capability.
 - Cross-context integrations target provider-owned inbound APIs/ports, provider-owned outbound ports, or events rather than private packages or persistence structures.
-- Driving adapters target inbound ports, and driven adapters implement application-owned outbound ports.
+- Driving adapters target inbound ports, and driven adapters implement or adapt owner-published outbound contracts without reversing ownership.
 - Transaction semantics remain application-owned while Spring or persistence-framework transaction mechanics remain in composition or driven adapters.
+- Gradle `api` exposure is limited to dependencies whose types occur in published contracts; framework/runtime dependencies remain implementation-scoped unless the public contract requires them.
 - `foundation` continues to pass the [Architectural Boundary Test](02-overall-description.md#26-architectural-boundary-test), including the classification of shared third-party dependencies.
 - Every representable bounded-context or logical module boundary passes Spring Modulith verification.
 - Every applicable tactical or intra-physical-module package boundary passes its ArchUnit rules.

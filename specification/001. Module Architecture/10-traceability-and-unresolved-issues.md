@@ -13,9 +13,10 @@
 | Resource-specific persistence ownership   | ARCH-MOD-006 • ARCH-CON-007 • ARCH-CON-014 • ARCH-VER-008                                               | All resource-owning bounded contexts.                     |
 | Identity bounded context                  | ARCH-MOD-007 • ARCH-CON-006 • ARCH-VER-003                                                              | Future Identity specification.                            |
 | Web adaptation                            | ARCH-MOD-008 • ARCH-CON-008                                                                             | Feature specifications exposing public web behavior.      |
-| Application composition                   | ARCH-MOD-009 • ARCH-CON-009                                                                             | Executable application specifications and configuration.  |
+| Application composition                   | ARCH-MOD-009 • ARCH-CON-009                                                                             | `web`, `worker`, and `migration` composition.              |
 | Spring Modulith boundary enforcement      | ARCH-MOD-010 • ARCH-MOD-011 • ARCH-CON-010 • ARCH-CON-011 • ARCH-VER-005                                | All JVM implementation modules.                           |
-| DDD + Onion + Hexagonal package enforcement | ARCH-MOD-012 • ARCH-CON-012 • ARCH-CON-013 • ARCH-VER-006                                             | Bounded contexts and executable adapter boundaries.       |
+| DDD + Onion + Hexagonal package enforcement | ARCH-MOD-012 • ARCH-CON-012 • ARCH-CON-013 • ARCH-VER-004 • ARCH-VER-006                              | Bounded contexts and executable adapter boundaries.       |
+| Gradle public dependency exposure            | ARCH-DATA-004 • ARCH-QUAL-002 • ARCH-CON-011                                                           | Reusable Java-library contracts.                           |
 | Cross-context integration and persistence | ARCH-MOD-014 • ARCH-MOD-015 • ARCH-CON-014 • ARCH-CON-015 • ARCH-QUAL-003 • ARCH-VER-007 • ARCH-VER-008 | All bounded-context integrations.                         |
 
 ## 10.2 Unresolved Issues

@@ -33,7 +33,7 @@ Language and Query Filtering SHALL remain consumer-neutral. Their consumers own 
 
 ### 2.2.4 Shared Technical Modules
 
-`foundation` is the dependency floor and shared technical library. It contains feature-neutral primitives and contracts plus third-party libraries intentionally established as common dependencies for multiple Taskmigo modules.
+`foundation` is the dependency floor and shared technical library. It contains feature-neutral primitives and contracts. It MAY re-export a third-party library only when that library is intentionally established as a project-wide common technical dependency.
 
 `database` owns shared persistence infrastructure that is not specific to one bounded context or resource. Domain entities, aggregate repositories, resource-specific mappings, and domain query translation SHALL remain with their owning context.
 
@@ -90,9 +90,9 @@ The package names MAY vary when an equivalent enforceable structure is used. The
 - The domain layer owns aggregates, entities, value objects, domain services, and domain policies required to express invariants and SHALL remain framework-neutral.
 - The application layer owns use-case orchestration, inbound ports, outbound ports, transaction semantics, and publication of completed outcomes without owning domain invariants.
 - Driving adapters translate external protocols or triggers into inbound-port calls and SHALL NOT depend on concrete application-service implementations or driven adapters.
-- Driven adapters implement outbound ports for persistence, cross-context integration, messaging, framework, and external-system concerns without defining domain invariants.
-- Composition roots wire inbound ports to application services and outbound ports to driven adapters and MAY depend on concrete framework types required for composition.
-- Spring transaction managers, transaction templates, ORM APIs, and equivalent mechanics SHALL remain outside the framework-neutral application core; the application MAY own the required atomicity, isolation, retry, and post-commit semantics.
+- Driven adapters implement outbound ports or adapt core-owned contracts to persistence, cross-context integration, messaging, framework, and external-system concerns without defining domain invariants. Adapter-local technical helpers MAY exist inside the driven adapter when they do not leak back into domain/application contracts.
+- Composition roots wire inbound ports to application services and outbound ports to driven adapters and MAY depend on concrete framework types required for composition. Executable applications MAY also host runtime-specific driven adapters when they implement published outbound ports required by a bounded context.
+- Spring transaction managers, transaction templates, ORM APIs, and equivalent mechanics SHALL remain outside the framework-neutral application core; the application SHALL own required atomicity, isolation, retry, and post-commit semantics through plain orchestration or an application-owned transaction port.
 
 Reusable supporting capabilities such as `language` and `query` MAY use a capability-appropriate internal structure instead of artificial aggregate, repository, port, or adapter abstractions when no such boundary exists.
 

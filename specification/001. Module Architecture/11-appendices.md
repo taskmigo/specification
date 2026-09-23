@@ -2,29 +2,35 @@
 
 ## 11.1 Reference Context and Dependency Model
 
-The following model is non-normative and illustrates the requirements in [Section 7](07-constraints.md) and [Section 8](08-requirements-allocation-and-dependencies.md):
+The following non-normative diagram mirrors the current runtime project graph required by [Section 8.2](08-requirements-allocation-and-dependencies.md#82-allowed-dependency-model). Arrows mean "depends on."
 
 ```text
-foundation
-   ↑
-   ├────────────── language
-   │                    ↑
-   │              ┌─────┴──────────┐
-   │              │                │
-   │            query        access-control
-   │              │                │
-   └──── database ┴────────────────┤
-                                   ↑
-                                identity
-                                   ↑
-                    ┌──────────────┼──────────────┐
-                    │              │              │
-                   web          migration        worker
+web ─────────▶ identity ─────────▶ access-control ─────────▶ query ─────────▶ language
+│               │                    │                        │
+│               ├────────▶ query     ├────────▶ language      └────────▶ foundation
+│               ├────────▶ database  ├────────▶ database
+│               ├────────▶ language  └────────▶ foundation
+│               └────────▶ foundation
+├────────▶ access-control
+├────────▶ query
+├────────▶ database
+└────────▶ foundation
+
+migration ───▶ identity
+          ├──▶ access-control
+          └──▶ database
+
+worker       (no Taskmigo runtime-project dependency)
+database     (no Taskmigo project dependency)
+foundation   (no Taskmigo project dependency)
+language     (no Taskmigo project dependency)
 ```
 
-The `identity` → `access-control` edge represents consumption of published Access Control contracts and implementation of Access-Control-owned outbound ports. It SHALL NOT permit `access-control` to depend back on Identity private packages. A direct Taskmigo project edge MAY be omitted when the consumer does not use the corresponding contract.
+The logical project `:modules:access-control` is physically stored under `server/modules/authorization`, and its Java namespace remains `io.taskmigo.authorization`.
 
-Common third-party libraries MAY additionally flow from `foundation` to its consumers under [ARCH-CON-003](07-constraints.md#arch-con-003--shared-foundation-dependencies).
+Project-level direction is intentionally coarser than package-level direction. Spring Modulith constrains published interfaces, while ArchUnit constrains domain/application/port/adapter dependencies inside projects.
+
+The shared `:testing:architecture` project is test-only. It provides reusable ArchUnit rules through test dependencies and SHALL NOT become a production abstraction.
 
 ## 11.2 Context Map Example
 
@@ -49,7 +55,7 @@ Identity MAY expose application use cases that accept Role or Statement identifi
 A bounded context MAY use the following layout when it matches the implementation's needs:
 
 ```text
-io.taskmigo.accesscontrol.role
+io.taskmigo.authorization.role
 ├── domain
 ├── application
 │   ├── port
@@ -79,7 +85,7 @@ The following examples are supporting guidance for the [Architectural Boundary T
 | Language compiler                              | `language`.                | Its meaning is defined by the Language supporting capability.                                  |
 | User Query Schema                              | `identity`.                | It is resource-specific query metadata for an Identity resource.                               |
 | Spring MVC `FilteredQuery` resolver            | `web`.                     | It adapts Query Filtering to the web framework.                                                |
-| JPA binder for a User Query Predicate          | `identity` infrastructure. | It translates an Identity-owned resource contract to Identity persistence topology.            |
+| JPA binder for a User Query Predicate          | Identity driven persistence adapter. | It translates an Identity-owned resource contract to Identity persistence topology.     |
 
 ## 11.5 Cross-Context Integration Examples
 
@@ -87,6 +93,8 @@ The following examples are supporting guidance for the [Architectural Boundary T
 | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | Identity-facing use case assigns Roles to a User          | Identity application orchestration calls an Access-Control-owned subject-binding API with an opaque User subject id. |
 | Access Control requires a User's effective Group subjects | Access Control invokes its owned subject-resolution outbound port; Identity supplies the driven adapter implementation. |
+| Access Control validates HTTP Object Authorization targets | Access Control owns the target-resolution outbound port; Web implements it from Spring MVC route metadata.             |
+| Migration validates managed Object Statements               | Access Control owns the target-resolution outbound port; Migration implements it from migration-known API routes.      |
 | Audit/history reacts to a Role change                     | Access Control publishes a stable integration event consumed asynchronously by the history owner.                    |
 | Identity displays Role details                            | Identity or web consumes an Access Control published query/API contract rather than reading Role tables.             |
 | Resource persistence applies Object Authorization         | The resource-owning context translates the Access Control predicate into its own persistence query.                  |
@@ -101,6 +109,7 @@ The following examples are supporting guidance for the [Architectural Boundary T
 | Domain or application package depending on a concrete adapter/framework                                     | [ArchUnit](https://www.archunit.org/getting-started) Onion/Hexagonal dependency rule.                                |
 | Driving adapter depending on an application implementation or driven adapter                                 | ArchUnit driving-adapter rule; the dependency is rejected.                                                           |
 | Outbound port depending on its driven-adapter implementation                                                 | ArchUnit outbound-port rule; the dependency is rejected.                                                             |
+| Reusable library exporting Spring Boot/Data JPA without published API need                                   | Gradle exposure review; the dependency SHALL be moved to implementation scope.                                        |
 | Distinct architectural packages sharing one physical module                                                 | Spring Modulith where representable, with ArchUnit rules for remaining intra-module restrictions.                     |
 | Dependency between separate Taskmigo physical modules                                                       | Build dependency graph, plus Spring Modulith verification when the packages participate in the same executable model. |
 | Cross-context access through another context's private persistence                                          | Architecture test plus repository/schema ownership review; the integration is rejected.                               |

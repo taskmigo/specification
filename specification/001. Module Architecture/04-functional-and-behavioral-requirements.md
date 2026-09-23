@@ -82,7 +82,7 @@ Traceability: [Web adapter boundary](03-external-interface-requirements.md#arch-
 
 ### ARCH-MOD-009 — Application composition
 
-The executable application roots `web`, `worker`, and `migration` SHALL compose published bounded-context, supporting-capability, inbound-port, outbound-port, and adapter contracts and SHALL NOT redefine reusable domain semantics. Their composition roots MAY reference concrete adapters and framework configuration only to perform wiring.
+The executable application roots `web`, `worker`, and `migration` SHALL compose published bounded-context, supporting-capability, inbound-port, outbound-port, and adapter contracts and SHALL NOT redefine reusable domain semantics. Their composition roots MAY reference concrete adapters and framework configuration only to perform wiring. `web` and `migration` MAY contain runtime-specific driven adapters that implement published outbound ports required by Access Control or another reusable capability.
 
 Verification: Inspect application-local contracts and confirm reusable domain semantics are allocated to the appropriate owning bounded context.
 Traceability: [Composition-only application boundary](03-external-interface-requirements.md#arch-if-007--composition-only-application-boundary).
@@ -113,7 +113,7 @@ A bounded context with state-changing domain behavior SHALL keep domain semantic
 
 The domain layer SHALL own domain invariants, aggregates, entities, value objects, domain services, and domain policies. The application layer SHALL own use-case orchestration, inbound ports, outbound ports, and transaction semantics without becoming the owner of domain invariants.
 
-A driving adapter SHALL invoke an inbound port and SHALL NOT depend on the concrete application-service implementation or a driven adapter. A driven adapter SHALL implement or satisfy an outbound port and MAY depend inward on the application/domain contracts required by that port. A composition root SHALL wire those implementations and SHALL NOT become a reusable business-logic owner.
+A driving adapter SHALL invoke an inbound port and SHALL NOT depend on the concrete application-service implementation or a driven adapter. A driven adapter SHALL implement or satisfy a port owned by the core/capability that requires the dependency and MAY depend inward on the application/domain contracts required by that port. The adapter implementation MAY reside in another bounded context or executable application when ownership requires that direction. A composition root SHALL wire those implementations and SHALL NOT become a reusable business-logic owner.
 
 Application-owned transaction requirements such as atomicity, isolation, retry limits, and post-commit publication SHALL remain expressible without importing Spring transaction APIs into the application core. Spring or persistence-framework transaction mechanics SHALL be implemented by a driven adapter or composition-time mechanism behind an application-owned boundary.
 

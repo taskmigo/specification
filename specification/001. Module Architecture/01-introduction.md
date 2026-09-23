@@ -33,7 +33,7 @@ This specification SHALL NOT require every Java package to map one-to-one to a p
 - **Bounded Context:** A semantic ownership boundary in which domain terms, invariants, lifecycle behavior, and public contracts have one canonical meaning.
 - **Context Map:** The normative relationships and dependency directions between Taskmigo bounded contexts and shared capabilities.
 - **Domain Event:** A fact emitted by a bounded context to describe a completed domain-significant state transition without exposing internal persistence structures.
-- **Domain Layer:** Framework-neutral domain behavior containing aggregates, entities, value objects, domain services, domain policies, and domain ports as required by the owning bounded context.
+- **Domain Layer:** Framework-neutral domain behavior containing aggregates, entities, value objects, domain services, and domain policies. A domain-owned port is exceptional and exists only when a domain-neutral capability is required to express a domain invariant.
 - **Composition Root:** The outermost wiring boundary that connects inbound ports to application services and outbound ports to driven adapters while owning framework configuration.
 - **Driven Adapter:** An outer adapter that implements an outbound port using persistence, another bounded context, a framework, or an external system.
 - **Driving Adapter:** An outer adapter that translates an external trigger or protocol into a call to an inbound port.
@@ -42,9 +42,9 @@ This specification SHALL NOT require every Java package to map one-to-one to a p
 - **Generic or Supporting Capability:** A reusable capability such as Language or Query Filtering whose semantic model supports domain contexts without itself being forced into aggregate-centric modeling.
 - **Hexagonal Architecture:** The port-and-adapter model in which application behavior is entered through inbound ports and external dependencies are reached through outbound ports implemented by adapters.
 - **Inbound Port:** An application-owned use-case contract invoked by a driving adapter or another authorized consumer.
-- **Infrastructure Layer:** Technical implementation concerns such as persistence, messaging, framework integration, and external systems; when such code satisfies an application dependency, it SHALL act as a driven adapter behind an outbound port.
+- **Technical Infrastructure:** Persistence, messaging, framework integration, external systems, and other technical mechanisms. Technical infrastructure SHALL remain outside domain/application ownership and SHALL be reached through driven adapters or composition where a port boundary is required.
 - **Onion Architecture:** The inward dependency model in which domain and application code do not depend on outer framework or adapter implementations.
-- **Outbound Port:** An application-owned dependency contract implemented by a driven adapter.
+- **Outbound Port:** A dependency contract owned by the core/capability that requires the dependency and implemented or satisfied by a driven adapter. The implementing adapter MAY live in another bounded context or executable application.
 - **Physical Module:** A build-level module or produced library, such as a Gradle project or JAR boundary.
 - **Published Contract:** A deliberately exposed API, named interface, event contract, or port intended for another bounded context or adapter to consume.
 - **Resource-Owning Context:** A bounded context that owns a domain resource and its resource-specific persistence and query translation.

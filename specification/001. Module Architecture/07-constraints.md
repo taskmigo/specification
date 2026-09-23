@@ -43,7 +43,7 @@ Traceability: ARCH-MOD-004; [Query Filtering](../004.%20Query%20Filtering/README
 
 ### ARCH-CON-006 — Access Control independence
 
-Core Access Control policy evaluation SHALL NOT depend on Identity domain types, web adapters, or another resource context's private persistence model. The `access-control` module MAY depend on `foundation`, `language`, `query`, shared persistence infrastructure, and published subject-resolution contracts required for its owned Role, Statement, binding, and authorization-resource behavior.
+Core Access Control policy evaluation SHALL NOT depend on Identity domain types, web adapters, or another resource context's private persistence model. The `access-control` project MAY depend on `foundation`, `language`, `query`, and shared `database` infrastructure for its owned Role, Statement, binding, and authorization-resource behavior. Access Control-owned outbound ports such as effective-subject resolution SHALL NOT create a reverse Access Control dependency on Identity.
 
 Access Control SHALL represent principals or subjects from another bounded context through opaque published references or ports rather than importing that context's entities or repositories.
 
@@ -70,7 +70,7 @@ Traceability: ARCH-MOD-008.
 
 ### ARCH-CON-009 — Applications are dependency leaves
 
-The executable application roots `web`, `worker`, and `migration` SHALL NOT be dependencies of reusable foundation, supporting-capability, bounded-context, infrastructure, or adapter modules.
+The executable application roots `web`, `worker`, and `migration` SHALL NOT be dependencies of reusable foundation, supporting-capability, bounded-context, technical-infrastructure, or adapter modules.
 
 Verification: Inspect the project dependency graph and confirm executable application modules are dependency leaves.
 Traceability: ARCH-MOD-009.
@@ -115,9 +115,9 @@ Within a bounded context that uses explicit domain, application, port, and adapt
 - Inbound ports SHALL NOT depend on application-service implementations, outbound ports, or adapters.
 - Driving adapters SHALL depend on inbound ports and input models and SHALL NOT depend on concrete application-service implementations, outbound ports, or driven adapters.
 - Outbound ports SHALL NOT depend on their driven-adapter implementations.
-- Driven adapters SHALL depend inward on the outbound ports and domain/application contracts they implement or translate.
+- Driven adapters SHALL depend inward on the owner-published ports and domain/application contracts they implement or translate. A driven adapter MAY live in another bounded context or executable application when it implements a port owned by the capability that requires the dependency.
 - Composition roots MAY depend on inbound-port implementations, driven adapters, and framework configuration solely to wire the executable application.
-- Application-owned transaction semantics SHALL be separated from framework transaction mechanics; Spring transaction types SHALL remain in composition or driven-adapter code.
+- Application-owned transaction semantics SHALL be separated from framework transaction mechanics; Spring transaction types SHALL remain in composition or driven-adapter code. Identity and Access Control SHALL express transaction execution through application-owned transaction ports, while Migration SHALL express SERIALIZABLE/retry execution through its installation transaction port.
 
 Equivalent package naming MAY be used when the same dependency direction is mechanically enforceable.
 
