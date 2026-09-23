@@ -4,26 +4,132 @@
 
 The following non-normative diagram mirrors the current runtime project graph required by [Section 8.2](08-requirements-allocation-and-dependencies.md#82-allowed-dependency-model). Arrows mean "depends on."
 
-```text
-web ─────────▶ identity ─────────▶ access-control ─────────▶ query ─────────▶ language
-│               │                    │                        │
-│               ├────────▶ query     ├────────▶ language      └────────▶ foundation
-│               ├────────▶ database  ├────────▶ database
-│               ├────────▶ language  └────────▶ foundation
-│               └────────▶ foundation
-├────────▶ access-control
-├────────▶ query
-├────────▶ database
-└────────▶ foundation
+```mermaid
+flowchart LR
+  subgraph APPS["Executable applications"]
+    direction TB
 
-migration ───▶ identity
-          ├──▶ access-control
-          └──▶ database
+    subgraph WEB["apps/web"]
+      direction TB
+      WEB_IN["adapter.in<br/>HTTP / OAuth / Spring Security"]
+      WEB_COMP["composition"]
+      WEB_OUT_OA["adapter.out.objectauthorization<br/>SpringMvcObjectAuthorizationTargetResolver"]
+      WEB_IN --> WEB_COMP
+    end
 
-worker       (no Taskmigo runtime-project dependency)
-database     (no Taskmigo project dependency)
-foundation   (no Taskmigo project dependency)
-language     (no Taskmigo project dependency)
+    subgraph MIG["apps/migration"]
+      direction TB
+      MIG_IN["adapter.in.installation<br/>MigrationRunner + resource loading"]
+      MIG_PORT_IN["application.port.in<br/>InstallationService"]
+      MIG_APP["application.service<br/>DefaultInstallationService"]
+      MIG_PORT_OUT["application.port.out<br/>Transaction / OAuth / Password / Change publication"]
+      MIG_OUT["adapter.out<br/>transaction / oauth / security / logging"]
+      MIG_OUT_OA["adapter.out.objectauthorization<br/>AuthorizationObjectSchemaConfiguration"]
+      MIG_COMP["composition"]
+      MIG_IN --> MIG_PORT_IN --> MIG_APP --> MIG_PORT_OUT
+      MIG_OUT --> MIG_PORT_OUT
+      MIG_COMP -. wires .-> MIG_APP
+      MIG_COMP -. wires .-> MIG_OUT
+    end
+
+    subgraph WORKER["apps/worker"]
+      direction TB
+      WORKER_COMP["composition"]
+      WORKER_NOTE["No Taskmigo runtime-module dependency<br/>until a real background job needs a published port"]
+      WORKER_COMP --- WORKER_NOTE
+    end
+  end
+
+  subgraph BC["Bounded contexts"]
+    direction TB
+
+    subgraph ID["modules/identity"]
+      direction LR
+      ID_IN["application.port.in<br/>api + context-private internal"]
+      ID_APP["application.service"]
+      ID_DOM["domain<br/>User / Group / Membership / hierarchy"]
+      ID_OUT["application.port.out<br/>repositories / hierarchy / transaction"]
+      ID_ADAPTER["adapter.out<br/>JPA / transaction / Access Control adapter"]
+
+      ID_IN --> ID_APP --> ID_DOM
+      ID_APP --> ID_OUT
+      ID_ADAPTER --> ID_OUT
+    end
+
+    subgraph AC["modules/access-control<br/>(source: modules/authorization)"]
+      direction LR
+      AC_IN["application.port.in<br/>api + context-private internal"]
+      AC_APP["application.service"]
+      AC_DOM["domain<br/>Role / Statement / Subject Grants / Request & Object Authorization"]
+      AC_OUT["application.port.out<br/>repositories / transaction / subject resolution / target resolution"]
+      AC_ADAPTER["adapter.out<br/>JPA / transaction"]
+
+      AC_IN --> AC_APP --> AC_DOM
+      AC_APP --> AC_OUT
+      AC_ADAPTER --> AC_OUT
+    end
+  end
+
+  subgraph SUPPORT["Supporting & technical modules"]
+    direction TB
+
+    FOUNDATION["modules/foundation<br/>minimal framework-neutral dependency floor"]
+
+    LANGUAGE["modules/language<br/>syntax / typing / Semantic AST / compilation / evaluation"]
+
+    subgraph QUERY["modules/query"]
+      direction TB
+      QUERY_API["Query contracts / compiler"]
+      QUERY_MODEL["query :: model<br/>persistence-neutral expression & predicate model"]
+      QUERY_API --> QUERY_MODEL
+    end
+
+    subgraph DB["modules/database"]
+      direction TB
+      DB_DS["datasource / schema support"]
+      DB_CRITERIA["database :: criteria<br/>JpaCriteriaComparison"]
+      DB_DS --- DB_CRITERIA
+    end
+
+    OA_MODEL["access-control :: object-model<br/>persistence-neutral Object Authorization model"]
+  end
+
+  WEB_COMP --> ID_IN
+  WEB_COMP --> AC_IN
+  WEB_COMP --> QUERY_API
+  WEB_COMP --> DB_DS
+  WEB_COMP --> FOUNDATION
+
+  MIG_APP --> ID_IN
+  MIG_APP --> AC_IN
+  MIG_COMP --> DB_DS
+
+  ID_APP --> AC_IN
+  ID_APP --> QUERY_API
+  ID_ADAPTER --> DB_CRITERIA
+  ID_APP --> LANGUAGE
+  ID_APP --> FOUNDATION
+
+  AC_APP --> QUERY_API
+  AC_ADAPTER --> DB_CRITERIA
+  AC_APP --> LANGUAGE
+  AC_APP --> FOUNDATION
+
+  QUERY_API --> LANGUAGE
+  QUERY_API --> FOUNDATION
+
+  ID_SUBJECT_ADAPTER["IdentityEffectiveSubjectResolver<br/>Identity driven adapter"]
+  ID_SUBJECT_ADAPTER --> AC_OUT
+
+  WEB_OUT_OA --> AC_OUT
+  MIG_OUT_OA --> AC_OUT
+
+  QUERY_MODEL --> ID_ADAPTER
+  QUERY_MODEL --> AC_ADAPTER
+  OA_MODEL --> ID_ADAPTER
+  OA_MODEL --> AC_ADAPTER
+
+  LEGEND["Solid arrow = code dependency / call direction<br/>Dashed arrow = composition wiring"]
 ```
 
 The logical project `:modules:access-control` is physically stored under `server/modules/authorization`, and its Java namespace remains `io.taskmigo.authorization`.
