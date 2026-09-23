@@ -2,134 +2,100 @@
 
 ## 11.1 Reference Context and Dependency Model
 
-The following non-normative diagram mirrors the current runtime project graph required by [Section 8.2](08-requirements-allocation-and-dependencies.md#82-allowed-dependency-model). Arrows mean "depends on."
+The following non-normative views mirror the current runtime project graph required by [Section 8.2](08-requirements-allocation-and-dependencies.md#82-allowed-dependency-model) and the integration boundaries defined by [Section 8.5](08-requirements-allocation-and-dependencies.md#85-context-integration-model).
+
+### 11.1.1 Runtime project dependencies
+
+A solid arrow points from a consumer project to the Taskmigo project it directly depends on.
+
+```mermaid
+flowchart TB
+  subgraph APPS["Executable applications"]
+    direction LR
+    WEB["web"]
+    MIGRATION["migration"]
+    WORKER["worker<br/>(no Taskmigo runtime dependencies)"]
+  end
+
+  subgraph CONTEXTS["Bounded contexts"]
+    direction LR
+    IDENTITY["identity"]
+    ACCESS["access-control<br/>(source: authorization)"]
+  end
+
+  subgraph SUPPORT["Supporting capabilities"]
+    direction LR
+    QUERY["query"]
+    LANGUAGE["language"]
+  end
+
+  subgraph TECH["Shared technical modules"]
+    direction LR
+    DATABASE["database"]
+    FOUNDATION["foundation"]
+  end
+
+  WEB --> IDENTITY
+  WEB --> ACCESS
+  WEB --> QUERY
+  WEB --> DATABASE
+  WEB --> FOUNDATION
+
+  MIGRATION --> IDENTITY
+  MIGRATION --> ACCESS
+  MIGRATION --> DATABASE
+
+  IDENTITY --> ACCESS
+  IDENTITY --> QUERY
+  IDENTITY --> DATABASE
+  IDENTITY --> LANGUAGE
+  IDENTITY --> FOUNDATION
+
+  ACCESS --> QUERY
+  ACCESS --> DATABASE
+  ACCESS --> LANGUAGE
+  ACCESS --> FOUNDATION
+
+  QUERY --> LANGUAGE
+  QUERY --> FOUNDATION
+```
+
+The first view is intentionally project-level. It does not repeat the internal Onion/Hexagonal package flow described in [Section 2.4](02-overall-description.md#24-tactical-ddd-model).
+
+### 11.1.2 Cross-context ports and neutral models
+
+The second view isolates the relationships that are easiest to lose in the project graph. Each arrow points from the consumer or adapter implementation to the provider-owned contract or neutral model it depends on.
 
 ```mermaid
 flowchart LR
-  subgraph APPS["Executable applications"]
+  subgraph CONSUMERS["Consumers and adapter implementations"]
     direction TB
-
-    subgraph WEB["apps/web"]
-      direction TB
-      WEB_IN["adapter.in<br/>HTTP / OAuth / Spring Security"]
-      WEB_COMP["composition"]
-      WEB_OUT_OA["adapter.out.objectauthorization<br/>SpringMvcObjectAuthorizationTargetResolver"]
-      WEB_IN --> WEB_COMP
-    end
-
-    subgraph MIG["apps/migration"]
-      direction TB
-      MIG_IN["adapter.in.installation<br/>MigrationRunner + resource loading"]
-      MIG_PORT_IN["application.port.in<br/>InstallationService"]
-      MIG_APP["application.service<br/>DefaultInstallationService"]
-      MIG_PORT_OUT["application.port.out<br/>Transaction / OAuth / Password / Change publication"]
-      MIG_OUT["adapter.out<br/>transaction / oauth / security / logging"]
-      MIG_OUT_OA["adapter.out.objectauthorization<br/>AuthorizationObjectSchemaConfiguration"]
-      MIG_COMP["composition"]
-      MIG_IN --> MIG_PORT_IN --> MIG_APP --> MIG_PORT_OUT
-      MIG_OUT --> MIG_PORT_OUT
-      MIG_COMP -. wires .-> MIG_APP
-      MIG_COMP -. wires .-> MIG_OUT
-    end
-
-    subgraph WORKER["apps/worker"]
-      direction TB
-      WORKER_COMP["composition"]
-      WORKER_NOTE["No Taskmigo runtime-module dependency<br/>until a real background job needs a published port"]
-      WORKER_COMP --- WORKER_NOTE
-    end
+    ID_APP["Identity application"]
+    ID_SUBJECT["IdentityEffectiveSubjectResolver"]
+    WEB_TARGET["Web Spring MVC<br/>target resolver"]
+    MIG_TARGET["Migration schema<br/>target resolver"]
+    ID_PERSIST["Identity persistence adapter"]
+    AC_PERSIST["Access Control persistence adapter"]
   end
 
-  subgraph BC["Bounded contexts"]
+  subgraph CONTRACTS["Provider-owned contracts and neutral models"]
     direction TB
-
-    subgraph ID["modules/identity"]
-      direction LR
-      ID_IN["application.port.in<br/>api + context-private internal"]
-      ID_APP["application.service"]
-      ID_DOM["domain<br/>User / Group / Membership / hierarchy"]
-      ID_OUT["application.port.out<br/>repositories / hierarchy / transaction"]
-      ID_ADAPTER["adapter.out<br/>JPA / transaction / Access Control adapter"]
-
-      ID_IN --> ID_APP --> ID_DOM
-      ID_APP --> ID_OUT
-      ID_ADAPTER --> ID_OUT
-    end
-
-    subgraph AC["modules/access-control<br/>(source: modules/authorization)"]
-      direction LR
-      AC_IN["application.port.in<br/>api + context-private internal"]
-      AC_APP["application.service"]
-      AC_DOM["domain<br/>Role / Statement / Subject Grants / Request & Object Authorization"]
-      AC_OUT["application.port.out<br/>repositories / transaction / subject resolution / target resolution"]
-      AC_ADAPTER["adapter.out<br/>JPA / transaction"]
-
-      AC_IN --> AC_APP --> AC_DOM
-      AC_APP --> AC_OUT
-      AC_ADAPTER --> AC_OUT
-    end
+    AC_API["Access Control<br/>inbound API"]
+    SUBJECT_PORT["Access Control<br/>subject-resolution outbound port"]
+    TARGET_PORT["Access Control<br/>target-resolution outbound port"]
+    OA_MODEL["access-control :: object-model"]
+    QUERY_MODEL["query :: model"]
   end
 
-  subgraph SUPPORT["Supporting & technical modules"]
-    direction TB
+  ID_APP -->|"uses"| AC_API
+  ID_SUBJECT -->|"implements"| SUBJECT_PORT
+  WEB_TARGET -->|"implements"| TARGET_PORT
+  MIG_TARGET -->|"implements"| TARGET_PORT
 
-    FOUNDATION["modules/foundation<br/>minimal framework-neutral dependency floor"]
-
-    LANGUAGE["modules/language<br/>syntax / typing / Semantic AST / compilation / evaluation"]
-
-    subgraph QUERY["modules/query"]
-      direction TB
-      QUERY_API["Query contracts / compiler"]
-      QUERY_MODEL["query :: model<br/>persistence-neutral expression & predicate model"]
-      QUERY_API --> QUERY_MODEL
-    end
-
-    subgraph DB["modules/database"]
-      direction TB
-      DB_DS["datasource / schema support"]
-      DB_CRITERIA["database :: criteria<br/>JpaCriteriaComparison"]
-      DB_DS --- DB_CRITERIA
-    end
-
-    OA_MODEL["access-control :: object-model<br/>persistence-neutral Object Authorization model"]
-  end
-
-  WEB_COMP --> ID_IN
-  WEB_COMP --> AC_IN
-  WEB_COMP --> QUERY_API
-  WEB_COMP --> DB_DS
-  WEB_COMP --> FOUNDATION
-
-  MIG_APP --> ID_IN
-  MIG_APP --> AC_IN
-  MIG_COMP --> DB_DS
-
-  ID_APP --> AC_IN
-  ID_APP --> QUERY_API
-  ID_ADAPTER --> DB_CRITERIA
-  ID_APP --> LANGUAGE
-  ID_APP --> FOUNDATION
-
-  AC_APP --> QUERY_API
-  AC_ADAPTER --> DB_CRITERIA
-  AC_APP --> LANGUAGE
-  AC_APP --> FOUNDATION
-
-  QUERY_API --> LANGUAGE
-  QUERY_API --> FOUNDATION
-
-  ID_SUBJECT_ADAPTER["IdentityEffectiveSubjectResolver<br/>Identity driven adapter"]
-  ID_SUBJECT_ADAPTER --> AC_OUT
-
-  WEB_OUT_OA --> AC_OUT
-  MIG_OUT_OA --> AC_OUT
-
-  QUERY_MODEL --> ID_ADAPTER
-  QUERY_MODEL --> AC_ADAPTER
-  OA_MODEL --> ID_ADAPTER
-  OA_MODEL --> AC_ADAPTER
-
-  LEGEND["Solid arrow = code dependency / call direction<br/>Dashed arrow = composition wiring"]
+  ID_PERSIST -->|"binds"| QUERY_MODEL
+  ID_PERSIST -->|"binds"| OA_MODEL
+  AC_PERSIST -->|"binds"| QUERY_MODEL
+  AC_PERSIST -->|"binds"| OA_MODEL
 ```
 
 The logical project `:modules:access-control` is physically stored under `server/modules/authorization`, and its Java namespace remains `io.taskmigo.authorization`.
