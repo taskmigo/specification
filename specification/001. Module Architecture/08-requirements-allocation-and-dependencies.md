@@ -16,6 +16,12 @@
 
 Role, Statement, Role hierarchy, Role-to-Statement assignment, and subject-to-Role or subject-to-Statement binding semantics SHALL be owned by `access-control`. Identity resources SHALL refer to Access Control concepts only through published Access Control contracts or opaque identifiers required by those contracts.
 
+Non-runtime support projects SHALL remain outside the runtime architectural dependency graph:
+
+- `:testing:architecture` SHALL contain reusable ArchUnit enforcement only, be consumed through test dependencies, and SHALL NOT become a production abstraction.
+- `:benchmarks:authorization` SHALL remain a JMH benchmark harness rather than a runtime module. Its current Taskmigo project dependency is `:modules:language`, and benchmark code SHALL NOT establish runtime ownership or dependency direction.
+
+
 ## 8.2 Allowed Dependency Model
 
 The current Taskmigo runtime project graph SHALL match the implemented architecture below. A future project edge change requires a corresponding architectural decision and specification update.
