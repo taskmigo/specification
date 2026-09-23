@@ -39,7 +39,7 @@ Language and Query Filtering SHALL remain consumer-neutral. Their consumers own 
 
 ### 2.2.5 Adapter and Application Modules
 
-`web` owns HTTP, Spring MVC, Spring Security, and public error adaptation. Executable applications such as `bootstrap` and `worker` compose published domain, supporting-capability, infrastructure, and adapter contracts without becoming canonical owners of reusable domain semantics.
+`web` owns HTTP, Spring MVC, Spring Security, and public error adaptation. The executable applications `web`, `worker`, and `migration` are driving/composition roots. They compose published domain, supporting-capability, infrastructure, and adapter contracts without becoming canonical owners of reusable domain semantics.
 
 ## 2.3 Context Map
 
@@ -74,29 +74,27 @@ Future product domains such as task, project, workspace, or notification SHALL b
 
 ## 2.4 Tactical DDD Model
 
-A bounded context containing state-changing domain behavior SHALL organize responsibilities so domain semantics are independent from application orchestration and technical implementation. The conceptual dependency direction is:
+A bounded context containing state-changing domain behavior SHALL combine DDD tactical modeling with Onion Architecture and Hexagonal Architecture. Code dependencies SHALL point toward domain/application-owned contracts rather than from inner behavior toward outer technical implementations.
 
 ```text
-inbound adapters
-      │
-      ▼
-application
-      │
-      ▼
-   domain
-      ▲
-      │
-infrastructure
+driving adapter ──▶ inbound port ◀── application service ──▶ domain
+                                         │
+                                         ▼
+                                    outbound port ◀── driven adapter
+
+composition root wires the concrete implementations
 ```
 
 The package names MAY vary when an equivalent enforceable structure is used. The following responsibilities SHALL remain distinct:
 
-- The domain layer owns aggregates, entities, value objects, domain services, domain policies, and domain-facing ports required to express invariants.
-- The application layer coordinates use cases, transaction boundaries, domain objects, ports, and publication of completed domain outcomes.
-- The infrastructure layer implements persistence, messaging, framework integration, and external-system ports without defining domain invariants.
-- Inbound adapters translate external protocols into application use cases and SHALL NOT become the canonical owner of domain behavior.
+- The domain layer owns aggregates, entities, value objects, domain services, and domain policies required to express invariants and SHALL remain framework-neutral.
+- The application layer owns use-case orchestration, inbound ports, outbound ports, transaction semantics, and publication of completed outcomes without owning domain invariants.
+- Driving adapters translate external protocols or triggers into inbound-port calls and SHALL NOT depend on concrete application-service implementations or driven adapters.
+- Driven adapters implement outbound ports for persistence, cross-context integration, messaging, framework, and external-system concerns without defining domain invariants.
+- Composition roots wire inbound ports to application services and outbound ports to driven adapters and MAY depend on concrete framework types required for composition.
+- Spring transaction managers, transaction templates, ORM APIs, and equivalent mechanics SHALL remain outside the framework-neutral application core; the application MAY own the required atomicity, isolation, retry, and post-commit semantics.
 
-Reusable supporting capabilities such as `language` and `query` MAY use a capability-appropriate internal structure instead of artificial aggregate, repository, or entity abstractions.
+Reusable supporting capabilities such as `language` and `query` MAY use a capability-appropriate internal structure instead of artificial aggregate, repository, port, or adapter abstractions when no such boundary exists.
 
 ## 2.5 Aggregate and Persistence Ownership
 
@@ -118,4 +116,4 @@ Domain terminology, aggregate behavior, lifecycle rules, policy semantics, query
 
 A physical build module, bounded context, and Spring Modulith application module do not need to map one-to-one. Taskmigo SHALL use Spring Modulith for every bounded-context or logical application-module boundary representable by its module model, allowed-dependency declarations, named interfaces, event publication, and verification rules.
 
-ArchUnit SHALL enforce tactical dependency rules and any package restrictions not fully represented by Spring Modulith. ArchUnit supplements rather than replaces Spring Modulith for boundaries Spring Modulith can represent.
+ArchUnit SHALL enforce Onion/Hexagonal dependency direction, port/adapter restrictions, framework neutrality, and any package restrictions not fully represented by Spring Modulith. ArchUnit supplements rather than replaces Spring Modulith for boundaries Spring Modulith can represent.

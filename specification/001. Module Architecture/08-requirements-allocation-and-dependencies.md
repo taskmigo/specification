@@ -10,8 +10,9 @@
 | `access-control`        | Access Control bounded context: Role lifecycle and hierarchy, Statement lifecycle, subject bindings, authorization context and state, Request Authorization, Object Authorization, and policy evaluation semantics. |
 | `identity`              | Identity bounded context: User, Group, Membership, group hierarchy, identity lifecycle, identity-resource query integration, and published subject-resolution adaptation for Access Control.                        |
 | `database`              | Shared persistence infrastructure without bounded-context resource ownership.                                                                                                                                       |
-| `web`                   | HTTP, Spring MVC, Spring Security, and public web error adaptation.                                                                                                                                                 |
-| Executable applications | Composition of published contracts for one runnable application.                                                                                                                                                    |
+| `web`                   | HTTP, Spring MVC, Spring Security, public web error adaptation, and the web executable composition root.                                                                                                            |
+| `worker`                | Background-job driving adapters and worker executable composition without reusable domain ownership.                                                                                                                |
+| `migration`             | Installation/provisioning driving adapters, migration-local application orchestration, and migration executable composition without reusable bounded-context ownership.                                             |
 
 Role, Statement, Role hierarchy, Role-to-Statement assignment, and subject-to-Role or subject-to-Statement binding semantics SHALL be owned by `access-control`. Identity resources SHALL refer to Access Control concepts only through published Access Control contracts or opaque identifiers required by those contracts.
 
@@ -27,12 +28,13 @@ The following Taskmigo project-module dependency relationships are permitted whe
 | `query`                 | `foundation` • `language`.                                                                                                                   |
 | `access-control`        | `foundation` • `language` • `query` when Access Control resources expose Query Filtering • `database` for owned persistence.                 |
 | `identity`              | `foundation` • `query` • `access-control` published interfaces • `database` • `language` only when a direct capability contract requires it. |
-| `web`                   | `foundation` • Supporting capabilities • Bounded-context modules • Infrastructure modules required for web adaptation.                       |
-| Executable applications | Reusable modules required to compose that application.                                                                                       |
+| `web`                   | `foundation` • Supporting capabilities • Bounded-context published contracts • Driven adapters required for web composition.                 |
+| `worker`                | Published inbound ports and supporting/runtime contracts required by implemented background jobs.                                             |
+| `migration`             | Provider-owned provisioning/input ports • Migration-owned outbound-port adapters • Shared technical infrastructure required for installation. |
 
 A permitted dependency is not a requirement to declare that dependency. Each module SHALL declare only dependencies needed by its owned behavior.
 
-An SPI declared by `access-control` and implemented by `identity` does not create a reverse `access-control` → `identity` project dependency. The interface SHALL be owned and published by `access-control`; the Identity adapter SHALL depend on that interface and be discovered or wired by executable composition.
+An outbound subject-resolution port declared by `access-control` and implemented by an Identity driven adapter does not create a reverse `access-control` → `identity` project dependency. The port SHALL be owned and published by `access-control`; the Identity adapter SHALL depend on that port and be discovered or wired by executable composition.
 
 Third-party libraries intentionally exposed through `foundation` under [ARCH-CON-003](07-constraints.md#arch-con-003--shared-foundation-dependencies) are shared technical dependencies and do not create additional Taskmigo project-module edges.
 
@@ -50,9 +52,9 @@ The following relationships SHALL be prohibited:
 - Bounded contexts SHALL NOT create project cycles or use private-package imports to simulate bidirectional ownership.
 - Bounded contexts SHALL NOT use another context's persistence tables or ORM entities as their integration API.
 - `web` SHALL NOT be required by reusable lower-level modules.
-- Executable applications SHALL NOT be required by reusable modules.
+- `web`, `worker`, and `migration` SHALL NOT be required by reusable modules.
 - Spring Modulith application modules SHALL NOT reference another module's internal packages or use open-module configuration to bypass the allowed dependency model.
-- Domain packages SHALL NOT depend outward on application, infrastructure, web, or executable application packages when tactical DDD package layers are present.
+- Domain/application packages and ports SHALL NOT depend outward on concrete driving/driven adapters or executable applications when Onion/Hexagonal package boundaries are present.
 
 Verification: Generate or inspect the project dependency graph, Spring Modulith module model, and ArchUnit tactical-layer rules and confirm every edge is permitted by [Section 8.2](#82-allowed-dependency-model) and no relationship prohibited by this section exists.
 Traceability: [Constraints](07-constraints.md).
@@ -72,7 +74,7 @@ The following relationships are normative:
 | Provider        | Consumer                         | Integration style                                                                                             | Contract ownership                                                                    |
 | --------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
 | Access Control  | Identity                         | Synchronous published API for Role and subject-binding operations when required by Identity-facing use cases. | Access Control.                                                                       |
-| Access Control  | Identity adapter                 | Access-Control-owned subject-resolution SPI implemented by Identity.                                          | Access Control interface; Identity implementation.                                    |
+| Access Control  | Identity driven adapter          | Access-Control-owned subject-resolution outbound port implemented by Identity.                                | Access Control port; Identity implementation.                                         |
 | Language        | Access Control / Query           | Consumer-neutral compilation, Semantic AST, evaluation, or partial-evaluation contracts.                      | Language.                                                                             |
 | Query           | Resource-owning contexts         | Typed Query Predicate contracts and compilation.                                                              | Query for generic contracts; resource context for schema and persistence translation. |
 | Bounded context | Independent side-effect consumer | Published integration event when synchronous coupling is unnecessary.                                         | Event-producing bounded context.                                                      |
@@ -88,7 +90,8 @@ The architecture constraints SHALL be allocated to enforcement mechanisms as fol
 | Physical Taskmigo project dependencies                                | Build dependency graph plus specification review.                                                     |
 | Bounded-context cycles and access to module internals                 | Spring Modulith verification.                                                                         |
 | Explicit module dependencies and published named interfaces           | Spring Modulith `@ApplicationModule(allowedDependencies = ...)`, `@NamedInterface`, and verification. |
-| Tactical domain/application/infrastructure dependency direction       | ArchUnit architecture rules.                                                                          |
+| DDD + Onion + Hexagonal domain/application/port/adapter direction     | ArchUnit architecture rules.                                                                          |
+| Driving/driven adapter and framework-neutral application boundaries   | ArchUnit architecture rules.                                                                          |
 | Package boundaries inside one physical module not fully modeled above | ArchUnit architecture rules.                                                                          |
 | Cross-context persistence isolation                                   | Architecture tests plus repository and schema-ownership verification.                                 |
 

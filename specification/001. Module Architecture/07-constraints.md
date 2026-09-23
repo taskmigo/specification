@@ -70,7 +70,7 @@ Traceability: ARCH-MOD-008.
 
 ### ARCH-CON-009 — Applications are dependency leaves
 
-Executable application modules SHALL NOT be dependencies of reusable foundation, supporting-capability, bounded-context, infrastructure, or adapter modules.
+The executable application roots `web`, `worker`, and `migration` SHALL NOT be dependencies of reusable foundation, supporting-capability, bounded-context, infrastructure, or adapter modules.
 
 Verification: Inspect the project dependency graph and confirm executable application modules are dependency leaves.
 Traceability: ARCH-MOD-009.
@@ -108,11 +108,20 @@ Traceability: ARCH-QUAL-004; ARCH-VER-006.
 
 ### ARCH-CON-013 — Tactical layer direction
 
-Within a bounded context that uses explicit domain, application, and infrastructure or adapter packages, domain packages SHALL NOT depend on application, infrastructure, web, ORM entity, Spring MVC, or executable application packages. Application packages SHALL NOT depend on inbound web adapters or executable applications. Infrastructure packages MAY depend inward on published application or domain ports required to implement them.
+Within a bounded context that uses explicit domain, application, port, and adapter packages, dependencies SHALL follow the DDD + Onion + Hexagonal model:
+
+- Domain packages SHALL NOT depend on application packages, adapters, Spring, JPA/ORM APIs, web, or executable applications.
+- Application-service packages MAY depend on domain types and application-owned inbound/outbound ports but SHALL NOT depend on concrete adapter implementations, Spring transaction APIs, JPA/ORM APIs, HTTP frameworks, or executable applications.
+- Inbound ports SHALL NOT depend on application-service implementations, outbound ports, or adapters.
+- Driving adapters SHALL depend on inbound ports and input models and SHALL NOT depend on concrete application-service implementations, outbound ports, or driven adapters.
+- Outbound ports SHALL NOT depend on their driven-adapter implementations.
+- Driven adapters SHALL depend inward on the outbound ports and domain/application contracts they implement or translate.
+- Composition roots MAY depend on inbound-port implementations, driven adapters, and framework configuration solely to wire the executable application.
+- Application-owned transaction semantics SHALL be separated from framework transaction mechanics; Spring transaction types SHALL remain in composition or driven-adapter code.
 
 Equivalent package naming MAY be used when the same dependency direction is mechanically enforceable.
 
-Verification: Run ArchUnit rules over representative bounded contexts and confirm forbidden outward dependencies from domain and application packages fail the build.
+Verification: Run ArchUnit rules over representative bounded contexts and executable adapters and confirm forbidden domain-to-outer, application-to-adapter/framework, driving-adapter-to-implementation, and outbound-port-to-adapter dependencies fail the build.
 Traceability: ARCH-MOD-012; ARCH-VER-006.
 
 ### ARCH-CON-014 — Persistence isolation
@@ -126,7 +135,7 @@ Traceability: ARCH-MOD-013; ARCH-QUAL-003; ARCH-IF-006.
 
 ### ARCH-CON-015 — Cross-context integration contracts
 
-A bounded context SHALL NOT import another bounded context's private domain, application, or infrastructure packages. Synchronous integration SHALL use an explicit published API or port. Asynchronous integration SHALL use an explicit published event contract.
+A bounded context SHALL NOT import another bounded context's private domain, application, or adapter packages. Synchronous integration SHALL use an explicit provider-owned inbound API/port or a provider-owned outbound port implemented by the collaborator. Asynchronous integration SHALL use an explicit published event contract.
 
 Integration events SHALL NOT expose private ORM entities, mutable aggregate instances, framework request objects, or persistence-specific query structures.
 

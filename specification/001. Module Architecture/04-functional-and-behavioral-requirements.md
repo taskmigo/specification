@@ -82,7 +82,7 @@ Traceability: [Web adapter boundary](03-external-interface-requirements.md#arch-
 
 ### ARCH-MOD-009 — Application composition
 
-Executable application modules SHALL compose published bounded-context, supporting-capability, infrastructure, and adapter contracts and SHALL NOT redefine reusable domain semantics.
+The executable application roots `web`, `worker`, and `migration` SHALL compose published bounded-context, supporting-capability, inbound-port, outbound-port, and adapter contracts and SHALL NOT redefine reusable domain semantics. Their composition roots MAY reference concrete adapters and framework configuration only to perform wiring.
 
 Verification: Inspect application-local contracts and confirm reusable domain semantics are allocated to the appropriate owning bounded context.
 Traceability: [Composition-only application boundary](03-external-interface-requirements.md#arch-if-007--composition-only-application-boundary).
@@ -109,11 +109,15 @@ Traceability: [Explicit interfaces and dependencies](07-constraints.md#arch-con-
 
 ### ARCH-MOD-012 — Domain, application, and infrastructure responsibilities
 
-A bounded context with state-changing domain behavior SHALL keep domain semantics independent from application orchestration and infrastructure implementation.
+A bounded context with state-changing domain behavior SHALL keep domain semantics independent from application orchestration and outer technical implementations by applying Onion Architecture and Hexagonal Architecture.
 
-The domain layer SHALL own domain invariants, aggregates, entities, value objects, domain services, domain policies, and domain-facing ports required by those semantics. The application layer SHALL coordinate use cases and transaction boundaries without becoming the owner of domain invariants. Infrastructure and adapters SHALL implement persistence, messaging, framework, and external-system concerns without redefining domain behavior.
+The domain layer SHALL own domain invariants, aggregates, entities, value objects, domain services, and domain policies. The application layer SHALL own use-case orchestration, inbound ports, outbound ports, and transaction semantics without becoming the owner of domain invariants.
 
-Verification: Inspect representative Access Control and Identity use cases and confirm framework, persistence, and application orchestration concerns do not define aggregate invariants or domain policy semantics.
+A driving adapter SHALL invoke an inbound port and SHALL NOT depend on the concrete application-service implementation or a driven adapter. A driven adapter SHALL implement or satisfy an outbound port and MAY depend inward on the application/domain contracts required by that port. A composition root SHALL wire those implementations and SHALL NOT become a reusable business-logic owner.
+
+Application-owned transaction requirements such as atomicity, isolation, retry limits, and post-commit publication SHALL remain expressible without importing Spring transaction APIs into the application core. Spring or persistence-framework transaction mechanics SHALL be implemented by a driven adapter or composition-time mechanism behind an application-owned boundary.
+
+Verification: Inspect representative Access Control, Identity, web, and migration use cases and confirm domain/application code remains framework-neutral, adapters point toward ports, and transaction framework mechanics remain outside the application core.
 Traceability: [Tactical DDD Model](02-overall-description.md#24-tactical-ddd-model); ARCH-CON-013.
 
 ### ARCH-MOD-013 — Aggregate ownership
@@ -127,7 +131,7 @@ Traceability: [Aggregate and Persistence Ownership](02-overall-description.md#25
 
 ### ARCH-MOD-014 — Cross-context integration
 
-A bounded context SHALL integrate with another bounded context only through a deliberately published synchronous contract or integration event. Consumers SHALL NOT import another context's private domain, application, or infrastructure packages.
+A bounded context SHALL integrate with another bounded context only through a deliberately published inbound port/API, a provider-owned outbound port implemented by the collaborating context, or an integration event. Consumers SHALL NOT import another context's private domain, application, or adapter packages.
 
 Synchronous integration MAY be used when the consuming use case requires an immediate result from the owning context. Event-based integration SHOULD be used for independently evolving side effects, projections, history, notifications, and other behavior that does not require a synchronous domain decision.
 

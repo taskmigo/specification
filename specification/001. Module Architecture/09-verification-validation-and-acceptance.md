@@ -27,10 +27,10 @@ Traceability: ARCH-MOD-005; ARCH-MOD-006; ARCH-MOD-007; ARCH-MOD-013; ARCH-CON-0
 
 ### ARCH-VER-004 — Adapter boundary verification
 
-Architecture verification SHALL confirm reusable lower-level modules do not depend on `web` or executable application modules and that HTTP adapters do not become the owner of domain invariants.
+Architecture verification SHALL confirm reusable lower-level modules do not depend on executable applications, driving adapters invoke inbound ports instead of concrete application services, and driven adapters satisfy outward dependencies through application-owned outbound ports without becoming owners of domain invariants.
 
-Verification: Inspect the dependency graph and representative public APIs for adapter leakage and domain logic implemented in web packages.
-Traceability: ARCH-CON-008; ARCH-CON-009; ARCH-MOD-008.
+Verification: Inspect the project/package dependency graph and representative `web`, `worker`, and `migration` adapters for adapter leakage, direct driving-to-driven coupling, and domain logic implemented in outer packages.
+Traceability: ARCH-CON-008; ARCH-CON-009; ARCH-CON-013; ARCH-MOD-008; ARCH-MOD-009.
 
 ### ARCH-VER-005 — Spring Modulith verification
 
@@ -43,16 +43,16 @@ Traceability: ARCH-MOD-010; ARCH-MOD-011; ARCH-CON-010; ARCH-CON-011.
 
 ### ARCH-VER-006 — ArchUnit tactical-boundary verification
 
-Every bounded context using explicit domain, application, infrastructure, or adapter packages SHALL run automated [ArchUnit](https://www.archunit.org/getting-started) rules for the dependency direction required by [ARCH-CON-013](07-constraints.md#arch-con-013--tactical-layer-direction).
+Every bounded context or executable application using explicit domain, application, port, or adapter packages SHALL run automated [ArchUnit](https://www.archunit.org/getting-started) rules for the dependency direction required by [ARCH-CON-013](07-constraints.md#arch-con-013--tactical-layer-direction).
 
 Every physical module containing additional architectural package boundaries not fully enforced by Spring Modulith SHALL also run ArchUnit rules for those remaining package restrictions.
 
-Verification: Introduce representative forbidden domain-to-infrastructure, application-to-web, and cross-package dependencies and confirm the ArchUnit rules reject them.
+Verification: Introduce representative forbidden domain-to-adapter, application-to-framework/adapter, driving-adapter-to-service/driven-adapter, inbound-port-to-implementation, and outbound-port-to-adapter dependencies and confirm the ArchUnit rules reject them.
 Traceability: ARCH-CON-012; ARCH-CON-013; ARCH-QUAL-004.
 
 ### ARCH-VER-007 — Cross-context integration verification
 
-Architecture verification SHALL confirm synchronous cross-context calls use published contracts, asynchronous consumers use published event contracts, and no consumer imports another bounded context's private domain, application, or infrastructure packages.
+Architecture verification SHALL confirm synchronous cross-context calls use provider-owned inbound APIs/ports or provider-owned outbound ports implemented by collaborators, asynchronous consumers use published event contracts, and no consumer imports another bounded context's private domain, application, or adapter packages.
 
 Verification: Inspect cross-context imports, Spring Modulith named interfaces, event contracts, and representative integrations including Identity subject resolution for Access Control.
 Traceability: ARCH-MOD-014; ARCH-MOD-015; ARCH-CON-015.
@@ -74,7 +74,9 @@ A change affecting bounded-context ownership, project dependencies, persistence 
 - Every new Taskmigo project dependency edge is permitted by [Section 8.2](08-requirements-allocation-and-dependencies.md#82-allowed-dependency-model).
 - No prohibited relationship from [Section 8.3](08-requirements-allocation-and-dependencies.md#83-prohibited-dependencies) is introduced.
 - Every public context-specific contract remains owned and published by its defining bounded context or supporting capability.
-- Cross-context integrations target published APIs, ports, or events rather than private packages or persistence structures.
+- Cross-context integrations target provider-owned inbound APIs/ports, provider-owned outbound ports, or events rather than private packages or persistence structures.
+- Driving adapters target inbound ports, and driven adapters implement application-owned outbound ports.
+- Transaction semantics remain application-owned while Spring or persistence-framework transaction mechanics remain in composition or driven adapters.
 - `foundation` continues to pass the [Architectural Boundary Test](02-overall-description.md#26-architectural-boundary-test), including the classification of shared third-party dependencies.
 - Every representable bounded-context or logical module boundary passes Spring Modulith verification.
 - Every applicable tactical or intra-physical-module package boundary passes its ArchUnit rules.

@@ -15,13 +15,15 @@
 | Web adaptation                            | ARCH-MOD-008 • ARCH-CON-008                                                                             | Feature specifications exposing public web behavior.      |
 | Application composition                   | ARCH-MOD-009 • ARCH-CON-009                                                                             | Executable application specifications and configuration.  |
 | Spring Modulith boundary enforcement      | ARCH-MOD-010 • ARCH-MOD-011 • ARCH-CON-010 • ARCH-CON-011 • ARCH-VER-005                                | All JVM implementation modules.                           |
-| Tactical DDD package enforcement          | ARCH-MOD-012 • ARCH-CON-012 • ARCH-CON-013 • ARCH-VER-006                                               | Bounded contexts with explicit tactical layers.           |
+| DDD + Onion + Hexagonal package enforcement | ARCH-MOD-012 • ARCH-CON-012 • ARCH-CON-013 • ARCH-VER-006                                             | Bounded contexts and executable adapter boundaries.       |
 | Cross-context integration and persistence | ARCH-MOD-014 • ARCH-MOD-015 • ARCH-CON-014 • ARCH-CON-015 • ARCH-QUAL-003 • ARCH-VER-007 • ARCH-VER-008 | All bounded-context integrations.                         |
 
 ## 10.2 Unresolved Issues
 
-No unresolved bounded-context ownership issue is recorded for version 0.6.0.
+No unresolved bounded-context ownership or port/adapter-direction issue is recorded for version 0.7.0.
 
-Role ownership is intentionally revised from version 0.5.0. Access Control is now the sole canonical owner of Role lifecycle, Role persistence, Role hierarchy, Statement lifecycle, Role-to-Statement assignment, and subject-binding semantics. Identity owns User, Group, Membership, and group hierarchy and integrates with Access Control through published contracts or an Access-Control-owned subject-resolution port.
+Role ownership is intentionally revised from version 0.5.0. Access Control is now the sole canonical owner of Role lifecycle, Role persistence, Role hierarchy, Statement lifecycle, Role-to-Statement assignment, and subject-binding semantics. Identity owns User, Group, Membership, and group hierarchy and integrates with Access Control through published inbound contracts or by implementing the Access-Control-owned subject-resolution outbound port.
 
 The Java package namespace used for Authorization APIs MAY remain `io.taskmigo.authorization`; package vocabulary does not change the canonical bounded-context identity `access-control` or permit Identity to regain ownership of Access Control resources.
+
+The normative tactical model for state-changing bounded contexts is DDD + Onion Architecture + Hexagonal Architecture. Supporting capabilities MAY use a simpler structure when no meaningful port/adapter boundary exists.
