@@ -2,7 +2,7 @@
 
 ## 3.1 Statement Contract
 
-### STMT-001 — Canonical model
+### STMT-001 â Canonical model
 
 ```yaml
 name: <name>
@@ -23,7 +23,7 @@ The canonical Statement SHALL contain the fields and nesting shown above. `targe
 Verification: Inspect persistence/API representation and run serialization contract tests.
 Traceability: [Scope](01-introduction.md#12-scope); POLICY-001.
 
-### STMT-002 — Required policy field
+### STMT-002 â Required policy field
 
 `policy` SHALL be required, non-null, and non-blank as part of the canonical Statement structure.
 
@@ -32,7 +32,7 @@ Creating or updating a Statement SHALL NOT compile, bind, type-check, execute, o
 Verification: Test create/update with structurally valid but semantically invalid Language source and confirm persistence succeeds; separately reject missing, null, empty, and whitespace-only policy values as structural contract violations.
 Traceability: POLICY-003.
 
-### STMT-003 — Runtime policy program
+### STMT-003 â Runtime policy program
 
 When a target-matching Statement participates in authorization, its `policy` SHALL satisfy the Language source contract in `PROGRAM` mode under the Authorization policy Compilation Profile and the Environment Schema for the current authorization scope.
 
@@ -45,7 +45,7 @@ A runtime failure in parsing, profile validation, binding, control-flow validati
 Verification: Persist semantically invalid policy source without pre-validation, then execute matching Request and Object Authorization and verify runtime error logging plus fail-closed behavior.
 Traceability: [Language Compilation Profile](../003.%20Language/03-external-interface-requirements.md#env-004--compilation-profile); POLICY-001 through POLICY-003; LOG-003.
 
-### STMT-004 — Boolean decision contract
+### STMT-004 â Boolean decision contract
 
 Authorization SHALL enforce Boolean policy results when a policy is evaluated or partially evaluated, not as a generic Language compilation restriction.
 
@@ -56,23 +56,23 @@ For Object Authorization, concrete `true`/`false` or a residual Semantic AST exp
 Verification: Persist valid non-`Bool` policies and verify runtime fail-closed behavior in each scope.
 Traceability: [Language typed result](../003.%20Language/04-functional-and-behavioral-requirements.md#lang-002--typed-source-result); REQ-001; OBJ-001.
 
-### STMT-005 — Effect semantics
+### STMT-005 â Effect semantics
 
 A policy result of `true` applies the Statement effect; `false` means the Statement does not match. Unconditional policies SHALL be authored explicitly with `return true;`.
 
 Verification: Test ALLOW/DENY with true/false policies.
 Traceability: REQ-001.
 
-### STMT-006 — Target semantics
+### STMT-006 â Target semantics
 
-`target.api.method` SHALL preserve exact-method-or-`*` behavior. `target.api.path` SHALL use full-match regular-expression semantics against the request path without query string. Target regex compilation and matching validation SHALL occur at runtime before repeated matching within an authorization operation.
+`target.api.method` SHALL preserve exact-method-or-`*` behavior. `target.api.path` SHALL use full-match [RE2 regular-expression syntax](https://github.com/google/re2/wiki/Syntax) against the request path without query string. The supported syntax includes literals, character classes, alternation, grouping, repetition, and anchors; backreferences and lookarounds SHALL be rejected. Target regex compilation and matching validation SHALL occur at runtime before repeated matching within an authorization operation.
 
 A malformed target encountered by an authorization operation SHALL be treated as an Authorization error, SHALL fail closed, and SHALL be logged under LOG-003.
 
-Verification: Test exact/wildcard methods, full path matching, matcher reuse, and runtime malformed-target failure.
-Traceability: PERF-004; LOG-003.
+Verification: Test exact/wildcard methods, full path matching, query-string stripping, matcher reuse, and runtime malformed or unsupported-target failure.
+Traceability: [PERF-006](06-quality-and-performance-requirements.md#perf-006--bounded-target-matching); LOG-003.
 
-### STMT-007 — Canonical persistence and API contract
+### STMT-007 â Canonical persistence and API contract
 
 The canonical model SHALL persist/expose `effect`, `scope`, `target.api.method`, `target.api.path`, and `policy` without requiring authorization semantic validation at create/update time.
 
@@ -81,7 +81,7 @@ Traceability: STMT-001 through STMT-003.
 
 ## 3.2 Authorization Inputs and Operation Snapshot
 
-### INPUT-001 — Policy roots
+### INPUT-001 â Policy roots
 
 The Authorization Environment Schema SHALL expose:
 
@@ -98,63 +98,63 @@ Object paths SHALL derive from the `ObjectAuthorizationSchema<Q>` supplied to th
 Verification: Validate scope-dependent roots and nested Object Authorization Schema paths at runtime.
 Traceability: AUTH-API-004; POLICY-002.
 
-### INPUT-002 — Object root and Request boundary
+### INPUT-002 â Object root and Request boundary
 
 For Request scope, `object` SHALL be absent and runtime references to it SHALL fail closed. For Object scope, `object` SHALL remain symbolic during partial evaluation and its path/type contract SHALL derive from the `ObjectAuthorizationSchema<Q>` supplied to the current Object Authorization operation.
 
 Verification: Persist Request policies referencing `object` and verify runtime fail-closed behavior; partially evaluate Object policies with nested/collection symbolic fields.
 Traceability: OBJ-001; OBJ-002; LOG-003.
 
-### INPUT-003 — Request input availability
+### INPUT-003 â Request input availability
 
 Request Authorization SHALL use only already-available `principal` and `request` values and SHALL NOT load business resources to complete those inputs.
 
 Verification: Instrument business-resource access during Request Authorization.
 Traceability: REQ-003.
 
-### RES-001 — Resource root exclusion
+### RES-001 â Resource root exclusion
 
 A `resources` root SHALL NOT be part of the Authorization Environment Schema.
 
 Verification: Execute Request/Object policies referencing `resources` and verify fail-closed runtime errors.
 Traceability: INPUT-001; LOG-003.
 
-### RES-002 — No privileged resource-loading call
+### RES-002 â No privileged resource-loading call
 
 Authorization SHALL NOT provide `resource(...)` or another privileged business-resource-loading intrinsic. General call syntax remains invalid under Language.
 
 Verification: Execute policies attempting `resource(...)` while permitting only canonical language intrinsics and verify fail-closed runtime errors.
 Traceability: [Language bounded intrinsic syntax](../003.%20Language/03-external-interface-requirements.md#syntax-004--static-paths-and-bounded-intrinsic-syntax); LOG-003.
 
-### RES-003 — No Request resource resolution
+### RES-003 â No Request resource resolution
 
 Request Authorization SHALL NOT load business resources or invoke resource adapters. Effective-Statement resolution remains required authorization-state loading.
 
 Verification: Instrument business-resource persistence and authorization-state resolution separately.
 Traceability: INPUT-003; REQ-003.
 
-### SNAPSHOT-001 — One snapshot per operation
+### SNAPSHOT-001 â One snapshot per operation
 
 The system SHALL establish exactly one immutable internal Authorization Snapshot after resolving effective Statement state. Request and Object Authorization in the same operation SHALL consume that same state and SHALL NOT independently re-resolve it.
 
 Verification: Instrument one operation containing both paths.
 Traceability: AUTH-API-002.
 
-### SNAPSHOT-002 — Consistency
+### SNAPSHOT-002 â Consistency
 
 Authorization changes committed after snapshot creation SHALL NOT affect the current operation. The next operation SHALL query database state again and observe then-current authorization state without cache invalidation requirements.
 
 Verification: Commit authorization changes between operations.
 Traceability: PERF-005.
 
-### SNAPSHOT-003 — Coherent creation
+### SNAPSHOT-003 â Coherent creation
 
 Snapshot creation SHALL avoid mixing incompatible concurrent authorization states and SHALL NOT require holding a database transaction for the full HTTP request solely to preserve snapshot semantics.
 
 Verification: Inspect transaction boundaries under concurrent changes.
 Traceability: [Resolution and Operation Context](02-overall-description.md#221-resolution-and-operation-context).
 
-### SNAPSHOT-004 — No cross-request reuse
+### SNAPSHOT-004 â No cross-request reuse
 
 An internal Authorization Snapshot and public `AuthorizationContext` SHALL NOT be reused as authorization input for a later unrelated operation.
 
@@ -163,7 +163,7 @@ Traceability: AUTH-API-002.
 
 ## 3.3 Public Integration API
 
-### AUTH-API-001 — Typed Request Authorization input
+### AUTH-API-001 â Typed Request Authorization input
 
 The public API SHALL accept typed principal/request values rather than caller-constructed Language root maps, with behavior equivalent to:
 
@@ -175,7 +175,7 @@ public record AuthorizationRequest(String method, String path, Map<String, Strin
 Verification: Inspect the public API and confirm callers do not construct `principal`/`request` language root maps.
 Traceability: INPUT-001; INPUT-003.
 
-### AUTH-API-002 — Opaque Authorization Context
+### AUTH-API-002 â Opaque Authorization Context
 
 The public operation handle SHALL provide behavior equivalent to:
 
@@ -188,7 +188,7 @@ It SHALL NOT expose Authorization Snapshot, effective Statement internals, Seman
 Verification: Inspect public visibility and lifecycle.
 Traceability: SNAPSHOT-001; SNAPSHOT-004.
 
-### AUTH-API-003 — Request Authorization API
+### AUTH-API-003 â Request Authorization API
 
 The public Request Authorization API SHALL provide behavior equivalent to:
 
@@ -211,7 +211,7 @@ The returned context SHALL represent the same operation state used to make the R
 Verification: Authorize a request and reuse the returned context for Object Authorization without a second Statement resolution.
 Traceability: SNAPSHOT-001; REQ-001.
 
-### AUTH-API-004 — Object Authorization API
+### AUTH-API-004 â Object Authorization API
 
 Object Authorization SHALL expose authorization-owned logical schema and predicate contracts with behavior equivalent to:
 
@@ -247,7 +247,7 @@ The schema SHALL identify API-visible object paths independently of persistence 
 Verification: Authorize simple, nested, composed, and collection object schemas and confirm no JPA entity or string target key is required by the public API.
 Traceability: OBJ-001 through OBJ-005.
 
-### AUTH-API-005 — Spring Security and MVC adaptation
+### AUTH-API-005 â Spring Security and MVC adaptation
 
 `web` SHALL adapt Request Authorization through Spring Security `AuthorizationManager<RequestAuthorizationContext>` or an equivalent Spring Security authorization extension point.
 
@@ -258,7 +258,7 @@ Spring adapters SHALL remain outside core Authorization semantics.
 Verification: Inspect Spring Security integration and confirm the same context is available to subsequent Object Authorization in the current request.
 Traceability: AUTH-API-002; AUTH-API-003.
 
-### AUTH-API-006 — Resource-owned persistence binder
+### AUTH-API-006 â Resource-owned persistence binder
 
 For a JPA-backed resource, persistence integration MAY provide behavior equivalent to:
 
@@ -279,7 +279,7 @@ Traceability: OBJ-002; OBJ-004.
 
 ## 3.4 Authorization Log HTTP API
 
-### LOG-API-001 — Authorization Log retrieval
+### LOG-API-001 â Authorization Log retrieval
 
 The v0 HTTP API SHALL expose `GET /api/v0/authorization/logs` to retrieve persisted Authorization Logs.
 
@@ -288,7 +288,7 @@ The endpoint SHALL itself be subject to normal Request Authorization and SHALL N
 Verification: Request the endpoint with granted and denied principals and confirm normal Request Authorization applies.
 Traceability: LOG-001; TECH-003.
 
-### LOG-API-002 — Offset pagination
+### LOG-API-002 â Offset pagination
 
 `GET /api/v0/authorization/logs` SHALL use the v0 offset-pagination contract with one-based `page` and `pageSize` query parameters. The default values SHALL be `page=1` and `pageSize=20`; `pageSize` SHALL accept values from 1 through 100 inclusive.
 
@@ -299,7 +299,7 @@ Logs SHALL be ordered deterministically by `createdAt` descending and then `id` 
 Verification: Exercise default, boundary, invalid, empty, first, middle, and final pages and verify deterministic ordering plus pagination metadata.
 Traceability: LOG-DATA-001.
 
-### LOG-API-003 — Public log representation
+### LOG-API-003 â Public log representation
 
 The public Authorization Log representation SHALL expose, at minimum, `id`, `createdAt`, `authorizationType`, `outcome`, `level`, request method, request path, and the principal identifier when available.
 

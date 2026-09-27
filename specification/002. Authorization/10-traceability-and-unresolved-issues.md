@@ -6,6 +6,6 @@ Each normative requirement has a stable identifier and observable verification o
 
 ## 10.2 Unresolved Issues
 
-No unresolved authorization-semantic conflict is recorded for version 0.7.0.
+No unresolved authorization-semantic conflict is recorded for version 0.7.1.
 
 Additional authorization target shapes beyond `target.api` require an explicit future specification revision.
