@@ -16,7 +16,7 @@ Authorization Log persistence SHALL record the outcome determined for the corres
 
 ## 6.3 Performance Requirements
 
-### PERF-001 — DB-first resolution
+### PERF-001 â DB-first resolution
 
 Runtime authorization SHALL NOT load all Groups or all Roles and SHALL NOT build the complete authorization hierarchy graph in JVM memory.
 
@@ -25,7 +25,7 @@ Direct and inherited User/Group/Role/Statement semantics SHALL be preserved.
 Verification: Instrument authorization-state resolution and confirm only relevant database state is loaded while direct and inherited assignments remain effective.
 Traceability: [Resolution and Operation Context](02-overall-description.md#221-resolution-and-operation-context).
 
-### PERF-002 — Bounded query behavior
+### PERF-002 â Bounded query behavior
 
 Authorization-state resolution SHALL:
 
@@ -40,7 +40,7 @@ Unrelated authorization-graph growth SHALL NOT increase the number of database r
 Verification: Compare query counts for equivalent principals while adding unrelated Groups, Roles, and Statements.
 Traceability: PERF-001; SNAPSHOT-001.
 
-### PERF-003 — Stress case
+### PERF-003 â Stress case
 
 The authorization system SHALL support a principal with approximately 500 effective Statements targeting the same API, including a case where no early constant result can terminate evaluation.
 
@@ -49,7 +49,7 @@ The scenario SHALL use bounded database round trips and SHALL exercise target ma
 Verification: Run the approximately 500-Statement scenario with query-count instrumentation.
 Traceability: [Language partial-evaluation performance](../003.%20Language/06-quality-and-performance-requirements.md#perf-002--dependency-aware-partial-evaluation); PERF-002; POLICY-004.
 
-### PERF-004 — Database source of truth on every operation
+### PERF-004 â Database source of truth on every operation
 
 Every authorization operation SHALL resolve the relevant effective Statements from the database.
 
@@ -62,9 +62,16 @@ After the current Statement has been loaded, the database-owned effective Statem
 Verification: Run sequential operations after a committed policy change and confirm each performs required database resolution, observes the new Statement revision, and does not reuse the stale derived artifact.
 Traceability: SNAPSHOT-001; POLICY-004; STATE-001; STATE-002.
 
-### PERF-005 — No distributed-cache correctness dependency
+### PERF-005 â No distributed-cache correctness dependency
 
 After a Statement, assignment, Role, or Group authorization change is committed, the next operation SHALL observe that change through database resolution without requiring cache eviction, TTL expiry, pub/sub invalidation, or cross-instance cache synchronization.
 
 Verification: Repeat committed-change freshness tests without cache coordination.
 Traceability: SNAPSHOT-002; PERF-004.
+
+### PERF-006 â Bounded target matching
+
+Each `target.api.path` match SHALL complete in time linear to the combined target-expression and request-path lengths. Target matching SHALL NOT use a backtracking regular-expression mechanism whose runtime can grow superlinearly for a persisted Statement target.
+
+Verification: Match known pathological expressions, including `(a|aa)+$` and `(a+)+$`, against long non-matching paths and enforce a bounded-time regression guard.
+Traceability: [STMT-006](03-external-interface-requirements.md#stmt-006--target-semantics); TECH-004.

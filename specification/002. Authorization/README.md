@@ -1,7 +1,7 @@
 ---
 metadata:
-  version: 0.7.0
-  changelog: Defers Statement policy semantic validation to runtime authorization and adds persisted Authorization Logs with offset-paginated retrieval.
+  version: 0.7.1
+  changelog: Bounds Statement API target matching with a documented non-backtracking regular-expression contract.
 ---
 
 <!-- markdownlint-disable MD041 -->
