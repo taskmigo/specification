@@ -45,11 +45,13 @@ primary           ::= literal
                     | reference
                     | quantifierExpr
                     | lengthExpr
+                    | containsExpr
                     | "(" expression ")" ;
 quantifierExpr    ::= quantifier "(" expression "," lambdaExpr ")" ;
 quantifier        ::= "all" | "any" | "none" ;
 lambdaExpr        ::= IDENT "=>" expression ;
 lengthExpr        ::= "len" "(" expression ")" ;
+containsExpr      ::= "contains" "(" expression "," expression ")" ;
 reference         ::= IDENT ( "." IDENT )* ;
 listLiteral       ::= "[" ( expression ( "," expression )* )? "]" ;
 literal           ::= "true" | "false" | "null" | NUMBER | STRING ;
@@ -88,6 +90,7 @@ The following MAY be valid when their feature families are enabled and operand t
 
 ```text
 len(record.name)
+contains(record.name, "abc")
 all(record.emails, email => len(email) > 10)
 ```
 
@@ -141,14 +144,16 @@ CONDITIONAL_CONTROL_FLOW
 LIST_LITERALS
 MEMBERSHIP
 LOGICAL_OPERATORS
+UNARY_NOT
 EQUALITY_OPERATORS
 ORDERING_OPERATORS
 ARITHMETIC_OPERATORS
 COLLECTION_QUANTIFIERS
 LENGTH_INTRINSIC
+CONTAINS_INTRINSIC
 ```
 
-`LOCAL_BINDINGS` and `CONDITIONAL_CONTROL_FLOW` apply only to `PROGRAM`. `COLLECTION_QUANTIFIERS` controls `all`, `any`, `none`, and their restricted lambda syntax. `LENGTH_INTRINSIC` controls `len(...)`.
+`LOCAL_BINDINGS` and `CONDITIONAL_CONTROL_FLOW` apply only to `PROGRAM`. `COLLECTION_QUANTIFIERS` controls `all`, `any`, `none`, and their restricted lambda syntax. `LENGTH_INTRINSIC` controls `len(...)`. `CONTAINS_INTRINSIC` controls `contains(text, substring)`. `UNARY_NOT` controls `!` separately from `LOGICAL_OPERATORS`.
 
 A disabled feature SHALL fail compilation with a diagnostic identifying the disabled feature. A profile SHALL NOT add behavior outside the canonical language.
 
