@@ -1,19 +1,22 @@
 # 8. Requirements Allocation and Dependencies
 
-## 8.1 Assumptions and Dependencies
+## 8.1 Module Allocation
 
-- [Module Architecture](../001.%20Module%20Architecture/README.md) defines the mandatory dependency direction and module ownership constraints for Query Filtering and its consumers.
-- [Language](../003.%20Language/README.md) defines expression syntax, Semantic AST, typing, Compilation Profiles, collection intrinsics, and evaluation semantics.
-- Resource-owning modules define Query Schemas and persistence mappings for their API query surfaces.
-- `web` owns HTTP extraction, Spring MVC argument resolution, and public HTTP error representation.
+- **`:modules:query`:** Opaque query predicate and sort contracts, operation Query Schema, field descriptors, compiler and schema validator.
+- **`:modules:internal:language`:** Syntax, typing, profile-aware parsing and expression mapping.
+- **`:modules:internal:jpa-query`:** Generic trusted Criteria/JPA expression and sort binders.
+- **Identity/Authorization/Ticket persistence:** Resource-specific Query Schemas, object-authorization integration and JPA field mappings.
+- **Web:** `ListQueryOptions`, `ListQueryOptionsCompiler`, runtime context resolution, HTTP errors and pagination.
+- **OpenAPI generator:** `x-filter-by` and `x-sort-by` extensions on declared query operations.
 
-## 8.2 Requirements Allocation
+## 8.2 Operation Context Sources
 
-- The `query` module SHALL define Query Schema and Query Predicate contracts, `FilteredQuery`, `filterBy` compilation, and query validation.
-- The `query` module MAY depend on `foundation` and `language` as permitted by [Module Architecture](../001.%20Module%20Architecture/08-requirements-allocation-and-dependencies.md#82-allowed-dependency-model).
-- The `query` module SHALL NOT depend on `authorization`, `identity`, `web`, or resource-specific persistence modules.
-- The `language` module SHALL own Language expression syntax, typing, Semantic AST, quantifier semantics, and evaluation behavior.
-- Resource-owning modules SHALL provide resource-specific Query Schemas and translate Query Predicates to persistence queries.
-- `web` SHALL resolve generic `FilteredQuery<Q>` arguments and public client-input errors.
-- Query Filtering SHALL NOT own resource-specific persistence topology.
-- The `language` module SHALL NOT own Query Schema registration or persistence mappings.
+Resource modules define the fields permitted for their operations; Web SHALL resolve a unique operation schema and runtime metadata through `@QueryOperation` and appropriate `QueryFieldContextSource`. Ticket's dynamic context SHALL come from stored EAV definitions, not client-supplied field declarations.
+
+## 8.3 Dependency Direction
+
+Query SHALL NOT depend on Authorization or a resource owner; resource owners SHALL depend on the Query published API. The Query module MAY depend on internal Language as an implementation detail. Web SHALL NOT import internal JPA Query/EAV implementation types directly.
+
+## 8.4 Related Specifications
+
+[Authorization](../002.%20Authorization/README.md), [Ticket and Dynamic Fields](../006.%20Tickets%20and%20Dynamic%20Fields/README.md), [API v0](../007.%20Audit%20and%20API%20Contracts/README.md).

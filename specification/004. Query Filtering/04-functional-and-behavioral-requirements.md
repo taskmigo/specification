@@ -1,79 +1,55 @@
 # 4. Functional and Behavioral Requirements
 
-## 4.1 Logical Query Compilation
+## 4.1 Compilation
 
-### QRY-001 — API-visible path compilation
+### QRY-001 — Restricted Boolean query expression
 
-`filterBy` SHALL bind `object.<path>` only to paths declared by the selected `QuerySchema<Q>`. Database columns, table names, JPA properties, and unregistered response paths SHALL have no implicit query meaning.
+FilterBy SHALL compile in `EXPRESSION` mode using only logical, equality, ordering, and contains features. The final compiled source SHALL return Boolean before being converted to a logical query expression.
 
-Verification: Map `object.name` to a differently named persistence attribute and reject persistence-oriented identifiers.
-Traceability: SCHEMA-002 through SCHEMA-004; FILTER-002.
+### QRY-002 — Explicitly supported expression shapes
 
-### QRY-002 — Nested and composed paths
+The validator SHALL accept literal true/false, AND/OR over valid subexpressions, field-to-literal equality/inequality/ordering, and `contains(object.field, "substring")` only for permitted string-like fields.
 
-Query Paths MAY contain multiple segments and SHALL preserve API-visible nesting independently of persistence topology.
+### QRY-003 — Unsupported operations
 
-A logical path MAY map to one column, multiple columns, a computed expression, one or more joins, an array/JSON expression, or a custom repository implementation.
+Field-to-field comparison, reversed literal-field comparison, bare object references, unary object-reference expressions, `IN`, arithmetic and modulo SHALL be rejected rather than converted into an unsafe or unsupported database expression.
 
-Verification: Query nested and computed fields and confirm client source remains unchanged across persistence mappings.
-Traceability: SCHEMA-002; PERSIST-001.
+### QRY-004 — Strict typed comparisons
 
-### QRY-003 — Logical predicate composition
+The schema SHALL validate the field's operator set, type, and nullability. Dates/times and UUID/ENUM fields MAY use compatible serialized string literals that are validated by the persistence binder. Ordering SHALL be rejected for nonorderable fields.
 
-`QueryPredicate<Q>` values MAY be composed only when their Query Contract and schema identities are compatible.
+### QRY-005 — Query identity
 
-Constant true/false predicates SHALL simplify according to Boolean identities when simplification preserves semantics.
+The compiler SHALL bind the resulting logical expression to the identity of the resolved operation schema and exact server-owned runtime context. The persistence layer SHALL reject mismatched predicate identity.
 
-Verification: Compose compatible predicates, reject incompatible identities, and inspect constant simplification.
-Traceability: PRED-001; PRED-002.
+## 4.2 Sorting
 
-### QRY-004 — Collection predicates
+### SORT-FR-001 — Multi-sort priority
 
-Collection-valued Query Fields SHALL preserve element type metadata. Membership and bounded collection quantifiers SHALL be accepted only when the Query Field/operator contract and selected persistence adapter support their translation.
+Sorting SHALL apply requested fields in order, each with its own ascending/descending direction, before pagination.
 
-For:
+### SORT-FR-002 — Null positioning
 
-```text
-all(object.user.emails, email => len(email) > 10)
-```
+For nullable sortable fields, the trusted JPA binder SHALL order missing/null values after present values regardless of ASC/DESC direction.
 
-persistence translation SHALL preserve Language quantifier semantics regardless of the supported physical collection representation.
+### SORT-FR-003 — Default stable order
 
-Verification: Translate membership and quantifiers over a supported collection mapping and reject unsupported schema/adapter combinations before unrestricted row loading.
-Traceability: SCHEMA-003; [Language collection semantics](../003.%20Language/04-functional-and-behavioral-requirements.md#type-005--collection-quantifiers-and-length); PERSIST-003.
+Where list controllers do not specify sorting, their resource repositories SHALL use stable identifier ordering as implemented (for example User/Ticket lists sort by UUID).
 
-### QRY-005 — Persistence execution before pagination
+## 4.3 Authorization and Pagination
 
-A `filterBy` predicate SHALL execute in the persistence query before pagination. Query Filtering SHALL NOT load unrestricted rows and apply the client filter in JVM memory.
+### PERSIST-002 — Authorized query composition
 
-Verification: Inspect persistence queries and page totals under client filtering.
-Traceability: PERSIST-001; PERF-001.
+List repositories SHALL combine client filters with Object Authorization and any implicit resource scope (for example Ticket Type) in the database before pagination.
 
-## 4.2 Persistence Mapping
+### PERSIST-003 — Trusted translation
 
-### PERSIST-002 — Trusted logical-to-persistence mapping
+Query metadata SHALL be compiled to trusted typed JPA Criteria/Specification predicates and order expressions, not interpreted as client-supplied SQL.
 
-Only resource-owned trusted mappings SHALL convert Query Paths to persistence expressions. User-controlled path text SHALL NOT be passed directly to `Root.get`, join selectors, SQL identifiers, or equivalent persistence APIs.
+### PAGE-001 — Offset pagination
 
-Verification: Instrument path binding and confirm persistence access originates only from registered mappings.
-Traceability: SEC-001; PERSIST-001.
+List API parameters SHALL default to `page=1`, `pageSize=20`, require `page>=1`, and require `1<=pageSize<=100`. Response metadata SHALL report current page, size, total items, and total pages.
 
-### PERSIST-003 — Quantifier equivalence
+### CONTEXT-001 — Dynamic Ticket fields
 
-Persistence adapters SHALL preserve these logical meanings:
-
-```text
-all(collection, item => predicate)
-  -> no item exists for which predicate is not true
-
-any(collection, item => predicate)
-  -> an item exists for which predicate is true
-
-none(collection, item => predicate)
-  -> no item exists for which predicate is true
-```
-
-Adapters SHALL preserve Language empty-list and null semantics and account for persistence three-valued logic where applicable.
-
-Verification: Compare direct Language results with persistence results for empty, matching, violating, and nullable cases supported by the Query Schema.
-Traceability: QRY-004; [Language quantifier semantics](../003.%20Language/04-functional-and-behavioral-requirements.md#type-005--collection-quantifiers-and-length).
+Ticket list SHALL use globally compatible fields or Type-scoped history when `ticketTypeId` is supplied. Ticket read/update Object Authorization SHALL use the stored Ticket's exact pinned template version.

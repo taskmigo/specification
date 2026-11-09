@@ -1,39 +1,35 @@
 # 7. Constraints
 
-## 7.1 Spring Integration
+## 7.1 Filter Surface
 
-### TECH-001 — Spring MVC and type resolution
+### TECH-001 — Explicit operation
 
-Web integration SHALL use Spring MVC extension points such as `HandlerMethodArgumentResolver` and Spring `ResolvableType` for generic Query Contract resolution rather than string target registries in controller signatures.
+Filter options SHALL require exactly one registered Query Schema for the operation; ambiguous/missing registrations SHALL fail rather than silently selecting a schema.
 
-Verification: Inspect controller contracts and argument resolution.
-Traceability: SPRING-001.
+### TECH-002 — Restricted syntax
 
-### TECH-002 — Spring conversion and persistence composition
+Comparison SHALL use a field reference from `object` on the left and literal on the right; `IN`, arithmetic, collection quantifiers, field-to-field comparisons, unsupported unary forms and arbitrary code SHALL NOT be accepted.
 
-JPA-backed persistence adapters SHOULD use Spring `ConversionService` for host-value conversion and Spring Data `PredicateSpecification<E>` for pure predicate composition where those abstractions are sufficient.
+### TECH-003 — Type/null constraints
 
-Equivalent custom repository adapters MAY be used for query surfaces not naturally represented by one JPA root.
+Null comparisons SHALL use only equality/inequality on nullable paths; CONTAINS SHALL use a string-like path and string literal; ordering SHALL use a supported orderable type.
 
-Verification: Inspect JPA-backed and custom query adapters.
-Traceability: PERSIST-001.
+### TECH-004 — Trusted persistence binding
 
-## 7.2 Isolation
+Resource owners SHALL bind logical fields/operators/sorts against their registered Query Schema and exact runtime context. They SHALL reject mismatched compiled schema identity.
 
-### TECH-003 — No direct persistence access from source
+## 7.2 Sorting and Pagination
 
-Language source SHALL NOT receive JPA entities, Spring container objects, Criteria objects, repositories, or persistence mapping functions.
+### TECH-005 — Sort prefix
 
-Verification: Inspect the Environment Schema and attempt forbidden references.
-Traceability: SEC-001; [Language isolation](../003.%20Language/07-constraints.md#74-isolation-and-host-access).
+A leading plus sign SHALL be invalid; leading minus sign SHALL mean DESC; absent sign SHALL mean ASC. Duplicates and unsupported sort fields SHALL be errors.
 
-## 7.3 Failure Behavior
+### TECH-006 — Sorting before page slicing
 
-### TECH-004 — Filter failure boundary
+The database SHALL apply request-specific sort and authorization/filter predicates before the requested offset slice, including nulls-last ordering for nullable fields.
 
-Syntax, profile, binding, type, complexity, Query Schema, and persistence-mapping failures originating from `filterBy` SHALL remain client query-input failures.
+## 7.3 Public Documentation
 
-Such failures SHALL NOT fall back to unrestricted row retrieval.
+### TECH-007 — Operation metadata
 
-Verification: Trigger each failure class and confirm HTTP `400` where the failure is caused by client input and no unrestricted fallback query is executed.
-Traceability: FILTER-003; QRY-005.
+Generated OpenAPI SHALL publish only statically available field/operator/sort metadata. Runtime EAV fields MAY vary by Ticket Type and historical template scope and SHALL NOT be assumed present in the static snapshot.

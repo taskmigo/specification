@@ -1,57 +1,34 @@
 # 11. Appendices
 
-The examples in this section are supporting material and do not add requirements.
-
-## 11.1 Scalar Mapping
-
-API response:
-
-```json
-{
-  "name": "Phong Chu"
-}
-```
-
-Client filter:
+## 11.1 Example Request
 
 ```text
-object.name == "Phong Chu"
+GET /api/v0/tickets?ticketTypeId=<UUID>&filterBy=object.status%20%3D%3D%20%22OPEN%22&sortBy=-updatedAt&sortBy=title&page=1&pageSize=20
 ```
 
-A resource mapping may translate `name` to `CustomerEntity_.customerName`, producing SQL equivalent to:
+This example requires URL encoding of the filter expression and fields supported by that operation's schema.
 
-```sql
-WHERE customer_name = ?
-```
-
-## 11.2 Nested and Composed Projection
-
-API response:
-
-```json
-{
-  "user": {
-    "name": "Phong Chu",
-    "age": 18
-  },
-  "account": {
-    "status": "ACTIVE"
-  }
-}
-```
-
-Client filter:
+## 11.2 Sort Semantics
 
 ```text
-object.user.age >= 18 && object.account.status == "ACTIVE"
+sortBy=title
+sortBy=-createdAt
 ```
 
-The resource adapter may translate the paths through different joins without changing the client expression.
+Results SHALL be ordered title ASC, then createdAt DESC. For nullable sortable fields, NULLS LAST applies.
 
-## 11.3 Collection Quantifier
+## 11.3 Query Pipeline
 
-```text
-all(object.user.emails, email => len(email) > 10)
+```mermaid
+flowchart TB
+    input[filterBy and repeated sortBy] --> schema[Resolve operation schema]
+    schema --> runtime[Resolve runtime field context]
+    runtime --> compiler[Validate and compile logical predicate]
+    compiler --> combine[Combine client filter and Object Authorization]
+    combine --> binder[Bind trusted persistence paths and sorting]
+    binder --> page[Execute database query with offset paging]
 ```
 
-A relationship-backed mapping may lower this to a `NOT EXISTS` query over violating elements. An array/JSON-backed mapping may use supported collection traversal while preserving the same logical result.
+## 11.4 Invalid Expressions
+
+`object.name == object.alias`, `"alice" == object.name`, `object.name in ["alice"]`, and `sortBy=+name` are intentionally outside the implemented query contract.

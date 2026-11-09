@@ -1,40 +1,31 @@
 # 6. Quality and Performance Requirements
 
-## 6.1 Determinism and Isolation
+## 6.1 Safety
 
-### QUAL-001 — Deterministic logical semantics
+### SEC-001 — Allowlist enforcement
 
-For identical Query Schema, Language version/profile, source, and known inputs, filter compilation and logical predicate composition SHALL produce equivalent semantics.
+Unknown fields/operators, persistence-only names, and incompatible schema identity SHALL fail validation; they SHALL NOT become raw SQL/JPA paths.
 
-Verification: Repeat compilation/composition and compare results modulo non-semantic metadata.
-Traceability: FILTER-002; PRED-002.
+### SEC-002 — No arbitrary code execution
 
-### SEC-001 — Persistence namespace isolation
-
-Database tables, columns, JPA attributes, joins, and persistence expressions SHALL NOT become queryable merely because they exist. Only explicitly registered API-visible Query Paths SHALL be addressable.
-
-Verification: Probe persistence-only names and confirm they remain unknown Query Paths.
-Traceability: SCHEMA-004; PERSIST-002.
-
-### SEC-002 — Public diagnostic vocabulary
-
-Client diagnostics SHALL identify API-visible Query Paths and logical operators. They SHALL NOT disclose persistence columns, entity implementation names, join topology, or raw persistence exceptions.
-
-Verification: Trigger compilation and mapping failures and inspect the public error response.
-Traceability: FILTER-003; SEC-001.
+The filter compiler SHALL use a bounded language compilation profile and symbolic expression mapping rather than executing user-provided scripts or SQL.
 
 ## 6.2 Performance
 
-### PERF-001 — Database-side filtering
+### PERF-001 — Database-side evaluation
 
-Client filtering SHALL be applied before pagination and SHALL avoid unrestricted JVM row filtering.
+Client filtering, Object Authorization, sorting and offset pagination SHALL be executed through the resource's database query. A full-table application-memory filter/sort SHALL NOT replace the defined API contract.
 
-Verification: Inspect persistence predicates and page totals.
-Traceability: QRY-005.
+### PERF-002 — Bounded page size
 
-### PERF-002 — Compiled filter reuse
+Version 0 offset endpoints SHALL cap `pageSize` at 100; the compiler SHALL reject invalid query syntax before starting unrestricted execution.
 
-A compiled `filterBy` artifact MAY be reused only when source content, Language version/profile, Environment Schema identity, and Query Schema identity are compatible.
+## 6.3 Correctness
 
-Verification: Change each identity input and confirm stale compiled filters are not reused.
-Traceability: DATA-001; [Language compiled artifact metadata](../003.%20Language/05-data-and-information-requirements.md#data-003--compiled-artifact-metadata).
+### QUAL-001 — Same-context compilation
+
+A runtime query-field snapshot SHALL be used consistently for filter validation, authorization predicate binding, and sorting in one operation.
+
+### QUAL-002 — Deterministic ordering
+
+Requested multi-sort order and nulls-last semantics SHALL be preserved when translated to JPA, and no-sort behavior SHALL remain stable by resource identifier as implemented.
