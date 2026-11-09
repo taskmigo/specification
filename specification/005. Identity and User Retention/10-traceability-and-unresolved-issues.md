@@ -2,14 +2,14 @@
 
 ## 10.1 Source Traceability
 
-| Contract | Requirement IDs | Implementation |
-| --- | --- | --- |
-| User registration and identity | ID-API-002, ID-FR-001–005 | [UserRegistrationApplicationService](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/identity/src/main/java/io/taskmigo/identity/user/application/UserRegistrationApplicationService.java) |
-| Delete and Retain | ID-FR-006–009 | [DefaultUserDeletionLifecycleService](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/identity/src/main/java/io/taskmigo/identity/user/application/DefaultUserDeletionLifecycleService.java) |
-| Tombstone and audit scrub | ID-FR-010–011, ID-DATA-003 | [DefaultUserTombstoneService](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/identity/src/main/java/io/taskmigo/identity/user/application/DefaultUserTombstoneService.java) |
-| Batch retention | ID-FR-012–013 | [DefaultUserRetentionService](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/identity/src/main/java/io/taskmigo/identity/user/application/DefaultUserRetentionService.java) |
-| Config | ID-API-006, ID-FR-015–016 | [DefaultConfigurationService](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/identity/src/main/java/io/taskmigo/identity/configuration/application/DefaultConfigurationService.java) |
-| User visibility | ID-FR-017 | [JpaUserQueryRepository](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/identity/src/main/java/io/taskmigo/identity/user/persistence/JpaUserQueryRepository.java) |
+| Contract                       | Requirement IDs            | Implementation                                                                                                                                                                                                                                 |
+| ------------------------------ | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| User registration and identity | ID-API-002, ID-FR-001–005  | [UserRegistrationApplicationService](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/identity/src/main/java/io/taskmigo/identity/user/application/UserRegistrationApplicationService.java)   |
+| Delete and Retain              | ID-FR-006–009              | [DefaultUserDeletionLifecycleService](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/identity/src/main/java/io/taskmigo/identity/user/application/DefaultUserDeletionLifecycleService.java) |
+| Tombstone and audit scrub      | ID-FR-010–011, ID-DATA-003 | [DefaultUserTombstoneService](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/identity/src/main/java/io/taskmigo/identity/user/application/DefaultUserTombstoneService.java)                 |
+| Batch retention                | ID-FR-012–013              | [DefaultUserRetentionService](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/identity/src/main/java/io/taskmigo/identity/user/application/DefaultUserRetentionService.java)                 |
+| Config                         | ID-API-006, ID-FR-015–016  | [DefaultConfigurationService](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/identity/src/main/java/io/taskmigo/identity/configuration/application/DefaultConfigurationService.java)        |
+| User visibility                | ID-FR-017                  | [JpaUserQueryRepository](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/identity/src/main/java/io/taskmigo/identity/user/persistence/JpaUserQueryRepository.java)                           |
 
 ## 10.2 Deliberately Unspecified
 

@@ -6,13 +6,18 @@
 {
   "success": true,
   "statusCode": 200,
-  "message": {"code": "resource.user.listed", "text": "Users listed"},
+  "message": { "code": "resource.user.listed", "text": "Users listed" },
   "error": null,
   "meta": {
-    "execution": {"startedAt": "2026-11-09T00:00:00Z", "duration": 12},
+    "execution": { "startedAt": "2026-11-09T00:00:00Z", "duration": 12 },
     "pagination": {
       "type": "offset",
-      "offset": {"currentPage": 1, "pageSize": 20, "totalItems": 0, "totalPages": 0}
+      "offset": {
+        "currentPage": 1,
+        "pageSize": 20,
+        "totalItems": 0,
+        "totalPages": 0
+      }
     }
   },
   "data": []

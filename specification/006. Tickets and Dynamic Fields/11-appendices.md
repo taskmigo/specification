@@ -39,7 +39,7 @@ flowchart TB
       "label": "Severity",
       "dataType": "ENUM",
       "required": true,
-      "constraints": {"options": ["LOW", "MEDIUM", "HIGH"]}
+      "constraints": { "options": ["LOW", "MEDIUM", "HIGH"] }
     }
   ]
 }

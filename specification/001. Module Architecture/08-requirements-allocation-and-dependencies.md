@@ -4,19 +4,19 @@
 
 The authoritative project roster is the [Gradle settings file](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/settings.gradle.kts). The table records direct production dependencies, omitting transitive dependencies and third-party libraries.
 
-| Owner | Public / direct dependencies | Purpose |
-| --- | --- | --- |
-| `foundation:core` | None | Generic core contracts |
-| `foundation:spring` | `foundation:core` | Spring support |
-| `internal:language` | None | Restricted language |
-| `query` | `foundation:core`, `internal:language` | Query compiler and logical model |
-| `internal:jpa-query` | `foundation:core`, `query` | Typed JPA binding |
-| `authorization` | `foundation:core`, `query`, `internal:language`, `internal:jpa-query` | Authorization and grants |
-| `audit` | `foundation:core` | Transactional audit |
-| `identity` | `foundation:core`, `query`, `authorization`, `audit`, `internal:language`, `internal:jpa-query` | Users, groups, lifecycle |
-| `internal:eav` | `query`, `internal:jpa-query` | Versioned typed custom fields |
-| `ticket` | `foundation:core`, `query`, `authorization`, `internal:jpa-query`, `internal:eav` | Tickets and templates |
-| `database` | None (Taskmigo) | JDBC/JPA runtime and schema |
+| Owner                | Public / direct dependencies                                                                    | Purpose                          |
+| -------------------- | ----------------------------------------------------------------------------------------------- | -------------------------------- |
+| `foundation:core`    | None                                                                                            | Generic core contracts           |
+| `foundation:spring`  | `foundation:core`                                                                               | Spring support                   |
+| `internal:language`  | None                                                                                            | Restricted language              |
+| `query`              | `foundation:core`, `internal:language`                                                          | Query compiler and logical model |
+| `internal:jpa-query` | `foundation:core`, `query`                                                                      | Typed JPA binding                |
+| `authorization`      | `foundation:core`, `query`, `internal:language`, `internal:jpa-query`                           | Authorization and grants         |
+| `audit`              | `foundation:core`                                                                               | Transactional audit              |
+| `identity`           | `foundation:core`, `query`, `authorization`, `audit`, `internal:language`, `internal:jpa-query` | Users, groups, lifecycle         |
+| `internal:eav`       | `query`, `internal:jpa-query`                                                                   | Versioned typed custom fields    |
+| `ticket`             | `foundation:core`, `query`, `authorization`, `internal:jpa-query`, `internal:eav`               | Tickets and templates            |
+| `database`           | None (Taskmigo)                                                                                 | JDBC/JPA runtime and schema      |
 
 Project declarations SHALL preserve the public `api` versus private `implementation` distinctions verified by each project's Gradle file; this table intentionally summarizes both without implying all edges are public.
 
