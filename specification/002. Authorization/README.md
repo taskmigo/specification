@@ -1,27 +1,27 @@
 ---
 metadata:
-  version: 0.7.0
-  changelog: Defers Statement policy semantic validation to runtime authorization and adds persisted Authorization Logs with offset-paginated retrieval.
+  version: 0.8.0
+  changelog: Replaces outdated Authorization Log and Object PROGRAM assumptions with implemented Request/Object policy and source contracts.
 ---
 
 <!-- markdownlint-disable MD041 -->
 
 ## Table of contents
 
-| Section | Title                                             | Purpose                                                                                  | Document                                                                                         |
-| ------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| 1       | Introduction                                      | Purpose, scope, terminology, references, and document control                            | [01-introduction.md](01-introduction.md)                                                         |
-| 2       | Overall Description                               | Product context, authorization lifecycle, object filtering, boundaries, and logging      | [02-overall-description.md](02-overall-description.md)                                           |
-| 3       | External Interface Requirements                   | Statement, input, snapshot, object schema, public APIs, and Authorization Log retrieval  | [03-external-interface-requirements.md](03-external-interface-requirements.md)                   |
-| 4       | Functional and Behavioral Requirements            | Runtime policy compilation, Request/Object authorization, and Authorization Log behavior | [04-functional-and-behavioral-requirements.md](04-functional-and-behavioral-requirements.md)     |
-| 5       | Data and Information Requirements                 | Authorization state, Authorization Log records, object schema identity, and lifecycle    | [05-data-and-information-requirements.md](05-data-and-information-requirements.md)               |
-| 6       | Quality and Performance Requirements              | Security, consistency, performance, and freshness                                        | [06-quality-and-performance-requirements.md](06-quality-and-performance-requirements.md)         |
-| 7       | Constraints                                       | Integration boundaries, policy isolation, logging isolation, and fail-closed behavior    | [07-constraints.md](07-constraints.md)                                                           |
-| 8       | Requirements Allocation and Dependencies          | Ownership across Authorization, Language, web, resources, and log persistence            | [08-requirements-allocation-and-dependencies.md](08-requirements-allocation-and-dependencies.md) |
-| 9       | Verification, Validation, and Acceptance Evidence | Verification objectives and conformance conditions                                       | [09-verification-validation-and-acceptance.md](09-verification-validation-and-acceptance.md)     |
-| 10      | Traceability and Unresolved Issues                | Requirement traceability and unresolved decisions                                        | [10-traceability-and-unresolved-issues.md](10-traceability-and-unresolved-issues.md)             |
-| 11      | Appendices                                        | Authorization examples                                                                   | [11-appendices.md](11-appendices.md)                                                             |
+| Section | Title                                          | Document                                                                                |
+| ------- | ---------------------------------------------- | --------------------------------------------------------------------------------------- |
+| 1       | Introduction                                   | [01-introduction.md](01-introduction.md)                                                |
+| 2       | Overall Description                            | [02-overall-description.md](02-overall-description.md)                                  |
+| 3       | External Interface Requirements                | [03-external-interface-requirements.md](03-external-interface-requirements.md)          |
+| 4       | Functional and Behavioral Requirements         | [04-functional-and-behavioral-requirements.md](04-functional-and-behavioral-requirements.md) |
+| 5       | Data and Information Requirements              | [05-data-and-information-requirements.md](05-data-and-information-requirements.md)      |
+| 6       | Quality and Performance Requirements           | [06-quality-and-performance-requirements.md](06-quality-and-performance-requirements.md) |
+| 7       | Constraints                                    | [07-constraints.md](07-constraints.md)                                                  |
+| 8       | Requirements Allocation and Dependencies       | [08-requirements-allocation-and-dependencies.md](08-requirements-allocation-and-dependencies.md) |
+| 9       | Verification, Validation, and Acceptance       | [09-verification-validation-and-acceptance.md](09-verification-validation-and-acceptance.md) |
+| 10      | Traceability and Unresolved Issues             | [10-traceability-and-unresolved-issues.md](10-traceability-and-unresolved-issues.md)    |
+| 11      | Appendices                                     | [11-appendices.md](11-appendices.md)                                                    |
 
 ## Read order
 
-Read the documents in section-number order from 1 through 11. Use [Section 3](03-external-interface-requirements.md) for public interfaces, [Section 4](04-functional-and-behavioral-requirements.md) for authorization semantics, and [Section 9](09-verification-validation-and-acceptance.md) for verification evidence.
+Read sections 1–11 in order. Sections [3](03-external-interface-requirements.md) and [4](04-functional-and-behavioral-requirements.md) specify the published contracts; [Section 10](10-traceability-and-unresolved-issues.md) records withdrawn old requirements.

@@ -1,28 +1,24 @@
 # 8. Requirements Allocation and Dependencies
 
-## 8.1 Assumptions and Dependencies
+## 8.1 Owning Components
 
-- [Module Architecture](../001.%20Module%20Architecture/README.md) defines the mandatory dependency direction and module ownership constraints for Authorization and its consumers.
-- [Language](../003.%20Language/README.md) defines language syntax, Compilation Profiles, Semantic AST, typing, intrinsics, evaluation, and partial evaluation.
-- Statement policy uses `PROGRAM` mode with an Authorization-owned Compilation Profile when authorization executes.
-- `target.api` is the only authorization target shape defined here.
-- The database is authoritative for effective authorization state.
-- Effective persisted Statements expose database-owned revision metadata for Authorization-layer derived-artifact freshness.
-- Statement creation/update does not require authorization semantic validation or Object target-to-schema applicability metadata.
-- Request and Object Authorization share one operation-scoped Authorization Context.
-- Resource-owning modules define Object Authorization Schemas and persistence binders for governed resource query surfaces.
-- Authorization owns Request/Object Authorization Log semantics and the persistence-neutral contracts needed to record/query those logs.
-- `web` owns Spring Security/MVC adaptation and the protected offset-paginated Authorization Log HTTP API.
+- **Authorization role/statement/subject:** Persist Roles, Statements, direct grants and hierarchy; expose published use cases.
+- **Request Authorization:** Resolve authoritative effective Statements, compile/evaluate REQUEST policies and return immutable operation context.
+- **Object Authorization:** Compile/validate OBJECT expressions, partially evaluate with principal/request and compose opaque allowed/denied predicates.
+- **Identity:** Own User/Group identity, membership and effective subject expansion without moving those aggregates into Authorization.
+- **Query:** Own operation-scoped field allowlists, predicate identity and logical operators.
+- **Internal Language:** Own parser/evaluator, compilation mode/profile, typed AST and partial evaluation.
+- **Internal JPA Query and resource owners:** Map symbolic fields to trusted database predicates.
+- **Web:** Enforce JWT identity, ACTIVE User state, Request Authorization on versioned routes and Object Authorization within relevant controller operations.
 
-## 8.2 Requirements Allocation
+## 8.2 Contract Direction
 
-- The `authorization` module SHALL define Statement policy semantics, runtime authorization validation, effective authorization state, effective Statement revision semantics, Request decisions, Object Authorization Schemas, Object Authorization Predicates, Authorization Log semantics/contracts, and Authorization-specific Language integration.
-- The `authorization` module MAY depend on `foundation` and `language` as permitted by [Module Architecture](../001.%20Module%20Architecture/08-requirements-allocation-and-dependencies.md#82-allowed-dependency-model).
-- The `authorization` module SHALL NOT depend on `identity`, `query`, `web`, or resource-specific persistence modules for its core authorization semantics.
-- The `language` module SHALL parse, type, evaluate, and partially evaluate Language policy source and SHALL preserve the compiled-artifact metadata required by Language DATA-003.
-- The persistence adapter responsible for effective Statement resolution SHALL return the current persisted Statement together with its database-owned revision metadata.
-- Authorization Log persistence SHALL implement the Authorization-owned log contract without exposing persistence implementation details through the public Authorization API.
-- Resource-owning modules SHALL provide resource-specific Object Authorization Schemas and map Object Authorization Predicates to persistence queries.
-- `web` SHALL adapt Spring Security inputs/results and current-request Authorization Context access and SHALL expose `GET /api/v0/authorization/logs` using the v0 offset-pagination contract.
-- Executable applications SHALL NOT be required to duplicate transport route metadata solely to make Statement creation/update valid.
-- The `language` module SHALL NOT own Object Authorization queryability, authorization decision semantics, Authorization Log semantics, or Statement lifecycle semantics.
+Authorization SHALL NOT depend on Identity/Ticket internals. Identity and Ticket MAY depend on published Authorization abstractions. Query SHALL remain independent of Authorization; Language SHALL remain independent of Query.
+
+## 8.3 Operational Data
+
+The [migration Statements](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/migration/src/main/resources/migration/statements.yaml) and [Roles](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/migration/src/main/resources/migration/roles.yaml) are concrete managed policy examples, not universal hardcoded permission bypasses. Changes to these managed definitions affect actual authorization behavior.
+
+## 8.4 Related SRSs
+
+[Architecture](../001.%20Module%20Architecture/README.md), [Language](../003.%20Language/README.md), [Query Filtering](../004.%20Query%20Filtering/README.md), and [API Audit](../007.%20Audit%20and%20API%20Contracts/README.md).

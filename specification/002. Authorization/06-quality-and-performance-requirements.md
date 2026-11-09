@@ -2,69 +2,34 @@
 
 ## 6.1 Security
 
-Authorization security behavior is defined by [policy isolation](07-constraints.md#72-security-and-isolation), [runtime Statement policy validation](04-functional-and-behavioral-requirements.md#policy-003--deferred-semantic-validation), [Request input boundaries](03-external-interface-requirements.md#32-authorization-inputs-and-operation-snapshot), and [fail-closed behavior](07-constraints.md#73-fail-closed-behavior).
+### SEC-001 — Default-deny safety
 
-Authorization Log retrieval SHALL remain protected by Request Authorization under LOG-API-001, and persisted/public diagnostics SHALL satisfy the data-minimization constraints in LOG-DATA-001.
+Request Authorization SHALL deny absent allow, invalid/failed policy execution, missing principal status or failed snapshot resolution.
 
-The Language compiler/evaluator boundary SHALL additionally satisfy the [Language constraints](../003.%20Language/07-constraints.md).
+### SEC-002 — Field allowlisting
 
-## 6.2 Consistency
+Object Authorization SHALL never expose arbitrary persistence columns/JPA properties from policy source. Only registered operation-scoped Query Schema fields and operators SHALL be bindable.
 
-Operation state consistency SHALL satisfy SNAPSHOT-001 through SNAPSHOT-004.
+### SEC-003 — Deny precedence
 
-Authorization Log persistence SHALL record the outcome determined for the corresponding authorization invocation and SHALL NOT alter that outcome under LOG-005.
+Matching DENY rules SHALL prevail over ALLOW for both Request and Object Authorization even with multiple inherited effective Statements.
 
-## 6.3 Performance Requirements
+## 6.2 Performance
 
-### PERF-001 — DB-first resolution
+### PERF-001 — Bounded target matching
 
-Runtime authorization SHALL NOT load all Groups or all Roles and SHALL NOT build the complete authorization hierarchy graph in JVM memory.
+API target regex SHALL use the bounded safe subset enforced by StatementTargetPathMatcher; unsupported regex constructs and oversized expressions SHALL be rejected.
 
-Direct and inherited User/Group/Role/Statement semantics SHALL be preserved.
+### PERF-002 — Database-side filtering
 
-Verification: Instrument authorization-state resolution and confirm only relevant database state is loaded while direct and inherited assignments remain effective.
-Traceability: [Resolution and Operation Context](02-overall-description.md#221-resolution-and-operation-context).
+Object restrictions SHALL be executed in database queries before pagination, avoiding unrestricted JVM filtering. No unmeasured statement cache hit-rate or throughput target is asserted.
 
-### PERF-002 — Bounded query behavior
+## 6.3 Consistency
 
-Authorization-state resolution SHALL:
+### QUAL-001 — Fresh effective state
 
-- Use a bounded number of database round trips.
-- Avoid N+1 behavior.
-- Avoid loading unrelated authorization graph nodes.
-- Deduplicate effective authorization state.
-- Avoid repeating the same effective-state resolution for Request and Object Authorization in one operation.
+A new authorization operation SHALL resolve authoritative persisted grants; its immutable snapshot SHALL remain internally consistent throughout that operation.
 
-Unrelated authorization-graph growth SHALL NOT increase the number of database round trips for one equivalent authorization operation.
+### QUAL-002 — Transaction isolation
 
-Verification: Compare query counts for equivalent principals while adding unrelated Groups, Roles, and Statements.
-Traceability: PERF-001; SNAPSHOT-001.
-
-### PERF-003 — Stress case
-
-The authorization system SHALL support a principal with approximately 500 effective Statements targeting the same API, including a case where no early constant result can terminate evaluation.
-
-The scenario SHALL use bounded database round trips and SHALL exercise target matching plus runtime Language compilation/evaluation or artifact reuse and partial evaluation.
-
-Verification: Run the approximately 500-Statement scenario with query-count instrumentation.
-Traceability: [Language partial-evaluation performance](../003.%20Language/06-quality-and-performance-requirements.md#perf-002--dependency-aware-partial-evaluation); PERF-002; POLICY-004.
-
-### PERF-004 — Database source of truth on every operation
-
-Every authorization operation SHALL resolve the relevant effective Statements from the database.
-
-The authorization system SHALL NOT use cross-request Statement, effective-Statement, principal-resolution, or Authorization Snapshot caches as authoritative authorization state.
-
-A derived compiled Language artifact MAY be reused only under POLICY-004 and SHALL NOT substitute for the database Statement lookup.
-
-After the current Statement has been loaded, the database-owned effective Statement revision defined by STATE-001 MAY serve as the Statement freshness component for Authorization-layer derived-artifact reuse when the remaining compilation identities are compatible as defined by STATE-002.
-
-Verification: Run sequential operations after a committed policy change and confirm each performs required database resolution, observes the new Statement revision, and does not reuse the stale derived artifact.
-Traceability: SNAPSHOT-001; POLICY-004; STATE-001; STATE-002.
-
-### PERF-005 — No distributed-cache correctness dependency
-
-After a Statement, assignment, Role, or Group authorization change is committed, the next operation SHALL observe that change through database resolution without requiring cache eviction, TTL expiry, pub/sub invalidation, or cross-instance cache synchronization.
-
-Verification: Repeat committed-change freshness tests without cache coordination.
-Traceability: SNAPSHOT-002; PERF-004.
+Effective Statement retrieval SHALL use read-only `REQUIRES_NEW` with `REPEATABLE_READ` isolation to obtain an operation's authoritative rule set.
