@@ -2,45 +2,33 @@
 
 ## 1.1 Purpose
 
-This Software Requirements Specification (SRS) defines the Language, a bounded language for parsing, semantically analyzing, evaluating, and partially evaluating deterministic program or expression sources through a language-owned Semantic AST.
+The **Language** is Taskmigo's bounded, statically typed source language for deterministic compilation, direct evaluation and partial evaluation. It is an internal service capability, **not a public JavaScript runtime or HTTP API**. This specification defines exactly which source forms exist, which are profile-controlled, what values and errors they produce, and which runtime operations are prohibited.
 
-This document is tailored to the software-requirements information-item guidance in [ISO/IEC/IEEE 29148:2018](https://committee.iso.org/standard/72089.html). It does not claim full conformance to the standard.
+This document uses tailored [ISO/IEC/IEEE 29148:2018 guidance](https://committee.iso.org/standard/72089.html) without claiming full certification. Implementation evidence is pinned to the [internal Language module at backend commit `9c1cd242`](https://github.com/taskmigo/taskmigo/tree/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/internal/language).
 
 ## 1.2 Scope
 
-The Language SHALL provide:
+Language SHALL provide two canonical source modes, a consumer-defined Compilation Profile, typed Environment Schemas, language-owned Semantic AST, expression/statement validation, static result typing, source diagnostics, concrete evaluation, unknown-preserving partial evaluation, and bounded simplification. Conditional control flow and immutable `const` bindings are available only under permitted PROGRAM profiles. Typed lists, membership, `len`, `contains`, and bounded collection quantifiers are available only when enabled.
 
-- `PROGRAM` and `EXPRESSION` compilation modes over one canonical expression language.
-- Consumer-defined Compilation Profiles that restrict canonical language feature families.
-- A typed, language-owned Semantic AST independent of ANTLR parse-tree classes and application-domain semantics.
-- Static types, immutable local bindings, bounded conditional control flow, direct evaluation, partial evaluation, and constant folding.
-- Static property paths declared by an Environment Schema.
-- Lists, membership, bounded collection quantifiers, and the bounded `len(...)` and `contains(...)` intrinsics when enabled by the applicable profile.
-- Restricted lambda syntax only as the element predicate of collection quantifiers.
+The language **does not** implement arbitrary function calls, modules/imports, mutable variables, loops, recursion, host reflection, I/O, external resource access, asynchronous work or general-purpose JavaScript semantics.
 
-The Language SHALL NOT provide general-purpose scripting, modules, imports, general function declarations or calls, first-class callable values, recursion, loops, mutable assignment, reflection, arbitrary host access, asynchronous execution, or I/O.
+## 1.3 Terms and type vocabulary
 
-The Environment Schema SHALL define the roots, structured paths, types, nullability, and symbolic availability visible to a source. The Language SHALL NOT reserve application-specific root names or consumer-specific profile names.
+| Term | Meaning |
+| --- | --- |
+| Source mode | `PROGRAM` statement-bearing source or `EXPRESSION` single-expression source |
+| Compilation Profile | Mode and enabled feature families supplied by the consumer |
+| Environment Schema | Allowed roots, typed property paths, nullability and symbolic availability |
+| Semantic AST | Language-owned typed representation, independent of ANTLR parse-tree classes |
+| Residual expression | Typed symbolic expression retained after partial evaluation |
+| Intrinsic | Bounded compiler-recognized `len`/`contains`/quantifier form, not a general host call |
+| Restricted lambda | One element binding accepted only within a quantifier predicate |
+| Known input | Value available now; contrast an explicit symbolic root required for partial evaluation |
 
-## 1.3 Definitions, Acronyms, and Abbreviations
+## 1.4 Source authority and consumers
 
-- **ANTLR:** Parser generator required for the Language lexer/parser frontend.
-- **Compilation Mode:** Source entry mode selecting either a statement-bearing `PROGRAM` source or a standalone `EXPRESSION` source.
-- **Compilation Profile:** Consumer-supplied compilation contract containing the selected mode and enabled canonical feature families.
-- **Environment Schema:** Typed definition of roots, structured paths, nullability, and symbolic availability for a compiled source.
-- **Intrinsic:** Compiler-recognized bounded language operation with specified static and runtime semantics, not a general callable host method.
-- **Semantic AST:** Typed language-owned abstract syntax tree produced after binding, type checking, and applicable control-flow validation.
-- **Partial Evaluation:** Evaluation that resolves known-dependent subexpressions while preserving unknown-dependent subexpressions.
-- **Residual Expression:** Typed Semantic AST expression remaining after partial evaluation because it depends on unknown values.
-- **Restricted Lambda:** Lexically scoped element-binding expression accepted only inside a specified collection quantifier.
+The Language's grammar and semantics are specified in [sections 3–5](03-external-interface-requirements.md). The [Authorization SRS](../002.%20Authorization/README.md) and [Query Filtering SRS](../004.%20Query%20Filtering/README.md) **restrict** the Language to their accepted profiles and fields; they cannot silently extend its grammar. A future interpreter/compiler change must preserve the typed external semantics or obtain an explicit SRS revision.
 
-The current physical implementation is `:modules:internal:language`; Query and Authorization apply narrower feature profiles. See the [Internal Language source](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/internal/language).
+## 1.5 Acceptance model
 
-## 1.4 References and Baseline
-
-- The linked standard's software-requirements information-item guidance is used as a tailored framework.
-- JavaScript-like surface syntax specified here does not imply ECMAScript runtime semantics.
-
-## 1.5 Overview
-
-Sections [2](02-overall-description.md)–[8](08-requirements-allocation-and-dependencies.md) define the language context, interfaces, behavior, data, quality attributes, constraints, and dependencies. [Section 9](09-verification-validation-and-acceptance.md) defines verification evidence; [Section 10](10-traceability-and-unresolved-issues.md) defines traceability and unresolved issues; [Section 11](11-appendices.md) provides supporting examples.
+Conformance consists of valid/invalid compilation, result-typing, direct/partial evaluation and bounded resource behavior under the same schema and profile. The [verification section](09-verification-validation-and-acceptance.md) defines the acceptance cases; [traceability](10-traceability-and-unresolved-issues.md) identifies evidence and any unresolved limitations.

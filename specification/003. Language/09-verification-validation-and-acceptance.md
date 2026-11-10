@@ -1,5 +1,7 @@
 # 9. Verification, Validation, and Acceptance Evidence
 
+Tests SHALL cover accepted and rejected source shapes, type failures, skipped branches and symbolic residual behavior without inventing additional language features.
+
 ## 9.1 Verification and Conformance Matrix
 
 Verification SHALL cover:

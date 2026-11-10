@@ -1,5 +1,7 @@
 # 10. Traceability and Unresolved Issues
 
+Keep canonical semantics separate from consumer-profile restrictions and backend evidence. Unapproved JavaScript-like syntax is not a requirement.
+
 ## 10.1 Traceability
 
 Each normative requirement has a stable identifier and observable verification objective. Cross-feature consumers SHALL reference the requirement IDs and section links defined by this SRS rather than duplicating language semantics.

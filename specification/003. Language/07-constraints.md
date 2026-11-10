@@ -1,10 +1,12 @@
 # 7. Constraints
 
+These limits separate the typed expression language from general-purpose scripts and forbid side effects or arbitrary host access.
+
 ## 7.1 Parser Frontend
 
 ### TECH-001 — ANTLR-generated parser
 
-The lexer and parser SHALL be generated from the canonical grammar using [ANTLR](https://www.antlr.org/) with the Java target/runtime. The frontend SHALL expose both source-mode entries from one shared grammar and convert generated parse trees into the language-owned Semantic AST before evaluation.
+**Normative requirement.** The lexer and parser SHALL be generated from the canonical grammar using [ANTLR](https://www.antlr.org/) with the Java target/runtime. The frontend SHALL expose both source-mode entries from one shared grammar and convert generated parse trees into the language-owned Semantic AST before evaluation.
 
 Compilation Profile restrictions SHALL NOT introduce consumer-specific grammars.
 
@@ -15,7 +17,7 @@ Traceability: SYNTAX-002; LANG-001; ENV-004.
 
 ### TECH-002 — No general-purpose scripting or general callable model
 
-The language SHALL NOT provide:
+**Normative requirement.** The language SHALL NOT provide:
 
 ```text
 modules or imports
@@ -44,7 +46,7 @@ Traceability: [Scope](01-introduction.md#12-scope); LANG-006; QUAL-002.
 
 ### TECH-003 — No ECMAScript coercion model
 
-The language SHALL NOT implement ECMAScript truthiness, `undefined`, loose equality, prototype lookup, automatic semicolon insertion, or implicit string/number/boolean coercion.
+**Normative requirement.** The language SHALL NOT implement ECMAScript truthiness, `undefined`, loose equality, prototype lookup, automatic semicolon insertion, or implicit string/number/boolean coercion.
 
 Verification: Attempt sources depending on excluded coercions or delimiters and confirm rejection.
 Traceability: TYPE-001 through TYPE-005; SYNTAX-003.
@@ -53,7 +55,7 @@ Traceability: TYPE-001 through TYPE-005; SYNTAX-003.
 
 ### TECH-004 — Pure execution environment
 
-Source SHALL be treated as untrusted compiler input. The language SHALL NOT expose repositories, dependency-injection containers, persistence entities, filesystems, networks, processes, reflection, class loaders, arbitrary host objects, or host methods.
+**Normative requirement.** Source SHALL be treated as untrusted compiler input. The language SHALL NOT expose repositories, dependency-injection containers, persistence entities, filesystems, networks, processes, reflection, class loaders, arbitrary host objects, or host methods.
 
 Canonical intrinsics SHALL execute only their specified pure language semantics and SHALL NOT dispatch to user-selected host methods.
 
@@ -64,7 +66,7 @@ Traceability: SYNTAX-004; LANG-006; DATA-001.
 
 ### TECH-005 — Fail closed on compiler-limit exhaustion
 
-Compiler limits required by PERF-001 SHALL be applied before source becomes executable. Limit exhaustion SHALL produce `ComplexityError` and SHALL NOT fall back to a less-restricted parser, profile, or evaluator.
+**Normative requirement.** Compiler limits required by PERF-001 SHALL be applied before source becomes executable. Limit exhaustion SHALL produce `ComplexityError` and SHALL NOT fall back to a less-restricted parser, profile, or evaluator.
 
 Verification: Exceed each limit and confirm failure without fallback.
 Traceability: PERF-001; DIAG-001; ENV-004.

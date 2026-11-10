@@ -1,10 +1,12 @@
 # 3. External Interface Requirements
 
+These are the callable **source, compilation, and evaluation contracts** used by internal consumers. Syntax/examples are normative only where they match the explicitly defined feature profile.
+
 ## 3.1 Source Contract
 
 ### SYNTAX-001 — Canonical source modes
 
-Every compilation SHALL select exactly one source mode through the applicable Compilation Profile:
+**Normative requirement.** Every compilation SHALL select exactly one source mode through the applicable Compilation Profile:
 
 ```text
 PROGRAM
@@ -20,7 +22,7 @@ Traceability: [Source Modes](02-overall-description.md#221-source-modes); ENV-00
 
 ### SYNTAX-002 — Canonical grammar
 
-The parser SHALL implement behavior equivalent to these source entry points and shared productions:
+**Normative requirement.** The parser SHALL implement behavior equivalent to these source entry points and shared productions:
 
 ```ebnf
 programSource     ::= statement* EOF ;
@@ -64,7 +66,7 @@ Traceability: SYNTAX-001; TECH-001.
 
 ### SYNTAX-003 — Delimiters, identifiers, and literals
 
-`PROGRAM` mode SHALL require parentheses around `if` conditions, braces around `if`/`else` bodies, and semicolons after `const` and `return`. `EXPRESSION` mode SHALL NOT require a trailing semicolon.
+**Normative requirement.** `PROGRAM` mode SHALL require parentheses around `if` conditions, braces around `if`/`else` bodies, and semicolons after `const` and `return`. `EXPRESSION` mode SHALL NOT require a trailing semicolon.
 
 Identifiers SHALL begin with an ASCII letter or `_` and continue with ASCII letters, decimal digits, or `_`.
 
@@ -75,7 +77,7 @@ Traceability: SYNTAX-002; TYPE-001 through TYPE-005.
 
 ### SYNTAX-004 — Static paths and bounded intrinsic syntax
 
-Property paths SHALL use static dot-separated identifiers. Computed member syntax, optional chaining, method calls, and general function calls SHALL be rejected.
+**Normative requirement.** Property paths SHALL use static dot-separated identifiers. Computed member syntax, optional chaining, method calls, and general function calls SHALL be rejected.
 
 The following SHALL be rejected:
 
@@ -101,7 +103,7 @@ Traceability: REF-001; LANG-006; TECH-002.
 
 ### ENV-001 — Environment Schema
 
-Compilation SHALL receive an Environment Schema that defines every available root and statically addressable property path, including:
+**Normative requirement.** Compilation SHALL receive an Environment Schema that defines every available root and statically addressable property path, including:
 
 - Static type.
 - Nullability.
@@ -118,14 +120,14 @@ Traceability: REF-001; LANG-006.
 
 ### ENV-002 — Schema-defined root namespace
 
-The Language SHALL NOT reserve or create application root names. Every non-local root SHALL exist only because the Environment Schema declares it.
+**Normative requirement.** The Language SHALL NOT reserve or create application root names. Every non-local root SHALL exist only because the Environment Schema declares it.
 
 Verification: Compile the same source against schemas with different root namespaces and confirm reference acceptance follows the supplied schema.
 Traceability: ENV-001.
 
 ### ENV-003 — Compiled source interface
 
-Successful compilation SHALL produce a compiled source artifact containing the typed Semantic AST, statically determined source result type, and metadata required by [compiled source artifacts](05-data-and-information-requirements.md#52-compiled-source-artifacts).
+**Normative requirement.** Successful compilation SHALL produce a compiled source artifact containing the typed Semantic AST, statically determined source result type, and metadata required by [compiled source artifacts](05-data-and-information-requirements.md#52-compiled-source-artifacts).
 
 For `PROGRAM`, the result type SHALL derive from reachable returns. For `EXPRESSION`, it SHALL be the source expression type.
 
@@ -134,7 +136,7 @@ Traceability: DATA-002; DATA-003; LANG-001; LANG-002; ENV-004.
 
 ### ENV-004 — Compilation Profile
 
-Every compilation SHALL receive a Compilation Profile containing one source mode and the enabled feature-family set.
+**Normative requirement.** Every compilation SHALL receive a Compilation Profile containing one source mode and the enabled feature-family set.
 
 The initial feature families SHALL be:
 
@@ -164,14 +166,14 @@ Traceability: [Compilation Profiles](02-overall-description.md#223-compilation-p
 
 ### EVAL-IF-001 — Typed input values
 
-Evaluation and partial evaluation SHALL receive values conforming to the Environment Schema used by the compiled source. Missing required values or incompatible runtime types SHALL fail rather than coerce.
+**Normative requirement.** Evaluation and partial evaluation SHALL receive values conforming to the Environment Schema used by the compiled source. Missing required values or incompatible runtime types SHALL fail rather than coerce.
 
 Verification: Execute compiled sources with matching and mismatching runtime values.
 Traceability: TYPE-001; TECH-003.
 
 ### EVAL-IF-002 — Result forms
 
-Direct evaluation SHALL return exactly one value conforming to the compiled source result type, or an evaluation failure.
+**Normative requirement.** Direct evaluation SHALL return exactly one value conforming to the compiled source result type, or an evaluation failure.
 
 Partial evaluation SHALL return a concrete conforming value, a typed residual Semantic AST expression conforming to the source result type, or an evaluation failure.
 
