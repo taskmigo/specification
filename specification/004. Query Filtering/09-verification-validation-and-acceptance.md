@@ -44,3 +44,16 @@ Verify operation-specific `x-filter-by` operator lists and `x-sort-by` sortable 
 - [Strict filter integration contract](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/query/src/test/java/io/taskmigo/query/Enhancement237FilterByStrictContractTest.java).
 - [Multi-sort contract test](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/web/src/test/java/io/taskmigo/web/api/support/query/ListQueryMultiSortContractTest.java).
 - [Ticket persistence query integration](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/ticket/src/test/java/io/taskmigo/ticket/persistence/TicketQueryPersistenceIntegrationTest.java).
+
+## 9.5 Independent-Consumer Contract Scenarios
+
+| Scenario | Request or condition | Expected outcome |
+| --- | --- | --- |
+| Missing filter | Omit `filterBy` on an authorized list | Only the client predicate becomes match-all; mandatory visibility and Object Authorization still apply |
+| Distinct filter and response fields | Filter User list by `displayName`, which is a response field but not query-allowlisted | HTTP 400 `INVALID_FILTER` |
+| Mixed sort precedence | Use `sortBy=title&sortBy=-createdAt` on Ticket list | ASC `title` then DESC `createdAt`; sorting precedes paging |
+| Unsupported sort | Use `sortBy=id` on Ticket list, where `id` is filterable but not sortable | HTTP 400 `INVALID_SORT` |
+| Authorized total | More objects match a filter than the current User may see | `totalItems` counts only the authorized matching subset |
+| Dynamic schema mismatch | A query predicate is compiled for one Ticket template context and bound against another incompatible context | Binding fails closed instead of widening the query |
+
+Verification SHALL include operation-specific allowlists and OpenAPI `x-filter-by`/`x-sort-by` parity, not only parser unit tests. Large-data verification SHALL check SQL-side limiting and filtering rather than fetching all unauthorized records for in-memory comparison.

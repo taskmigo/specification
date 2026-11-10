@@ -33,3 +33,15 @@ Verification SHALL demonstrate:
 9. Semantic AST nodes and compiled artifacts do not require an independent Semantic AST version field.
 
 10. Independently gate `CONTAINS_INTRINSIC` and `UNARY_NOT` and verify valid string contains and Boolean negation.
+
+## 9.3 Consumer Compatibility Acceptance
+
+| Scenario | Setup | Expected outcome |
+| --- | --- | --- |
+| Same source, different profile | Compile a valid `PROGRAM` source with the Request Authorization profile and the Object Authorization profile | The source is accepted only where its mode and enabled features permit it |
+| Restricted client expression | Attempt `IN`, arithmetic, dynamic member access, general host call, or local `const` in a client filter profile | Compilation/consumer validation rejects the form instead of returning an arbitrary residual query |
+| Partial evaluation | Supply known `principal` data and unknown schema-approved `object` paths | Known parts specialize; unknown-dependent parts retain a typed residual |
+| Identical compiled artifact | Reuse with unchanged schema and feature-set identity, then with mismatched identity | Identical inputs are compatible; mismatched artifacts are rejected or recompiled |
+| Runtime mismatch | Evaluate with a missing required root or a value of incompatible type | Evaluation fails without coercion or a permissive default |
+
+Acceptance SHALL verify consumer contracts via their own profiles in addition to canonical Language tests. A grammar feature is not sufficient proof of its safety or availability in Authorization or Query.
