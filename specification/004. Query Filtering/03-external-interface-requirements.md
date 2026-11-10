@@ -1,164 +1,69 @@
 # 3. External Interface Requirements
 
-## 3.1 Query Contract Interfaces
+## 3.1 Query Schema
 
-### SCHEMA-001 — Query Contract identity
+### SCHEMA-001 — Operation identity
 
-Each query surface SHALL be identified by a Java Query Contract type `Q` independently of the persistence entity type.
+Every filterable/sortable operation SHALL have one registered Query Schema with a stable operation identifier. A Web route using query options SHALL declare the operation by `@QueryOperation`.
 
-A public response type MAY serve as `Q` when it is the stable query surface. A dedicated type MAY identify a versioned or composed query surface.
+### SCHEMA-002 — Field metadata
 
-Verification: Define simple and composed Query Contracts and confirm no persistence entity type is required by the web-facing contract.
-Traceability: [Logical Query Surface](02-overall-description.md#221-logical-query-surface).
+A field descriptor SHALL identify logical path, type, nullability, allowed operators, sortable capability and stable persistence source identity. Public fields SHALL be allowlisted independently of JPA entity structure.
 
-### SCHEMA-002 — Query Schema
+### SCHEMA-003 — Operator allowlist
 
-The public logical schema SHALL provide behavior equivalent to:
+`filterBy` SHALL accept only expressions composed of fields/operators explicitly allowed by the corresponding operation schema; valid symbolic operators are EQ, NE, GT, GTE, LT, LTE and CONTAINS, plus boolean AND/OR composition.
 
-```java
-public interface QuerySchema<Q> {
-    Class<Q> queryType();
-    Optional<QueryField> field(QueryPath path);
-    Collection<QueryField> fields();
-}
-```
+### SCHEMA-004 — Runtime context
 
-`QuerySchema<Q>` SHALL NOT expose persistence expressions or entity metadata.
+The Query Schema SHALL resolve the operation's server-owned runtime field context, and schema identity SHALL include effective runtime field metadata/source identity to prevent incompatible binding.
 
-Verification: Inspect Query Schemas and confirm they contain only logical query metadata.
-Traceability: SCHEMA-001; DATA-001.
+## 3.2 Predicate Model
 
-### SCHEMA-003 — Query Field
+### PRED-001 — Opaque logical predicate
 
-A Query Field SHALL provide behavior equivalent to:
+Compilation SHALL produce an immutable opaque logical predicate typed to the Query Contract, not raw SQL, arbitrary JPA expressions or executable dynamic code.
 
-```java
-public interface QueryField {
-    QueryPath path();
-    ResolvableType type();
-    boolean nullable();
-    Set<QueryOperator> operators();
-}
-```
+### PRED-002 — Identity predicate
 
-`ResolvableType` SHALL preserve collection element and nested Query Contract type information required for runtime schema resolution.
+An absent, null or blank `filterBy` SHALL compile to an always-true logical predicate for the declared schema.
 
-Verification: Register scalar, nested, `List<String>`, and `List<StructuredQueryType>` fields and inspect retained type metadata.
-Traceability: DATA-001; FILTER-002.
+## 3.3 Filter Request
 
-### SCHEMA-004 — Explicit field allow-list
+### FILTER-001 — Expression syntax
 
-Only paths explicitly present in the Query Schema SHALL be queryable. Query fields SHALL NOT be derived automatically from persistence entities or from all response properties.
+The `filterBy` parameter SHALL contain a Boolean expression using the `object` root and approved comparisons/logical composition. Example: `object.status == "ACTIVE" && object.createdAt >= "2026-01-01T00:00:00Z"`.
 
-Verification: Attempt to query response-visible but non-queryable paths and persistence-only fields and confirm rejection.
-Traceability: SEC-001.
+### FILTER-002 — Invalid input
 
-## 3.2 Predicate Interfaces
+Malformed syntax, non-Boolean expression, unknown field, unapproved operator or unsupported expression form SHALL return HTTP 400 with code `INVALID_FILTER` and SHALL NOT be ignored.
 
-### PRED-001 — Typed opaque Query Predicate
+### FILTER-003 — Field-to-literal comparisons
 
-The public logical predicate SHALL provide behavior equivalent to:
+Comparison SHALL use an `object.<field>` reference on the left and a literal on the right. Null comparison SHALL be permitted only for EQ/NE on nullable fields; `contains` requires a string-like field and a string literal.
 
-```java
-public interface QueryPredicate<Q> {
-    boolean isAlwaysTrue();
-    boolean isAlwaysFalse();
-}
-```
+## 3.4 Spring/Web Binding
 
-The public interface SHALL NOT expose Semantic AST, JPA Criteria, SQL, or child-node traversal.
+### SPRING-001 — Query binding
 
-Verification: Inspect the public interface and implementation visibility.
-Traceability: DATA-002.
+Web SHALL bind optional `filterBy` and repeated `sortBy` to `ListQueryOptions` and compile them for the method's declared Query Schema and server-owned runtime context.
 
-### PRED-002 — Typed predicate composition
+## 3.5 Persistence Binding
 
-Predicate composition SHALL provide behavior equivalent to:
+### PERSIST-001 — Resource-owned mapping
 
-```java
-public interface QueryPredicates {
-    <Q> QueryPredicate<Q> alwaysTrue();
-    <Q> QueryPredicate<Q> alwaysFalse();
-    <Q> QueryPredicate<Q> and(QueryPredicate<Q> left, QueryPredicate<Q> right);
-    <Q> QueryPredicate<Q> or(QueryPredicate<Q> left, QueryPredicate<Q> right);
-    <Q> QueryPredicate<Q> not(QueryPredicate<Q> predicate);
-}
-```
+A resource's persistence adapter SHALL map logical predicates/sorts to trusted JPA paths using its own Query Schema; no client-provided raw field, SQL identifier or expression SHALL bypass schema validation.
 
-Composition SHALL preserve `Q` and SHALL reject incompatible Query Contract/schema identities.
+## 3.6 Multi-Sort Request
 
-Verification: Compose compatible predicates and reject incompatible predicate identities.
-Traceability: QRY-003; DATA-002.
+### SORT-001 — Repeated field order
 
-## 3.3 `filterBy` Interface
+Clients SHALL supply `sortBy=name&sortBy=-createdAt`. Field order SHALL determine sort precedence. Ascending SHALL be the default; a leading `-` SHALL indicate descending.
 
-### FILTER-001 — HTTP input
+### SORT-002 — Input rejection
 
-Collection endpoints supporting Query Filtering SHALL accept an optional HTTP query parameter named `filterBy` containing one Language `EXPRESSION` source.
+A `+` prefix, empty field, duplicate logical field, unknown path or nonsortable field SHALL return HTTP 400 with error code `INVALID_SORT`.
 
-Missing or blank `filterBy` SHALL be equivalent to a constant-true Query Predicate.
+### SORT-003 — Static documentation
 
-Verification: Exercise absent, blank, and populated `filterBy` values.
-Traceability: FILTER-002; SPRING-001.
-
-### FILTER-002 — Compiler interface
-
-The compiler SHALL provide behavior equivalent to:
-
-```java
-public interface FilterByCompiler {
-    <Q> QueryPredicate<Q> compile(QuerySchema<Q> schema, String source);
-}
-```
-
-Compilation SHALL use Language `EXPRESSION` mode, a Query Filtering Compilation Profile, and an Environment Schema exposing exactly one application root named `object` whose structured paths derive from `QuerySchema<Q>`.
-
-The compiled source result type SHALL be `Bool`. A non-`Bool` source SHALL be invalid client filter input.
-
-Verification: Compile valid Boolean filters and reject statements, unavailable roots, disabled features, unknown paths, and non-Boolean expressions.
-Traceability: [Language source modes](../003.%20Language/03-external-interface-requirements.md#syntax-001--canonical-source-modes); QRY-001.
-
-### FILTER-003 — Client error boundary
-
-Invalid `filterBy` input SHALL produce HTTP `400 Bad Request`. Spring MVC integration SHALL represent the error through `ProblemDetail` or an equivalent Spring error response without persistence implementation names.
-
-Verification: Trigger syntax, type, field, operator, and complexity errors and inspect the HTTP response.
-Traceability: SEC-002; SPRING-001.
-
-## 3.4 Spring MVC Interface
-
-### SPRING-001 — Filtered query argument
-
-Collection web handlers SHALL be able to declare the active client filter through a generic value equivalent to:
-
-```java
-public record FilteredQuery<Q>(QueryPredicate<Q> predicate) {}
-```
-
-A Spring MVC `HandlerMethodArgumentResolver` SHALL use `ResolvableType` on the controller method parameter to resolve `Q`, obtain `QuerySchema<Q>` from Spring-managed schema beans, compile optional `filterBy`, and supply `FilteredQuery<Q>`.
-
-A string target selector such as `target = "customer"` SHALL NOT be required in the controller contract.
-
-Verification: Resolve multiple generic Query Contract types and confirm the matching Query Schemas are selected without string target keys.
-Traceability: SCHEMA-001; FILTER-001.
-
-## 3.5 Persistence Interface
-
-### PERSIST-001 — Resource-owned persistence binder
-
-For JPA-backed query surfaces, a resource module MAY expose behavior equivalent to:
-
-```java
-public interface QueryPredicateBinder<Q, E> {
-    Class<Q> queryType();
-    Class<E> domainType();
-    PredicateSpecification<E> bind(QueryPredicate<Q> predicate);
-}
-```
-
-The binder SHALL own the trusted mapping from Query Paths/operators to JPA expressions and joins.
-
-A resource MAY use a custom repository/query adapter when one JPA root is not an appropriate representation.
-
-Verification: Bind simple, joined, computed, and custom-query projections without exposing entity types to controllers.
-Traceability: QRY-002; QRY-005.
+Generated OpenAPI SHALL expose supported filter paths/operators via `x-filter-by` and sortable paths via `x-sort-by` for registered operation schemas.

@@ -1,7 +1,7 @@
 ---
 metadata:
-  version: 0.6.1
-  changelog: Aligns unresolved-issue version metadata with the current Language specification without changing language semantics.
+  version: 0.6.2
+  changelog: Aligns internal Language module, unary negation and string contains intrinsic with backend source.
 ---
 
 <!-- markdownlint-disable MD041 -->

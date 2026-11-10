@@ -25,6 +25,7 @@ The Language provides:
 
 - Deterministic parsing of canonical `PROGRAM` and `EXPRESSION` sources.
 - Consumer-defined profiles that restrict enabled feature families without defining another language.
+- Independently gated Boolean unary negation and bounded `contains(text, substring)` string matching.
 - Static root/path, operator, intrinsic, lexical-binding, control-flow, and type validation.
 - Typed Semantic AST construction with source-location and dependency metadata.
 - Static source-result typing.

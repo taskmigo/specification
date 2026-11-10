@@ -79,7 +79,7 @@ Traceability: TECH-003.
 
 ### TYPE-002 — Boolean and equality operators
 
-When enabled, `&&`, `||`, and `!` SHALL operate only on `Bool`; `==` and `!=` SHALL compare type-compatible operands and return `Bool`. `&&` and `||` SHALL short-circuit.
+When enabled, `&&` and `||` SHALL operate only on `Bool`; independently enabled `UNARY_NOT` SHALL govern `!` on `Bool`; `==` and `!=` SHALL compare type-compatible operands and return `Bool`. `&&` and `||` SHALL short-circuit.
 
 Verification: Test valid operations, type errors, short-circuiting, and disabled features.
 Traceability: LANG-005; EVAL-001.
@@ -196,3 +196,19 @@ Captured known outer values SHALL specialize normally inside the residual predic
 
 Verification: Partially evaluate concrete, symbolic, empty, and outer-value-capturing quantifiers and compare with direct evaluation semantics.
 Traceability: TYPE-005; PARTIAL-001; PARTIAL-004.
+
+## 4.6 Additional Implemented Features
+
+### LANG-007 — String contains intrinsic
+
+When `CONTAINS_INTRINSIC` is enabled, `contains(text, substring)` SHALL accept String operands, return Bool, and evaluate by string containment. This intrinsic SHALL NOT dispatch to arbitrary host methods. When disabled, the source SHALL fail profile validation.
+
+Verification: Compile and execute valid and invalid operands under enabled/disabled profiles.
+Traceability: ENV-004; TECH-002; TYPE-001.
+
+### TYPE-006 — Independently gated Boolean negation
+
+`UNARY_NOT` SHALL independently control Boolean unary `!`; `LOGICAL_OPERATORS` SHALL control binary `&&` and `||`. Invalid operand types SHALL fail typing.
+
+Verification: Toggle `UNARY_NOT` independently from `LOGICAL_OPERATORS`.
+Traceability: TYPE-002; ENV-004.

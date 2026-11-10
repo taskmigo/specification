@@ -1,27 +1,25 @@
 # 5. Data and Information Requirements
 
-## 5.1 Query Schema Data
+## 5.1 Query Schema
 
-### DATA-001 — Query Path and schema identity
+### DATA-001 — Field descriptors
 
-A Query Path SHALL be an immutable ordered sequence of non-blank API-visible path segments.
+A field's logical identity SHALL include its public path, JVM/logical type, nullability, operator allowlist, sortable flag and source identity. The operation name SHALL be part of the full Query Schema identity.
 
-A Query Schema SHALL have a stable identity sufficient to distinguish incompatible changes to paths, types, nullability, allowed operators, and nested/collection element contracts.
+### DATA-002 — Immutable query result
 
-Verification: Change each schema property independently and confirm incompatible compiled filters are not treated as exact matches.
-Traceability: SCHEMA-002; SCHEMA-003; PERF-002.
+`ListQuerySpec` SHALL hold the opaque predicate, immutable runtime field context, and immutable prioritized `List<QuerySort>` descriptions. The compiled predicate SHALL retain its schema identity for binding checks.
 
-### DATA-002 — Opaque predicate identity
+## 5.2 Dynamic Fields
 
-A `QueryPredicate<Q>` SHALL be immutable for its logical lifetime and SHALL retain enough internal identity to prevent application under an incompatible Query Contract or Query Schema revision.
+### DATA-003 — Server-owned context
 
-Public consumers SHALL NOT require access to its Semantic AST or persistence representation.
+Runtime context SHALL contain only server-resolved field metadata. API clients SHALL NOT provide arbitrary field source identity or schema-version binding metadata.
 
-Verification: Attempt cross-contract/schema reuse and inspect public visibility.
-Traceability: PRED-001; DATA-001.
+### DATA-004 — EAV compatibility
 
-## 5.2 Lifecycle
+A custom-field key SHALL be eligible in a multi-version query only if the schema definition UUID, field UUID and type remain unambiguous across the selected eligible published/retired versions.
 
-Query Schemas MAY be singleton Spring beans. Request-derived `QueryPredicate<Q>` and `FilteredQuery<Q>` values SHALL NOT be reused under incompatible client input or Query Schema identity.
+## 5.3 Pagination
 
-Verification: Execute sequential requests with distinct filters and confirm request-derived filter state is isolated.
+The common `OffsetPage` model records items, totalItems and totalPages. Web wraps it in API v0 `OffsetMeta` and preserves one-based page numbering in the response.

@@ -35,7 +35,7 @@ reflection
 arbitrary host method calls
 ```
 
-The bounded intrinsic forms specified by LANG-006 are permitted and SHALL NOT create a general callable namespace.
+The bounded intrinsic forms specified by LANG-006 and LANG-007 are permitted and SHALL NOT create a general callable namespace.
 
 Verification: Reject representative excluded constructs while accepting valid bounded intrinsics under compatible profiles.
 Traceability: [Scope](01-introduction.md#12-scope); LANG-006; QUAL-002.

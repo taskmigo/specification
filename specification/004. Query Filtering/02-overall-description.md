@@ -1,76 +1,21 @@
 # 2. Overall Description
 
-## 2.1 Product Perspective
+## 2.1 Supported Surface
 
-```text
-HTTP filterBy
-    ↓
-QuerySchema<Q>
-    ↓
-Language EXPRESSION compilation
-    ↓
-QueryPredicate<Q>
-    ↓
-resource-owned persistence mapping
-    ↓
-database query
-    ↓
-pagination
-```
+A client may provide a `filterBy` expression and repeated `sortBy` query parameters on list routes that declare those capabilities. The filter expression uses the restricted Taskmigo Language `EXPRESSION` profile, referencing `object.<logicalField>` with logical `&&`/`||`, comparisons, and `contains(object.field, "text")`.
 
-## 2.2 Product Functions
+## 2.2 Query Safety
 
-The capability provides:
+Unlike a general embedded language, FilterBy accepts only approved field-to-literal comparisons, boolean combination, and string contains. It rejects arithmetic, `IN`, collection quantifiers, bare field references, field-to-field comparison, reversed literal operands, and unsupported operators.
 
-- Query Contract types identifying logical query surfaces.
-- Structured API-visible Query Paths and typed Query Fields.
-- Query Schema discovery through Spring.
-- `filterBy` compilation to an opaque typed Query Predicate.
-- Same-contract Query Predicate composition.
-- Resource-owned persistence binding.
-- Spring MVC argument resolution for filtered collection queries.
+## 2.3 Sorting
 
-### 2.2.1 Logical Query Surface
+Clients order by repeating `sortBy`; ascending has no prefix, descending uses `-`. A leading `+`, duplicate field, unknown field, or nonsortable field is invalid. The JPA sort binder adds NULLS LAST for nullable fields, and resource list implementations use stable UUID ordering when no explicit sort is requested.
 
-A Query Schema SHALL describe only explicitly queryable API-visible paths and their logical types/operators.
+## 2.4 Runtime Schemas
 
-For an API response:
-
-```json
-{
-  "user": {
-    "name": "Phong Chu",
-    "age": 18
-  }
-}
-```
-
-a Query Schema MAY expose:
-
-```text
-user.name
-user.age
-```
-
-without exposing the persistence paths used to produce those values.
-
-### 2.2.2 Persistence Boundary
-
-A resource-owning module SHALL translate Query Predicates through trusted mappings. Client source and controllers SHALL NOT select persistence fields directly.
-
-## 2.3 Stakeholders and Users
-
-The capability is consumed by API clients, `web`, resource-owning modules, and persistence adapters.
-
-## 2.4 Operational Scenarios
-
-The following scenarios are supporting context:
-
-1. A client filters a collection by an API-visible scalar path.
-2. A nested API path maps through a persistence join.
-3. A computed API field maps to a persistence expression.
-4. A collection quantifier maps to a supported relational, array, or JSON representation.
+Query Schemas are operation-specific, may include server-resolved custom fields, and carry identity based on field path/type/nullability/operator/sort/source metadata. Ticket uses globally compatible, Type-history, or exact pinned Ticket version fields. The same context SHALL be used for validation, compilation, Object Authorization and database binding.
 
 ## 2.5 Out of Scope
 
-Sorting, aggregation, grouping, arbitrary projection selection, raw SQL fragments, and unrestricted database expressions are outside this SRS.
+This API surface does not implement OData, arbitrary SQL fragments, `sortOrder` as a second parameter, `+field` as a sort prefix, free-form CASE expressions, user-supplied schema metadata, or a general-purpose collection `IN` expression.

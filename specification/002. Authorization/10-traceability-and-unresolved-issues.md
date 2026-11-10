@@ -1,11 +1,25 @@
 # 10. Traceability and Unresolved Issues
 
-## 10.1 Traceability Approach
+## 10.1 Source Traceability
 
-Each normative requirement has a stable identifier and observable verification objective. Language semantics are referenced from Language; authorization object-schema, predicate, effective Statement revision, runtime validation, Authorization Log, and persistence requirements are defined within this SRS.
+| Requirement group        | Evidence                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| STMT-001–007, POLICY-005 | [Statement domain](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/authorization/src/main/java/io/taskmigo/authorization/statement/domain/Statement.java) and [target matcher](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/authorization/src/main/java/io/taskmigo/authorization/statement/StatementTargetPathMatcher.java) |
+| POLICY-001–004           | [AuthorizationCompilationProfile](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/authorization/src/main/java/io/taskmigo/authorization/embeddedlanguage/AuthorizationCompilationProfile.java)                                                                                                                                                                                    |
+| REQ-001–003              | [RequestAuthorizationService](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/authorization/src/main/java/io/taskmigo/authorization/request/application/service/RequestAuthorizationService.java)                                                                                                                                                                                 |
+| OBJ-001–005              | [ObjectAuthorizationService](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/authorization/src/main/java/io/taskmigo/authorization/object/application/service/ObjectAuthorizationService.java)                                                                                                                                                                                    |
+| SNAPSHOT-001–004         | [AuthorizationSnapshot](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/authorization/src/main/java/io/taskmigo/authorization/request/application/model/AuthorizationSnapshot.java)                                                                                                                                                                                               |
+| AUTH-API-001–006         | [OpenAPI v0](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/web/src/main/resources/static/api/docs/openapi.yaml)                                                                                                                                                                                                                                                                    |
+| QUAL-002                 | [JpaEffectiveStatementResolver](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/authorization/src/main/java/io/taskmigo/authorization/request/persistence/JpaEffectiveStatementResolver.java)                                                                                                                                                                                     |
 
-## 10.2 Unresolved Issues
+## 10.2 Withdrawn or Reinterpreted Baseline Requirements
 
-No unresolved authorization-semantic conflict is recorded for version 0.7.0.
+- **LOG-API-001–003, LOG-001–005, LOG-DATA-001–002:** Withdrawn. No independent Authorization decision-log table or HTTP endpoint exists. Entity Audit is documented elsewhere.
+- **Cached compiled policy artifacts:** No persistent policy-revision/cached artifact storage is imposed; current implementation compiles matching Statement derivatives for each snapshot.
+- **OBJECT PROGRAM mode:** Replaced with implemented EXPRESSION mode; local bindings/conditional control flow are Request-only.
 
-Additional authorization target shapes beyond `target.api` require an explicit future specification revision.
+Existing identifiers for still-valid Statements, request/object decisions, snapshots and public APIs are retained with updated implementation semantics.
+
+## 10.3 Unresolved Feature Decisions
+
+A future Authorization decision-history facility, durable evaluation trace, cross-request compiled-policy cache or broader policy operator support would be new capabilities and require separate implementation/specification. Do not treat them as already delivered.

@@ -15,7 +15,7 @@ The Language SHALL provide:
 - A typed, language-owned Semantic AST independent of ANTLR parse-tree classes and application-domain semantics.
 - Static types, immutable local bindings, bounded conditional control flow, direct evaluation, partial evaluation, and constant folding.
 - Static property paths declared by an Environment Schema.
-- Lists, membership, bounded collection quantifiers, and the bounded `len(...)` intrinsic when enabled by the applicable profile.
+- Lists, membership, bounded collection quantifiers, and the bounded `len(...)` and `contains(...)` intrinsics when enabled by the applicable profile.
 - Restricted lambda syntax only as the element predicate of collection quantifiers.
 
 The Language SHALL NOT provide general-purpose scripting, modules, imports, general function declarations or calls, first-class callable values, recursion, loops, mutable assignment, reflection, arbitrary host access, asynchronous execution, or I/O.
@@ -33,6 +33,8 @@ The Environment Schema SHALL define the roots, structured paths, types, nullabil
 - **Partial Evaluation:** Evaluation that resolves known-dependent subexpressions while preserving unknown-dependent subexpressions.
 - **Residual Expression:** Typed Semantic AST expression remaining after partial evaluation because it depends on unknown values.
 - **Restricted Lambda:** Lexically scoped element-binding expression accepted only inside a specified collection quantifier.
+
+The current physical implementation is `:modules:internal:language`; Query and Authorization apply narrower feature profiles. See the [Internal Language source](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/internal/language).
 
 ## 1.4 References and Baseline
 

@@ -34,6 +34,14 @@ all(record.emails, email => len(email) > 10)
 any(record.orders, order => order.product.name == "Book")
 ```
 
+### String Contains Intrinsic
+
+```text
+contains(record.name, "abc")
+```
+
+This source requires `CONTAINS_INTRINSIC` in its Compilation Profile.
+
 ## 11.2 Partial Evaluation Example
 
 Given known `context.minimumScore = 10`, known `context.override = false`, and symbolic `record`, this expression:
