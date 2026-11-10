@@ -37,6 +37,7 @@ flowchart TB
 
 This snapshot is derived from the registered Query Schemas and the [generated OpenAPI v0 document](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/web/src/main/resources/static/api/docs/openapi.yaml). It describes static capabilities only. Operators separated by commas apply to the entire named field group.
 
+<!-- prettier-ignore -->
 | GET collection       | Fields and supported operators                                                                                                       | Sortable fields                                                   |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
 | `/api/v0/users`      | `id`, `status`: EQ, NE • `username`, `firstName`, `lastName`: EQ, NE, CONTAINS • `retainedAt`: EQ, NE, GT, GTE, LT, LTE              | `id`, `username`, `firstName`, `lastName`, `status`, `retainedAt` |
@@ -45,7 +46,7 @@ This snapshot is derived from the registered Query Schemas and the [generated Op
 | `/api/v0/roles`      | `id`: EQ, NE • `code`, `displayName`, `description`: EQ, NE, CONTAINS                                                                | `id`, `code`, `displayName`, `description`                        |
 | `/api/v0/groups`     | `id`: EQ, NE • `code`, `displayName`, `description`: EQ, NE, CONTAINS                                                                | `id`, `code`, `displayName`, `description`                        |
 
-For Statements, `method` and `path` are the *query aliases*, even though the response nests them under `target.api`. Ticket custom fields can extend the static Ticket list schema through its server-resolved runtime EAV context, as defined by [TKT-FR-013](../006.%20Tickets%20and%20Dynamic%20Fields/04-functional-and-behavioral-requirements.md#tkt-fr-013--runtime-query-field-snapshots).
+For Statements, `method` and `path` are the query aliases, even though the response nests them under `target.api`. Ticket custom fields can extend the static Ticket list schema through its server-resolved runtime EAV context, as defined by [TKT-FR-013](../006.%20Tickets%20and%20Dynamic%20Fields/04-functional-and-behavioral-requirements.md#tkt-fr-013--runtime-query-field-snapshots).
 
 The current `GET /api/v0/ticket-types` and `GET /api/v0/audit/{entityType}/logs` operations do not expose `filterBy` or `sortBy`.
 
@@ -53,6 +54,7 @@ The current `GET /api/v0/ticket-types` and `GET /api/v0/audit/{entityType}/logs`
 
 These operation schemas are for authorizing a target, not public `filterBy` query parameters.
 
+<!-- prettier-ignore -->
 | Operation                           | Approved static Object paths and operators                                                                                                                                                               |
 | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `identity.users.delete`             | `id`, `status`: EQ, NE • `username`: EQ, NE, CONTAINS • `retainedAt`: EQ, NE, GT, GTE, LT, LTE                                                                                                           |
