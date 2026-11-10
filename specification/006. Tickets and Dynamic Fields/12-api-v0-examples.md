@@ -1,3 +1,5 @@
+<!-- prettier-ignore-start -->
+
 # 12. Tickets and Templates — API v0 Examples
 
 The field names, accepted parameters and response schemas are specified in [this module's OpenAPI](openapi.yaml); the JSON values in the examples are illustrative rather than captured runtime traffic. Shared response envelopes, error conventions and pagination are documented in the [common API v0 guide](../007.%20Audit%20and%20API%20Contracts/12-api-v0-http-examples.md).
@@ -161,3 +163,5 @@ HTTP 201 returns `data: {"id": "<new UUID>"}`. `GET /api/v0/ticket-types` return
 ```
 
 `GET /api/v0/ticket-types/{ticketTypeId}/templates` returns an unpaginated array of template representations; its `/{templateVersionId}` counterpart returns one. `POST` on the `/{templateVersionId}/publish` or `/{templateVersionId}/retire` subroute takes no request body and returns HTTP 200 with the updated full template representation. A published template has `status: "PUBLISHED"` and `publishedAt`; a retired one has `status: "RETIRED"` and `retiredAt`.
+
+<!-- prettier-ignore-end -->

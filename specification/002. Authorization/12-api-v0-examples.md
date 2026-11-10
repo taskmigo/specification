@@ -1,3 +1,5 @@
+<!-- prettier-ignore-start -->
+
 # 12. Authorization — API v0 Examples
 
 The field names, accepted parameters and response schemas are specified in [this module's OpenAPI](openapi.yaml); the JSON values in the examples are illustrative rather than captured runtime traffic. Shared response envelopes, error conventions and pagination are documented in the [common API v0 guide](../007.%20Audit%20and%20API%20Contracts/12-api-v0-http-examples.md).
@@ -101,3 +103,5 @@ In `filterBy` and `sortBy`, these last two target fields are referenced as logic
 ## 12.3 Cross-Context User Statements
 
 The `PATCH /api/v0/users/{userId}/statements` route uses Authorization's grant service, but its HTTP controller and User lifecycle constraints belong to **Identity**. See the [Identity API examples](../005.%20Identity%20and%20User%20Retention/12-api-v0-examples.md) and [Identity OpenAPI](../005.%20Identity%20and%20User%20Retention/openapi.yaml).
+
+<!-- prettier-ignore-end -->

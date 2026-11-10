@@ -1,3 +1,5 @@
+<!-- prettier-ignore-start -->
+
 # 12. Identity and Configuration — API v0 Examples
 
 The field names, accepted parameters and response schemas are specified in [this module's OpenAPI](openapi.yaml); the JSON values in the examples are illustrative rather than captured runtime traffic. Shared response envelopes, error conventions and pagination are documented in the [common API v0 guide](../007.%20Audit%20and%20API%20Contracts/12-api-v0-http-examples.md).
@@ -119,3 +121,5 @@ The Group list is offset-paginated and authorized by a Group Object predicate. G
 ```
 
 HTTP 200 returns the effective configuration under the same shape, for example `data: {"retention": {"user": "P1D"}}`. Retention uses nonnegative whole 24-hour days and canonicalizes the returned value to `P<n>D`; unknown properties are rejected.
+
+<!-- prettier-ignore-end -->

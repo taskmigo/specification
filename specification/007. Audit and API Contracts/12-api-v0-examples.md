@@ -1,3 +1,5 @@
+<!-- prettier-ignore-start -->
+
 # 12. Audit — API v0 Examples
 
 The field names, accepted parameters and response schemas are specified in [this module's OpenAPI](openapi.yaml); the JSON values in the examples are illustrative rather than captured runtime traffic. Shared response envelopes, error conventions and pagination are documented in the [common API v0 guide](../007.%20Audit%20and%20API%20Contracts/12-api-v0-http-examples.md).
@@ -42,3 +44,5 @@ The field names, accepted parameters and response schemas are specified in [this
 ```
 
 Only entity type `user` is currently queryable. The endpoint requires unrestricted User Object visibility, and the server orders by `occurredAt` descending and then `id` descending. It does not expose `filterBy` or `sortBy`.
+
+<!-- prettier-ignore-end -->

@@ -3,3 +3,6 @@ specification/002. Authorization/openapi.yaml
 specification/005. Identity and User Retention/openapi.yaml
 specification/006. Tickets and Dynamic Fields/openapi.yaml
 specification/007. Audit and API Contracts/openapi.yaml
+
+# OpenAPI extraction tool uses fixed source-level whitespace for deterministic snapshots.
+scripts/module-openapi.mjs
