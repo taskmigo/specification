@@ -44,3 +44,7 @@ Verify the Type collection is ordered by key, includes all persisted Types in a 
 ### TKT-VER-008 — Constraint validation boundaries
 
 Verify invalid negative/decimal STRING lengths, inverted min/max for STRING/NUMBER/DATE/DATETIME, duplicate/blank ENUM options, and values incompatible with BOOLEAN/UUID/DATE/DATETIME types are rejected. Verify existing historical instances remain pinned to the version that validated them.
+
+### TKT-VER-009 — Dynamic field path interpretation
+
+Verify a registered custom field with key `severity` is queryable as `object.severity`, is not automatically queryable as `object.customFields.severity`, and is rejected when the operation's history/context makes the key ambiguous or unavailable.

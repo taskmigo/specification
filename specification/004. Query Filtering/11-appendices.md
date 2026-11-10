@@ -60,3 +60,9 @@ These operation schemas are for authorizing a target, not public `filterBy` quer
 | `tickets.read` and `tickets.update` | `id`, `ticketTypeId`, `createdBy`: EQ, NE • `title`, `status`: EQ, NE, CONTAINS • `createdAt`, `updatedAt`: EQ, NE, GT, GTE, LT, LTE • Compatible dynamic fields from the Ticket's pinned schema version |
 
 The [resource-specific Query Schemas](https://github.com/taskmigo/taskmigo/tree/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules) are the implementation evidence; neither this table nor static OpenAPI replaces runtime metadata resolution.
+
+## 11.7 Runtime Ticket Field Syntax
+
+Resolved Ticket custom fields use the logical path `object.<fieldKey>` directly, not `object.customFields.<fieldKey>`, because the EAV binder exposes each field key as a top-level logical query path. A compatible STRING custom field with key `severity` can be filtered as `contains(object.severity, "HIGH")` when its runtime context includes that field.
+
+Availability depends on the global, Type-scoped or Ticket-pinned historical query context; static OpenAPI cannot enumerate runtime field keys. See the [EAV JPA field binding](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/internal/eav/src/main/java/io/taskmigo/eav/value/persistence/EavJpaQueryFieldFactory.java).
