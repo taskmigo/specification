@@ -47,3 +47,7 @@ HTTP operation paths and methods SHALL match the checked-in generated [OpenAPI v
 ### AUD-API-004 — Fixed audit query options
 
 `GET /api/v0/audit/{entityType}/logs` SHALL accept `page` and `pageSize` but not expose `filterBy` or `sortBy`. The server SHALL order results by `occurredAt` descending and `id` descending, as specified in [AUD-FR-006](04-functional-and-behavioral-requirements.md#aud-fr-006--audit-read-order).
+
+## 3.5 HTTP Request and Response Examples
+
+The [API v0 HTTP and JSON reference](12-api-v0-http-examples.md) documents the request parameters, request bodies, response envelopes, returned data shapes, and HTTP status for every currently implemented API v0 route, using the generated OpenAPI snapshot and controller DTOs. The normative contracts above remain unchanged.

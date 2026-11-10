@@ -49,3 +49,7 @@ All v0 operations SHALL use the [API response envelope](../007.%20Audit%20and%20
 ### TKT-API-010 — Current Type and template access boundary
 
 The current Ticket Type and Template controllers SHALL be protected by versioned Request Authorization. They do not resolve Object Authorization predicates for Type listing, Type reads/updates, or template operations. This describes a current API limitation, not a guarantee that all Ticket Types are intended to remain universally visible.
+
+## HTTP/JSON Examples
+
+See the [API v0 HTTP and JSON reference](../007.%20Audit%20and%20API%20Contracts/12-api-v0-http-examples.md) for concrete method/path, input DTO, sample request, successful response, and error envelope for the Ticket and Template APIs.

@@ -117,3 +117,7 @@ Verification: Compare `GET /api/v0/statements` with [Static query capabilities](
 The Role list SHALL expose `id`, `code`, `displayName`, optional `description`, and recursive `children`. The response serializer SHALL omit `children` when empty and omit `description` when null. This differs from the Group projection, which includes a `children` array.
 
 Verification: Compare Roles with and without children and description in a list response.
+
+## HTTP/JSON Examples
+
+See the [API v0 HTTP and JSON reference](../007.%20Audit%20and%20API%20Contracts/12-api-v0-http-examples.md) for concrete method/path, input DTO, sample request, successful response, and error envelope for the Authorization APIs.

@@ -1,7 +1,7 @@
 ---
 metadata:
-  version: 0.1.1
-  changelog: Refines implementation parity, missing interface details, verification and source traceability.
+  version: 0.2.0
+  changelog: Adds concrete method, request, response, error and pagination examples for all implemented API v0 routes.
 ---
 
 <!-- markdownlint-disable MD041 -->
@@ -21,7 +21,8 @@ metadata:
 | 9       | Verification, Validation, and Acceptance | Audit and API verification                 | [09-verification-validation-and-acceptance.md](09-verification-validation-and-acceptance.md)     |
 | 10      | Traceability and Unresolved Issues       | Contract mapping and limits                | [10-traceability-and-unresolved-issues.md](10-traceability-and-unresolved-issues.md)             |
 | 11      | Appendices                               | Envelope and audit examples                | [11-appendices.md](11-appendices.md)                                                             |
+| 12      | API v0 HTTP and JSON Reference           | All API methods and example payloads       | [12-api-v0-http-examples.md](12-api-v0-http-examples.md)                                         |
 
 ## Read order
 
-Read sections 1–11 in order. Start with [external interfaces](03-external-interface-requirements.md), continue through [functional behavior](04-functional-and-behavioral-requirements.md), and consult [verification](09-verification-validation-and-acceptance.md) and [unresolved issues](10-traceability-and-unresolved-issues.md) before treating the specification as complete.
+Read sections 1–12 in order. Start with [external interfaces](03-external-interface-requirements.md), continue through [functional behavior](04-functional-and-behavioral-requirements.md), and consult [verification](09-verification-validation-and-acceptance.md) and [unresolved issues](10-traceability-and-unresolved-issues.md) and inspect the [HTTP/JSON API reference](12-api-v0-http-examples.md) before treating the specification as complete.
