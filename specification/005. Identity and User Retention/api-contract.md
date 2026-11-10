@@ -106,8 +106,8 @@ These are **explicit JSON field contracts**. `Required=yes` means required in a 
 
 ### RetentionConfiguration
 
-| Field  | JSON type | Required | Validation / meaning                |
-| ------ | --------- | -------- | ----------------------------------- |
+| Field  | JSON type | Required | Validation / meaning                    |
+| ------ | --------- | -------- | --------------------------------------- |
 | `user` | `string`  | yes      | Canonical `P<n>D` value; default `P30D` |
 
 ### Shared response DTOs
