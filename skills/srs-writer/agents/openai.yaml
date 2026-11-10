@@ -1,4 +1,4 @@
 interface:
   display_name: "SRS Writer"
-  short_description: "Write tailored software requirements"
-  default_prompt: "Use $srs-writer to draft or restructure a clear software requirements specification."
+  short_description: "Write modular SRS with API contracts"
+  default_prompt: "Use $srs-writer to draft or reconcile a module SRS with precise per-operation API contracts, verifiable behavior, and source-to-spec traceability."
