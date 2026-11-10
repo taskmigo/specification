@@ -17,12 +17,12 @@ The validator SHALL recognize precisely the following expression categories when
 | Shape                                     | Required meaning                                 |
 | ----------------------------------------- | ------------------------------------------------ |
 | Literal `true` or `false`                 | Match-all or match-none client predicate         |
-| `A && B`, `A                              |                                                  | B`  | Boolean combination of individually valid predicates |
+| Boolean AND / OR expressions              | Boolean combination of individually valid predicates |
 | `object.field == literal` and `!=`        | Schema-approved typed equality/inequality        |
 | `object.field > literal`, `>=`, `<`, `<=` | Schema-approved ordered typed comparison         |
 | `contains(object.field, "text")`          | String containment for a field allowing CONTAINS |
 
-Parentheses may group valid Boolean expressions. Every logical field and operator SHALL be allowlisted for the current operation.
+Boolean combination uses `&&` for conjunction and the two-pipe OR operator for disjunction. Parentheses may group valid Boolean expressions. Every logical field and operator SHALL be allowlisted for the current operation.
 
 ### QRY-003 — Unsupported operations
 
