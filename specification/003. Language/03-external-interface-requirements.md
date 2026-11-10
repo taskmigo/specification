@@ -177,3 +177,30 @@ Partial evaluation SHALL return a concrete conforming value, a typed residual Se
 
 Verification: Exercise concrete and residual results for scalar, list, and quantified expressions.
 Traceability: LANG-001; LANG-002; EVAL-001; PARTIAL-001; PARTIAL-003.
+
+## 3.4 Consumer Contract and Evaluation Boundaries
+
+The Language module is an **internal compiler/evaluator**, not an HTTP API. No `/api/v0/language` endpoint SHALL be inferred. Its consumers include [Authorization](../002.%20Authorization/README.md) and [Query Filtering](../004.%20Query%20Filtering/README.md); each consumer SHALL choose a compilation profile narrower than or equal to the [canonical compilation profile](#env-004--compilation-profile).
+
+| Interface stage | Mandatory inputs | Observable result or failure |
+| --- | --- | --- |
+| Compile | Source string, exact source mode, Environment Schema, enabled feature set | Typed compiled source and diagnostic information, or compile failure |
+| Direct evaluate | Compatible compiled artifact and concrete schema-conforming input values | One value of the compiled result type, or evaluation failure |
+| Partially evaluate | Compatible compiled artifact, known input values, declared symbolic dependencies | Concrete value or typed residual Semantic AST, or evaluation failure |
+| Reuse | Compiled artifact plus matching effective schema, mode and feature set | Reuse is permitted only when identity and type assumptions remain valid |
+
+The compiler SHALL NOT permit runtime values to create undeclared schema roots or bypass static typing. Consumers SHALL NOT treat a residual expression as an authorized SQL predicate without their own operation-specific validation.
+
+### 3.4.1 Profile ownership
+
+| Consumer | Source mode | Consumer responsibility |
+| --- | --- | --- |
+| Request Authorization | `PROGRAM` | Restrict allowed roots/features and require Boolean authorization decisions |
+| Object Authorization | `EXPRESSION` | Restrict features, preserve approved `object` references symbolically, validate residual query field/operator support |
+| Client `filterBy` | `EXPRESSION` | Accept only allowlisted field-to-literal Boolean expressions and supported intrinsics |
+
+Feature availability in the Language grammar SHALL NOT by itself authorize a feature in client queries or policies. For specific consumer root names and allowed operators, use the consuming module's own normative specification.
+
+### 3.4.2 Diagnostics and failure behavior
+
+Compilation failure SHALL identify the invalid source mode, disallowed feature, unknown reference, type mismatch, or malformed syntax as appropriate under [DIAG-001](06-quality-and-performance-requirements.md). Direct and partial evaluation SHALL fail rather than coercing mismatched inputs, calling arbitrary host functions, or replacing an evaluation failure with a Boolean success. Measurable resource limits and deterministic results are covered by the [quality contract](06-quality-and-performance-requirements.md).

@@ -37,3 +37,24 @@ A context SHALL NOT integrate with another context by importing its private JPA 
 Executable apps SHALL assemble published use cases and framework adapters, without becoming owners of reusable domain invariants. Worker SHALL consume Identity's published retention use case instead of Identity internals.
 
 For API-specific contracts, see [Authorization](../002.%20Authorization/README.md), [Query Filtering](../004.%20Query%20Filtering/README.md), [Identity and User Retention](../005.%20Identity%20and%20User%20Retention/README.md), and [Tickets](../006.%20Tickets%20and%20Dynamic%20Fields/README.md).
+
+## 3.5 Consumer/Provider Contract Ownership
+
+The following allocation is the source-backed module ownership boundary. It supplements [ARCH-IF-001–007](#31-published-module-contracts), rather than providing an alternate implementation architecture.
+
+| Consumer | Provider and approved contract | Forbidden shortcut |
+| --- | --- | --- |
+| Web API adapters | Identity, Authorization, Ticket, Query and Audit published use cases | Business invariants in controllers or another context's private JPA repositories |
+| Worker retention scheduler | Identity's published retention service | Direct mutation of Identity User rows |
+| User/Group workflows | Authorization's published Role/Statement grants and Audit append | Owning or duplicating Authorization grant state inside Identity |
+| Authorization Object query | Query operation schemas and resource-owned persistence field binding | Raw SQL or unsafe JPA path access derived from policy text |
+| Ticket custom fields | Ticket-owned schema/version and internal EAV service interface | Web/Worker importing the EAV implementation as a public business module |
+| Migration | Published installation and managed resource contracts | Granting public applications unrestricted access to module internals |
+
+The [Module Architecture behavior](04-functional-and-behavioral-requirements.md#41-capability-ownership) defines ownership. Each consumer SHALL resolve its provider through a published boundary, and those boundaries SHALL be independently verifiable by Gradle/Spring Modulith/ArchUnit checks. All public HTTP field-level wire contracts SHALL be documented **in their owning module's section 3**, not duplicated in this architecture SRS.
+
+## 3.6 Change and Compatibility Boundary
+
+A new public endpoint, client-visible field, query operator, role or Object Authorization behavior SHALL update the owning module contract and its verification cases. A new cross-module dependency SHALL identify a provider-owned published interface and pass the applicable architecture rules. This architecture SRS SHALL NOT infer the existence of public APIs from internal application services, source package names, or generated dependency graphs.
+
+[Implementation evidence](10-traceability-and-unresolved-issues.md#101-traceability) is tied to the reviewed backend revision, whereas normative architecture boundaries remain approved requirements. A failing implementation boundary is drift to be reported, not a reason to weaken the normative rule.
