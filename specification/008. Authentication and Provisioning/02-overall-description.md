@@ -1,21 +1,31 @@
 # 2. Overall Description
 
-## 2.1 Web Authentication
+## 2.1 Authentication and protected-resource pipeline
 
-Taskmigo Web configures Spring Authorization Server with OIDC endpoints, JDBC registered clients/authorizations/consents, RS256 JWT signing and resource-server JWT validation. Interactive accounts use the canonical Identity User model and are disabled unless ACTIVE.
+Web exposes Spring Authorization Server/OIDC capability, JDBC-backed OAuth registration/authorization/consent and RS256-signed JWTs. Interactive login resolves the persisted Identity User and rejects absent credentials or non-ACTIVE lifecycle state. Versioned resource endpoints validate JWT and principal claims, check the current persisted User, and evaluate Request Authorization before reaching a controller.
 
-## 2.2 API Authorization
+## 2.2 Principal kinds and claims
 
-Versioned endpoints `/api/v*/**` require a JWT principal with supported type, valid `user_id`, an ACTIVE persisted User, and the Request Authorization policy decision. Object Authorization is evaluated downstream by resource-specific operations for relevant rows.
+| Principal | Claim semantics | Versioned API eligibility |
+| --- | --- | --- |
+| User | `principal_type=user`, `user_id` UUID string and `principal_username` | Referenced User must be ACTIVE; Request Authorization must allow the operation |
+| Service | `principal_type=service` and registered-client subject; optional System User claims only if active | Must not bypass persisted User identity and Request Authorization requirements |
+| Missing/invalid | No valid supported principal or claims | Denied; distinguish unauthenticated 401 from authenticated forbidden 403 |
 
-## 2.3 Session Security
+A token signature being valid is **not sufficient** when the referenced User has been deleted, retained, disabled or otherwise made ineligible.
 
-Interactive servlet authentication is stored in PostgreSQL-backed Spring Session. Session reads/writes and OAuth authorization/consent writes are guarded by User ACTIVE status and coordinated with deletion using a persisted User row lock.
+## 2.3 Managed browser OAuth client
 
-## 2.4 Installation
+The managed `browser` client permits authorization code plus refresh token grants with PKCE, configured redirect/logout URI allowlists, `openid`/`profile` scopes, five-minute access tokens and eight-hour non-reusable refresh tokens. The resources are provisioned only when the browser authentication toggle allows them. Application clients must respect the actual deployed registration and protocol metadata.
 
-The Migration app applies Flyway schema and then one-shot managed-resource reconciliation. It loads YAML Users, Roles, Statements, Groups and OAuth clients, validates reference consistency, and applies changes atomically with Serializable isolation and bounded retries.
+## 2.4 Session and deletion coordination
 
-## 2.5 Out of Scope
+Spring Session stores authenticated sessions in JDBC and identifies the User by stable UUID. Session reads and writes verify lifecycle eligibility; OAuth authorization/consent writes are guarded against races with User deletion. Invalidated sessions and grants cannot recreate an authenticated identity after a User becomes RETAINED or TOMBSTONE.
 
-No organization-specific login realm, social login provider, SAML integration, customizable MFA, or external Keycloak provider is claimed by this implementation. The browser client resource is not a general public OAuth-client management API.
+## 2.5 Managed installation
+
+Migration reads declarative Users, Roles, Statements, Groups and optional OAuth client definitions. It validates unique keys/references, resolves managed entries in dependency order and reconciles them inside a SERIALIZABLE transaction with bounded retries. It must not adopt an unrelated OAuth client merely because its ID matches a managed declaration; unchanged encoded secrets should be preserved.
+
+## 2.6 Scope exclusions
+
+Identity Groups do not imply Organization or realm-specific login. No social login, SAML, MFA enrollment, third-party Keycloak broker flow or generic public OAuth client administration is included. External protocol endpoints are defined by the deployed authorization-server configuration, not copied into a speculative Taskmigo REST inventory.

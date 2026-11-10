@@ -1,38 +1,40 @@
 # 9. Verification, Validation, and Acceptance Evidence
 
+Acceptance SHALL cover code+PKCE grants, redirect allowlists, token principal claims, stale User revocation, race-safe session writes and reconciler idempotence.
+
 ## 9.1 Authentication
 
 ### AUTHN-VER-001 — OAuth code/PKCE and tokens
 
-Verify configured browser client accepts code+PKCE and refresh while enforcing registered client, allowed scopes, token duration and refresh reuse configuration.
+**Verification objective.** Verify configured browser client accepts code+PKCE and refresh while enforcing registered client, allowed scopes, token duration and refresh reuse configuration.
 
 ### AUTHN-VER-002 — Principal claims and policy
 
-Verify correct User/service claims, stale User rejection, missing/malformed UUID denial and Request Authorization context propagation.
+**Verification objective.** Verify correct User/service claims, stale User rejection, missing/malformed UUID denial and Request Authorization context propagation.
 
 ### AUTHN-VER-003 — Signing key
 
-Verify existing key loading, absent-key failure when required, configured development generation and stable signing identity across restart.
+**Verification objective.** Verify existing key loading, absent-key failure when required, configured development generation and stable signing identity across restart.
 
 ## 9.2 Session Lifecycle
 
 ### AUTHN-VER-004 — Session revocation
 
-Verify authenticated sessions are not returned or recreated after User deletion and session writes are rejected when User is not ACTIVE.
+**Verification objective.** Verify authenticated sessions are not returned or recreated after User deletion and session writes are rejected when User is not ACTIVE.
 
 ### AUTHN-VER-005 — OAuth guard
 
-Verify interactive OAuth authorization/consent writes fail when User lifecycle changes, while explicitly permitted client-credentials persistence follows the service-principal contract.
+**Verification objective.** Verify interactive OAuth authorization/consent writes fail when User lifecycle changes, while explicitly permitted client-credentials persistence follows the service-principal contract.
 
 ## 9.3 Installation
 
 ### AUTHN-VER-006 — Idempotent managed reconciliation
 
-Verify repeated runs reconcile existing Users/Roles/Statements/Groups/clients without adopting unmanaged clients or rotating unchanged encoded secrets.
+**Verification objective.** Verify repeated runs reconcile existing Users/Roles/Statements/Groups/clients without adopting unmanaged clients or rotating unchanged encoded secrets.
 
 ### AUTHN-VER-007 — Atomic failure and retry
 
-Verify invalid references/duplicates fail, Serializable transaction prevents partial installation, and transient failures retry at most three times.
+**Verification objective.** Verify invalid references/duplicates fail, Serializable transaction prevents partial installation, and transient failures retry at most three times.
 
 ## 9.4 Evidence
 

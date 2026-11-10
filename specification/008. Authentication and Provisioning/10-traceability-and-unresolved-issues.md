@@ -1,5 +1,7 @@
 # 10. Traceability and Unresolved Issues
 
+Pin observed OAuth and migration evidence. Unsupported Organization or federation features are not current public requirements.
+
 ## 10.1 Implementation Traceability
 
 | Area                     | Requirement IDs   | Code evidence                                                                                                                                                                                                    |
