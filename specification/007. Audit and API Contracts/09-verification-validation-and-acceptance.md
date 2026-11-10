@@ -42,8 +42,12 @@ Test references do not indicate that test jobs were executed as part of authorin
 
 ### API-VER-004 — Endpoint and payload parity
 
-Verify that every operation in the [API v0 HTTP/JSON reference](12-api-v0-http-examples.md#122-implemented-endpoint-index) exists in the generated OpenAPI, that its request fields and successful response `data` shape match the controller DTO, and that the v0 envelope includes `success`, `statusCode`, `message`, `error`, `meta` and `data`.
+Verify that every operation in the [API v0 HTTP/JSON reference](12-api-v0-http-examples.md#122-module-openapi-index) exists in the generated OpenAPI, that its request fields and successful response `data` shape match the controller DTO, and that the v0 envelope includes `success`, `statusCode`, `message`, `error`, `meta` and `data`.
 
 ### API-VER-005 — Examples and generated responses
 
 Validate example JSON syntax and compare create, paginated list, detail, patch, no-data mutation, and validation/error envelopes with API integration tests. Detect discrepancies between controller-returned 200 statuses and the generated OpenAPI status list.
+
+## Module OpenAPI Contract Verification
+
+Verify that [this module's OpenAPI](openapi.yaml) contains only its controller-owned `/api/v0` paths; all referenced component schemas resolve locally; requests/responses match the backend-generated aggregate; and the [JSON examples](12-api-v0-examples.md) demonstrate relevant success/error behavior. Shared DTO envelopes may be copied into each standalone module snapshot. Validation is automated by `npm run openapi:check` in the specification repository.

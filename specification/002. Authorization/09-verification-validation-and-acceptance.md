@@ -42,3 +42,7 @@ Verify the current OpenAPI surface does not claim `GET /api/v0/authorization/log
 - [Web ObjectAuthorization integration tests](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/web/src/test/java/io/taskmigo/web/security/objectauthorization/ObjectAuthorizationRouteIntegrationTest.java).
 
 This SRS describes required test coverage, not a claim that the tests have run during document generation.
+
+## Module OpenAPI Contract Verification
+
+Verify that [this module's OpenAPI](openapi.yaml) contains only its controller-owned `/api/v0` paths; all referenced component schemas resolve locally; requests/responses match the backend-generated aggregate; and the [JSON examples](12-api-v0-examples.md) demonstrate relevant success/error behavior. Shared DTO envelopes may be copied into each standalone module snapshot. Validation is automated by `npm run openapi:check` in the specification repository.

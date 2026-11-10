@@ -121,3 +121,7 @@ Verification: Compare Roles with and without children and description in a list 
 ## HTTP/JSON Examples
 
 See the [API v0 HTTP and JSON reference](../007.%20Audit%20and%20API%20Contracts/12-api-v0-http-examples.md) for concrete method/path, input DTO, sample request, successful response, and error envelope for the Authorization APIs.
+
+## Module-Local OpenAPI Contract
+
+The [module OpenAPI 3.1 definition](openapi.yaml) is the source-derived machine-readable contract for the HTTP operations owned by this module, including request schemas, response schemas, endpoint parameters, security requirements and reusable response envelope dependencies. The [module API examples](12-api-v0-examples.md) show the concrete JSON shapes. Both are derived from the implementation-generated OpenAPI; this SRS remains the source for intended feature behavior.

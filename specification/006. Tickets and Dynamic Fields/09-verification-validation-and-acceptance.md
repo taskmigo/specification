@@ -48,3 +48,7 @@ Verify invalid negative/decimal STRING lengths, inverted min/max for STRING/NUMB
 ### TKT-VER-009 — Dynamic field path interpretation
 
 Verify a registered custom field with key `severity` is queryable as `object.severity`, is not automatically queryable as `object.customFields.severity`, and is rejected when the operation's history/context makes the key ambiguous or unavailable.
+
+## Module OpenAPI Contract Verification
+
+Verify that [this module's OpenAPI](openapi.yaml) contains only its controller-owned `/api/v0` paths; all referenced component schemas resolve locally; requests/responses match the backend-generated aggregate; and the [JSON examples](12-api-v0-examples.md) demonstrate relevant success/error behavior. Shared DTO envelopes may be copied into each standalone module snapshot. Validation is automated by `npm run openapi:check` in the specification repository.

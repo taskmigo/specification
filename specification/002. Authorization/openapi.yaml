@@ -1,0 +1,851 @@
+---
+openapi: 3.1.0
+info:
+  title: Taskmigo Authorization API
+  description: Implementation-derived module contract for Taskmigo API v0.
+  version: v0
+security:
+- taskmigoOAuth: []
+paths:
+  /api/v0/statements:
+    get:
+      tags:
+      - Statement
+      summary: List authorization statements
+      operationId: list_3
+      parameters:
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based index)
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 1
+          description: Page number to retrieve (1-based index)
+          minimum: 1
+      - name: pageSize
+        in: query
+        description: Number of items per page
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 20
+          description: Number of items per page
+          maximum: 100
+          minimum: 1
+      - name: filterBy
+        in: query
+        description: Filter expression using the Taskmigo FilterBy DSL.
+        required: false
+        schema:
+          type:
+          - string
+          - "null"
+          description: Filter expression using the Taskmigo FilterBy DSL.
+        x-filter-by:
+          code:
+          - EQ
+          - NE
+          - CONTAINS
+          description:
+          - EQ
+          - NE
+          - CONTAINS
+          id:
+          - EQ
+          - NE
+          method:
+          - EQ
+          - NE
+          - CONTAINS
+          path:
+          - EQ
+          - NE
+          - CONTAINS
+      - name: sortBy
+        in: query
+        description: Sort fields in priority order. Prefix a field with '-' for descending
+          order; ascending is the default. Repeat the parameter for multiple fields.
+        required: false
+        schema:
+          type: array
+          description: Sort fields in priority order. Prefix a field with '-' for
+            descending order; ascending is the default. Repeat the parameter for multiple
+            fields.
+          items:
+            type: string
+            description: Sort fields in priority order. Prefix a field with '-' for
+              descending order; ascending is the default. Repeat the parameter for
+              multiple fields.
+        x-sort-by:
+        - code
+        - description
+        - id
+        - method
+        - path
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseListStatementInfoOffsetMeta"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "406":
+          description: Not Acceptable
+        "422":
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+    post:
+      tags:
+      - Statement
+      summary: Create an authorization statement
+      operationId: create_3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateStatementRequest"
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseMapStringUUIDBasicMeta"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "406":
+          description: Not Acceptable
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "415":
+          description: Unsupported Media Type
+        "422":
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+  /api/v0/roles:
+    get:
+      tags:
+      - Role
+      summary: List roles
+      operationId: list_4
+      parameters:
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based index)
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 1
+          description: Page number to retrieve (1-based index)
+          minimum: 1
+      - name: pageSize
+        in: query
+        description: Number of items per page
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 20
+          description: Number of items per page
+          maximum: 100
+          minimum: 1
+      - name: filterBy
+        in: query
+        description: Filter expression using the Taskmigo FilterBy DSL.
+        required: false
+        schema:
+          type:
+          - string
+          - "null"
+          description: Filter expression using the Taskmigo FilterBy DSL.
+        x-filter-by:
+          code:
+          - EQ
+          - NE
+          - CONTAINS
+          description:
+          - EQ
+          - NE
+          - CONTAINS
+          displayName:
+          - EQ
+          - NE
+          - CONTAINS
+          id:
+          - EQ
+          - NE
+      - name: sortBy
+        in: query
+        description: Sort fields in priority order. Prefix a field with '-' for descending
+          order; ascending is the default. Repeat the parameter for multiple fields.
+        required: false
+        schema:
+          type: array
+          description: Sort fields in priority order. Prefix a field with '-' for
+            descending order; ascending is the default. Repeat the parameter for multiple
+            fields.
+          items:
+            type: string
+            description: Sort fields in priority order. Prefix a field with '-' for
+              descending order; ascending is the default. Repeat the parameter for
+              multiple fields.
+        x-sort-by:
+        - code
+        - description
+        - displayName
+        - id
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseListRoleInfoOffsetMeta"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "406":
+          description: Not Acceptable
+        "422":
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+    post:
+      tags:
+      - Role
+      summary: Create a role
+      operationId: createRole
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRoleRequest"
+        required: true
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseMapStringUUIDBasicMeta"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "406":
+          description: Not Acceptable
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "415":
+          description: Unsupported Media Type
+        "422":
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+  /api/v0/roles/{roleId}/statements:
+    patch:
+      tags:
+      - Role
+      summary: Replace a role's direct statements
+      operationId: setStatements_1
+      parameters:
+      - name: roleId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReplaceRoleStatementsRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "406":
+          description: Not Acceptable
+        "415":
+          description: Unsupported Media Type
+        "422":
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+  /api/v0/statements/{statementId}:
+    delete:
+      tags:
+      - Statement
+      summary: Delete an authorization statement
+      operationId: delete_1
+      parameters:
+      - name: statementId
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "406":
+          description: Not Acceptable
+        "422":
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+components:
+  schemas:
+    ApiResponseVoidBasicMeta:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the request completed successfully
+        statusCode:
+          type: integer
+          format: int32
+          description: HTTP status code of the response
+        message:
+          $ref: "#/components/schemas/Message"
+          description: Machine-readable and human-readable outcome message
+        error:
+          type: "null"
+          $ref: "#/components/schemas/Error"
+          description: Error details when the request fails
+        meta:
+          $ref: "#/components/schemas/BasicMeta"
+          description: Execution and pagination metadata
+        data:
+          type: "null"
+          description: Response payload
+      required:
+      - data
+      - error
+      - message
+      - meta
+      - statusCode
+      - success
+    BasicMeta:
+      type: object
+      description: Response metadata for an operation that does not paginate its data
+      properties:
+        execution:
+          $ref: "#/components/schemas/Execution"
+          description: Timing information for processing the request
+      required:
+      - execution
+    Error:
+      type: object
+      properties:
+        code:
+          type:
+          - string
+          - "null"
+          description: Stable code identifying the error
+        message:
+          type:
+          - string
+          - "null"
+          description: Human-readable description of the error
+        formErrors:
+          type:
+          - object
+          - "null"
+          additionalProperties:
+            type: string
+          description: Validation errors keyed by request field name
+    Execution:
+      type: object
+      properties:
+        startedAt:
+          type: string
+          format: date-time
+          description: Time at which server processing began
+        duration:
+          type: integer
+          format: int64
+          description: Server processing time in milliseconds
+          minimum: 0
+      required:
+      - duration
+      - startedAt
+    Message:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Stable code for the response outcome
+        text:
+          type: string
+          description: Human-readable description of the response outcome
+      required:
+      - code
+      - text
+    ApiResponseMapStringUUIDBasicMeta:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the request completed successfully
+        statusCode:
+          type: integer
+          format: int32
+          description: HTTP status code of the response
+        message:
+          $ref: "#/components/schemas/Message"
+          description: Machine-readable and human-readable outcome message
+        error:
+          type: "null"
+          $ref: "#/components/schemas/Error"
+          description: Error details when the request fails
+        meta:
+          $ref: "#/components/schemas/BasicMeta"
+          description: Execution and pagination metadata
+        data:
+          type:
+          - object
+          - "null"
+          additionalProperties:
+            type: string
+            format: uuid
+          description: Response payload
+      required:
+      - data
+      - error
+      - message
+      - meta
+      - statusCode
+      - success
+    ApiInfo:
+      type: object
+      properties:
+        method:
+          type: string
+        path:
+          type: string
+    CreateStatementRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        effect:
+          type: string
+          minLength: 1
+          pattern: allow|deny
+        scope:
+          type: string
+          minLength: 1
+          pattern: request|object
+        target:
+          $ref: "#/components/schemas/Target"
+        policy:
+          type: string
+          minLength: 1
+      required:
+      - code
+      - effect
+      - policy
+      - scope
+      - target
+    Target:
+      type: object
+      properties:
+        api:
+          $ref: "#/components/schemas/ApiInfo"
+      required:
+      - api
+    CreateRoleRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+        displayName:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        roleIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          uniqueItems: true
+      required:
+      - code
+      - displayName
+    ReplaceRoleStatementsRequest:
+      type: object
+      properties:
+        statementIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+          uniqueItems: true
+    Offset:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+          description: One-based index of the current page
+          minimum: 1
+        pageSize:
+          type: integer
+          format: int32
+          description: Maximum number of items in each page
+          minimum: 1
+        totalItems:
+          type: integer
+          format: int64
+          description: Total number of items matching the request
+          minimum: 0
+        totalPages:
+          type: integer
+          format: int64
+          description: Total number of available pages
+          minimum: 0
+      required:
+      - currentPage
+      - pageSize
+      - totalItems
+      - totalPages
+    OffsetMeta:
+      type: object
+      description: Response metadata for an operation using offset pagination
+      properties:
+        execution:
+          $ref: "#/components/schemas/Execution"
+          description: Timing information for processing the request
+        pagination:
+          $ref: "#/components/schemas/OffsetPagination"
+          description: Offset pagination state for this response
+      required:
+      - execution
+      - pagination
+    OffsetPagination:
+      type: object
+      description: Offset pagination metadata
+      properties:
+        type:
+          type: string
+          description: Pagination strategy
+          enum:
+          - offset
+        offset:
+          $ref: "#/components/schemas/Offset"
+          description: Offset pagination values
+      required:
+      - offset
+      - type
+    ApiResponseData:
+      type: object
+      properties:
+        method:
+          type: string
+        path:
+          type: string
+    ApiResponseListStatementInfoOffsetMeta:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the request completed successfully
+        statusCode:
+          type: integer
+          format: int32
+          description: HTTP status code of the response
+        message:
+          $ref: "#/components/schemas/Message"
+          description: Machine-readable and human-readable outcome message
+        error:
+          type: "null"
+          $ref: "#/components/schemas/Error"
+          description: Error details when the request fails
+        meta:
+          $ref: "#/components/schemas/OffsetMeta"
+          description: Execution and pagination metadata
+        data:
+          type:
+          - array
+          - "null"
+          description: Response payload
+          items:
+            $ref: "#/components/schemas/StatementInfo"
+      required:
+      - data
+      - error
+      - message
+      - meta
+      - statusCode
+      - success
+    StatementInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        description:
+          type: string
+        effect:
+          type: string
+          enum:
+          - ALLOW
+          - DENY
+        scope:
+          type: string
+          enum:
+          - OBJECT
+          - REQUEST
+        target:
+          $ref: "#/components/schemas/TargetResponse"
+        policy:
+          type: string
+    TargetResponse:
+      type: object
+      properties:
+        api:
+          $ref: "#/components/schemas/ApiResponseData"
+    ApiResponseListRoleInfoOffsetMeta:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the request completed successfully
+        statusCode:
+          type: integer
+          format: int32
+          description: HTTP status code of the response
+        message:
+          $ref: "#/components/schemas/Message"
+          description: Machine-readable and human-readable outcome message
+        error:
+          type: "null"
+          $ref: "#/components/schemas/Error"
+          description: Error details when the request fails
+        meta:
+          $ref: "#/components/schemas/OffsetMeta"
+          description: Execution and pagination metadata
+        data:
+          type:
+          - array
+          - "null"
+          description: Response payload
+          items:
+            $ref: "#/components/schemas/RoleInfo"
+      required:
+      - data
+      - error
+      - message
+      - meta
+      - statusCode
+      - success
+    RoleInfo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        displayName:
+          type: string
+        description:
+          type: string
+        children:
+          type: array
+          items:
+            $ref: "#/components/schemas/RoleInfo"
+  securitySchemes:
+    taskmigoOAuth:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: /oauth2/authorize
+          tokenUrl: /oauth2/token
+          scopes:
+            openid: OpenID Connect scope
+            profile: Access the user's profile information

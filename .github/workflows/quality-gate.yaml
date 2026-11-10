@@ -28,3 +28,5 @@ jobs:
       - run: npm run style:check
 
       - run: npm run markdown:check
+
+      - run: npm run openapi:check

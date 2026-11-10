@@ -40,3 +40,7 @@ These test files are evidence of intended coverage, not a claim that the test su
 ### ID-VER-007 — No implicit credential or Group
 
 Verify a newly registered ACTIVE User has no interactive credential, cannot perform password login without subsequent managed credential initialization, and has no Role or Group memberships when those input fields are omitted. Verify explicitly supplied assignments remain atomic with User creation.
+
+## Module OpenAPI Contract Verification
+
+Verify that [this module's OpenAPI](openapi.yaml) contains only its controller-owned `/api/v0` paths; all referenced component schemas resolve locally; requests/responses match the backend-generated aggregate; and the [JSON examples](12-api-v0-examples.md) demonstrate relevant success/error behavior. Shared DTO envelopes may be copied into each standalone module snapshot. Validation is automated by `npm run openapi:check` in the specification repository.

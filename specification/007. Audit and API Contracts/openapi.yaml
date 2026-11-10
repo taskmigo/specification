@@ -1,0 +1,306 @@
+---
+openapi: 3.1.0
+info:
+  title: Taskmigo Audit API
+  description: Implementation-derived module contract for Taskmigo API v0.
+  version: v0
+security:
+- taskmigoOAuth: []
+paths:
+  /api/v0/audit/{entityType}/logs:
+    get:
+      tags:
+      - Audit
+      summary: List entity audit logs
+      operationId: listAuditLogs
+      parameters:
+      - name: entityType
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: Page number to retrieve (1-based index)
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 1
+          description: Page number to retrieve (1-based index)
+          minimum: 1
+      - name: pageSize
+        in: query
+        description: Number of items per page
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 20
+          description: Number of items per page
+          maximum: 100
+          minimum: 1
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseListAuditLogOffsetMeta"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "406":
+          description: Not Acceptable
+        "422":
+          description: Unprocessable Content
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponseVoidBasicMeta"
+components:
+  schemas:
+    ApiResponseVoidBasicMeta:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the request completed successfully
+        statusCode:
+          type: integer
+          format: int32
+          description: HTTP status code of the response
+        message:
+          $ref: "#/components/schemas/Message"
+          description: Machine-readable and human-readable outcome message
+        error:
+          type: "null"
+          $ref: "#/components/schemas/Error"
+          description: Error details when the request fails
+        meta:
+          $ref: "#/components/schemas/BasicMeta"
+          description: Execution and pagination metadata
+        data:
+          type: "null"
+          description: Response payload
+      required:
+      - data
+      - error
+      - message
+      - meta
+      - statusCode
+      - success
+    BasicMeta:
+      type: object
+      description: Response metadata for an operation that does not paginate its data
+      properties:
+        execution:
+          $ref: "#/components/schemas/Execution"
+          description: Timing information for processing the request
+      required:
+      - execution
+    Error:
+      type: object
+      properties:
+        code:
+          type:
+          - string
+          - "null"
+          description: Stable code identifying the error
+        message:
+          type:
+          - string
+          - "null"
+          description: Human-readable description of the error
+        formErrors:
+          type:
+          - object
+          - "null"
+          additionalProperties:
+            type: string
+          description: Validation errors keyed by request field name
+    Execution:
+      type: object
+      properties:
+        startedAt:
+          type: string
+          format: date-time
+          description: Time at which server processing began
+        duration:
+          type: integer
+          format: int64
+          description: Server processing time in milliseconds
+          minimum: 0
+      required:
+      - duration
+      - startedAt
+    Message:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Stable code for the response outcome
+        text:
+          type: string
+          description: Human-readable description of the response outcome
+      required:
+      - code
+      - text
+    Offset:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+          format: int32
+          description: One-based index of the current page
+          minimum: 1
+        pageSize:
+          type: integer
+          format: int32
+          description: Maximum number of items in each page
+          minimum: 1
+        totalItems:
+          type: integer
+          format: int64
+          description: Total number of items matching the request
+          minimum: 0
+        totalPages:
+          type: integer
+          format: int64
+          description: Total number of available pages
+          minimum: 0
+      required:
+      - currentPage
+      - pageSize
+      - totalItems
+      - totalPages
+    OffsetMeta:
+      type: object
+      description: Response metadata for an operation using offset pagination
+      properties:
+        execution:
+          $ref: "#/components/schemas/Execution"
+          description: Timing information for processing the request
+        pagination:
+          $ref: "#/components/schemas/OffsetPagination"
+          description: Offset pagination state for this response
+      required:
+      - execution
+      - pagination
+    OffsetPagination:
+      type: object
+      description: Offset pagination metadata
+      properties:
+        type:
+          type: string
+          description: Pagination strategy
+          enum:
+          - offset
+        offset:
+          $ref: "#/components/schemas/Offset"
+          description: Offset pagination values
+      required:
+      - offset
+      - type
+    ApiResponseListAuditLogOffsetMeta:
+      type: object
+      properties:
+        success:
+          type: boolean
+          description: Whether the request completed successfully
+        statusCode:
+          type: integer
+          format: int32
+          description: HTTP status code of the response
+        message:
+          $ref: "#/components/schemas/Message"
+          description: Machine-readable and human-readable outcome message
+        error:
+          type: "null"
+          $ref: "#/components/schemas/Error"
+          description: Error details when the request fails
+        meta:
+          $ref: "#/components/schemas/OffsetMeta"
+          description: Execution and pagination metadata
+        data:
+          type:
+          - array
+          - "null"
+          description: Response payload
+          items:
+            $ref: "#/components/schemas/AuditLog"
+      required:
+      - data
+      - error
+      - message
+      - meta
+      - statusCode
+      - success
+    AuditActor:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+    AuditChange:
+      type: object
+      properties:
+        field:
+          type: string
+        before: {}
+        after: {}
+        sensitive:
+          type: boolean
+    AuditLog:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        entityType:
+          type: string
+        entityId:
+          type: string
+          format: uuid
+        actor:
+          $ref: "#/components/schemas/AuditActor"
+        occurredAt:
+          type: string
+          format: date-time
+        changes:
+          type: array
+          items:
+            $ref: "#/components/schemas/AuditChange"
+  securitySchemes:
+    taskmigoOAuth:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: /oauth2/authorize
+          tokenUrl: /oauth2/token
+          scopes:
+            openid: OpenID Connect scope
+            profile: Access the user's profile information

@@ -51,3 +51,7 @@ HTTP operation paths and methods SHALL match the checked-in generated [OpenAPI v
 ## 3.5 HTTP Request and Response Examples
 
 The [API v0 HTTP and JSON reference](12-api-v0-http-examples.md) documents the request parameters, request bodies, response envelopes, returned data shapes, and HTTP status for every currently implemented API v0 route, using the generated OpenAPI snapshot and controller DTOs. The normative contracts above remain unchanged.
+
+## Module-Local OpenAPI Contract
+
+The [module OpenAPI 3.1 definition](openapi.yaml) is the source-derived machine-readable contract for the HTTP operations owned by this module, including request schemas, response schemas, endpoint parameters, security requirements and reusable response envelope dependencies. The [module API examples](12-api-v0-examples.md) show the concrete JSON shapes. Both are derived from the implementation-generated OpenAPI; this SRS remains the source for intended feature behavior.
