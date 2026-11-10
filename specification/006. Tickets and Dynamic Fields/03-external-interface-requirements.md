@@ -80,15 +80,15 @@ On create, null custom-field entries SHALL be ignored before validation; unknown
 
 ### 3.4.2 Ticket Type and Template schemas
 
-| Model                   | Fields and rules                                                                                                                       |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Create Type request     | Required nonblank `key` and `name`. Type identity and initial ACTIVE status are server-managed.                                        |
-| PATCH Type request | Optional `name: string` and `status` with enum values `ACTIVE` or `RETIRED`. Omitted property retains its current value. |
-| Type response | `id: UUID`, `key: string`, `name: string`, `status` with values `ACTIVE` or `RETIRED`, and `createdAt` and `updatedAt` instants. |
-| PATCH Template request  | Required `fields` array; **replaces** the complete DRAFT field set. Each field entry SHALL be nonnull and valid.                       |
-| Template field request  | Optional `fieldId: UUID`, required nonblank `key` and `label`, required `dataType`, boolean `required`, optional `constraints` object. |
-| Template field response | `fieldId: UUID`, `key`, `label`, `dataType`, `required`, `constraints`.                                                                |
-| Template response | `id: UUID`, `version: integer`, `status` with values `DRAFT`, `PUBLISHED` or `RETIRED`, `fields: array`, and nullable `publishedAt` and `retiredAt` instants. |
+| Model                   | Fields and rules                                                                                                                                              |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Create Type request     | Required nonblank `key` and `name`. Type identity and initial ACTIVE status are server-managed.                                                               |
+| PATCH Type request      | Optional `name: string` and `status` with enum values `ACTIVE` or `RETIRED`. Omitted property retains its current value.                                      |
+| Type response           | `id: UUID`, `key: string`, `name: string`, `status` with values `ACTIVE` or `RETIRED`, and `createdAt` and `updatedAt` instants.                              |
+| PATCH Template request  | Required `fields` array; **replaces** the complete DRAFT field set. Each field entry SHALL be nonnull and valid.                                              |
+| Template field request  | Optional `fieldId: UUID`, required nonblank `key` and `label`, required `dataType`, boolean `required`, optional `constraints` object.                        |
+| Template field response | `fieldId: UUID`, `key`, `label`, `dataType`, `required`, `constraints`.                                                                                       |
+| Template response       | `id: UUID`, `version: integer`, `status` with values `DRAFT`, `PUBLISHED` or `RETIRED`, `fields: array`, and nullable `publishedAt` and `retiredAt` instants. |
 
 Supported custom field `dataType` values SHALL be `STRING`, `NUMBER`, `BOOLEAN`, `DATE`, `DATETIME`, `UUID`, and `ENUM`. Template version transitions and backwards compatibility follow [TKT-FR-003–006](04-functional-and-behavioral-requirements.md#41-ticket-type-lifecycle).
 
