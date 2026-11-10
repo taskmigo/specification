@@ -1,5 +1,7 @@
 # 11. Appendices
 
+Examples clarify policy inputs and allow/deny composition; they do not extend the supported grammar or available HTTP routes.
+
 ## 11.1 Request and Object Flow
 
 ```mermaid

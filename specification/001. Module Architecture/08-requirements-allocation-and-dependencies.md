@@ -1,8 +1,10 @@
 # 8. Requirements Allocation and Dependencies
 
+Dependency allocation in this section is a **pinned implementation inventory**. Its project edges are observed, while the surrounding ownership rules are normative.
+
 ## 8.1 Physical Project Map
 
-The authoritative project roster is the [Gradle settings file](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/settings.gradle.kts). The table records direct production dependencies, omitting transitive dependencies and third-party libraries.
+**Observed project inventory.** The authoritative project roster is the [Gradle settings file](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/settings.gradle.kts). The table records direct production dependencies, omitting transitive dependencies and third-party libraries.
 
 | Owner                | Public / direct dependencies                                                                    | Purpose                          |
 | -------------------- | ----------------------------------------------------------------------------------------------- | -------------------------------- |

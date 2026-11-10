@@ -1,5 +1,7 @@
 # 11. Appendices
 
+Examples illustrate the required dependency direction and specialized cases. They do not expand the normative module graph or public API surface.
+
 ## 11.1 Dependency Direction
 
 ```mermaid
@@ -21,7 +23,7 @@ flowchart TB
     jpa --> query
 ```
 
-The diagram is illustrative; [Gradle dependencies](08-requirements-allocation-and-dependencies.md) specify the complete project edge set.
+**Interpretation:** The diagram is illustrative; [Gradle dependencies](08-requirements-allocation-and-dependencies.md) specify the complete project edge set.
 
 ## 11.2 Tactical Package Convention
 

@@ -1,5 +1,7 @@
 # 8. Requirements Allocation and Dependencies
 
+The internal Language module owns compilation/evaluation; Query and Authorization own narrower consumer profiles and never become grammar owners.
+
 ## 8.1 Assumptions and Dependencies
 
 - [Module Architecture](../001.%20Module%20Architecture/README.md) defines the mandatory dependency direction and consumer-neutral boundary for the `:modules:internal:language` module.

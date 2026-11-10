@@ -1,83 +1,37 @@
 # 2. Overall Description
 
-## 2.1 Product Perspective
+## 2.1 Compiler and evaluator pipeline
 
-The Language is a language subsystem between source text and execution inputs. The subsystem owns source parsing, Compilation Profile enforcement, binding, static typing, applicable control-flow validation, Semantic AST construction, direct evaluation, and partial evaluation.
-
-The required boundary is:
+Language transforms source text and a declared compilation environment into a **typed, language-owned Semantic AST**. The observable processing model is:
 
 ```text
-Source + Compilation Profile
-  -> PROGRAM or EXPRESSION parser entry
-  -> ANTLR lexer/parser
-  -> Parse tree
-  -> Semantic analysis and feature validation
-  -> Typed Semantic AST
-  -> Evaluation or partial evaluation
-  -> Concrete value or residual Semantic AST
+Source + Environment Schema + Compilation Profile
+  → mode-specific ANTLR parse entry
+  → lexical and syntactic diagnostics
+  → reference binding, feature validation, typing and control-flow checks
+  → immutable typed Semantic AST + result type + dependencies
+  → concrete evaluation OR partial evaluation
+  → compatible value OR typed residual expression OR explicit failure
 ```
 
-ANTLR parse-tree types SHALL remain a frontend concern. Evaluation and partial evaluation SHALL consume the language-owned Semantic AST.
+ANTLR parse trees SHALL not escape as public semantic artifacts. A consumer SHALL receive typed results/diagnostics rather than having to inspect parser-specific node implementations.
 
-## 2.2 Product Functions
+## 2.2 Source modes
 
-The Language provides:
+`PROGRAM` accepts a sequence of statements with immutable `const` declarations and bounded `if`/`else` control flow when features are enabled. Every reachable execution path SHALL yield a `return` value. `EXPRESSION` accepts exactly one expression and no wrapper, assignment or `return`. Both use the same expression semantics.
 
-- Deterministic parsing of canonical `PROGRAM` and `EXPRESSION` sources.
-- Consumer-defined profiles that restrict enabled feature families without defining another language.
-- Independently gated Boolean unary negation and bounded `contains(text, substring)` string matching.
-- Static root/path, operator, intrinsic, lexical-binding, control-flow, and type validation.
-- Typed Semantic AST construction with source-location and dependency metadata.
-- Static source-result typing.
-- Direct evaluation and unknown-preserving partial evaluation.
-- Constant folding and type-preserving simplification.
+## 2.3 Types and bounded operations
 
-### 2.2.1 Source Modes
+The canonical values include Boolean, String, Number, Null and typed List values, with schema-defined scalar/structured references where declared. Operators are statically checked; incompatible values are **not** implicitly coerced. With the relevant feature enabled, `len(value)` operates on compatible String/List inputs and `contains(text, substring)` performs string containment. `all`, `any`, and `none` are bounded quantifiers with a restricted predicate-only lambda.
 
-`PROGRAM` mode is one statement-bearing program. It MAY contain immutable `const` declarations and `if`/`else` control flow. Every reachable control-flow path SHALL terminate with `return <expression>;`.
+## 2.4 Profiles and consumers
 
-`EXPRESSION` mode is exactly one expression followed by end-of-source. It SHALL NOT contain statement syntax or require a `return` wrapper.
+Profiles select the source mode and accepted feature families. Authorization Request compilation uses PROGRAM; Object Authorization and client FilterBy use EXPRESSION with narrower valid expression shapes. A general grammar production or built-in intrinsic SHALL not be exposed to those consumers unless their own SRS explicitly allows it.
 
-Both modes SHALL use the same expression semantics and Semantic AST expression model.
+## 2.5 Known and symbolic evaluation
 
-### 2.2.2 Known and Unknown Inputs
+Direct evaluation resolves concrete, schema-conforming values. Partial evaluation substitutes known inputs without evaluating skipped branches or unknown-dependent paths; remaining unknown parts are represented as a typed residual Semantic AST. The same schema/profile/artifact identity controls safe reuse; an incompatible identity is not valid evidence for reuse.
 
-Every relevant Semantic AST expression SHALL identify the Environment Schema roots on which it depends, or equivalent metadata sufficient for partial evaluation.
+## 2.6 Consumers and exclusions
 
-For one evaluation operation, each required root SHALL be supplied as known or unknown. Unknown-dependent expressions SHALL remain symbolic unless simplification proves that the unknown dependency cannot affect the result.
-
-### 2.2.3 Compilation Profiles
-
-Every compilation SHALL use a Compilation Profile selecting one source mode and enabled canonical feature families.
-
-A Compilation Profile SHALL only restrict the canonical language. It SHALL NOT add syntax, types, coercions, roots, intrinsics, evaluation behavior, or Semantic AST semantics.
-
-### 2.2.4 Bounded Collection Expressions
-
-When enabled, collection quantifiers SHALL use bounded intrinsic forms such as:
-
-```text
-all(values, value => predicate)
-any(values, value => predicate)
-none(values, value => predicate)
-```
-
-The restricted lambda introduces one lexical element binding scoped to the quantifier predicate. It SHALL NOT be a first-class callable value.
-
-## 2.3 Stakeholders and Users
-
-The language is consumed by source authors and Taskmigo components that compile or execute Language sources. Consumer-specific purposes remain outside the language contract.
-
-## 2.4 Operational Context and Scenarios
-
-The following scenarios are supporting context, not additional requirements:
-
-1. A `PROGRAM` source is compiled against an Environment Schema and Compilation Profile and evaluated repeatedly.
-2. An `EXPRESSION` source is compiled through the shared expression grammar without a statement wrapper.
-3. A consumer disables canonical features outside its accepted source subset.
-4. Partial evaluation specializes known values and preserves unknown-dependent residual expressions.
-5. A symbolic collection quantifier remains a typed residual Semantic AST expression for a downstream consumer.
-
-## 2.5 Out of Scope
-
-Consumer-specific policy meanings, persistence translation, query APIs, and business-domain root names are outside this SRS.
+Primary users are Taskmigo modules compiling embedded expressions and trusted policy/query code—not a browser-facing Language administration API. Consumer-specific database translation, User roles, field allowlists, network access and arbitrary scripting are outside Language's ownership boundary.

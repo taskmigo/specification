@@ -1,5 +1,7 @@
 # 11. Appendices
 
+These diagrams and JSON snippets illustrate the Type/Template/Ticket relationships. An example is not evidence that a Type or field already exists.
+
 ## 11.1 Schema Version Lifecycle
 
 ```mermaid

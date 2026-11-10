@@ -1,5 +1,7 @@
 # 11. Appendices
 
+The diagrams illustrate validated request and installation flows; the managed defaults may vary by deployment configuration.
+
 ## 11.1 Request Authorization Flow
 
 ```mermaid

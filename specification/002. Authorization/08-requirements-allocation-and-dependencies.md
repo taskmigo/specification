@@ -1,5 +1,7 @@
 # 8. Requirements Allocation and Dependencies
 
+Public authorization use cases are owned here; Identity owns User/Group state and resource modules own their persistence bindings. Cross-module imports follow published boundaries.
+
 ## 8.1 Owning Components
 
 - **Authorization role/statement/subject:** Persist Roles, Statements, direct grants and hierarchy; expose published use cases.

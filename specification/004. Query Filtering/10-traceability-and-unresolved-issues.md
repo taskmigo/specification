@@ -1,5 +1,7 @@
 # 10. Traceability and Unresolved Issues
 
+This source-derived baseline preserves previously approved semantics but distinguishes older unsupported query syntaxes from the current restricted contract.
+
 ## 10.1 Source Traceability
 
 | Requirements                 | Implementation                                                                                                                                                                                                                                                                                                                                                       |
@@ -19,3 +21,19 @@ Prior descriptions of broad membership/`IN` operators, quantifiers, generic lang
 ## 10.3 Deliberately Unspecified
 
 A generalized SQL DSL, a public client-supplied dynamic Query Schema, arbitrary expressions in sorting, and cursor pagination are not implemented in the reviewed query operation surface. Source snapshot: `9c1cd242fe4c5210fdd8dd88311e328a3784d0e1`.
+
+## 10.4 Module Contract Traceability and Baseline Discipline
+
+The [backend source snapshot](https://github.com/taskmigo/taskmigo/tree/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server) is **observed implementation evidence**, not an automatic replacement for approved SRS requirements. The table below links existing normative IDs to interface contracts and objective acceptance obligations. The stated acceptance coverage does **not** claim those tests were run during this documentation edit.
+
+| Requirement IDs               | Behavior or interface                                | Normative SRS contract                                                                                    | Verification obligation                                                                                       |
+| ----------------------------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| FILTER-001–003, QRY-001–005   | Approved filter grammar and per-operation allowlists | [Client contract](03-external-interface-requirements.md#37-client-query-contract-for-each-list-operation) | [Consumer scenarios](09-verification-validation-and-acceptance.md#95-independent-consumer-contract-scenarios) |
+| SORT-001–003, SORT-FR-001–003 | Ordered multi-sort, null semantics, invalid sort     | [Sort interface](03-external-interface-requirements.md#36-multi-sort-request)                             | [Sort verification](09-verification-validation-and-acceptance.md#92-sort-acceptance)                          |
+| PAGE-001, PERSIST-002–003     | Authorized, scope-aware SQL-side paging and totals   | [Pagination interface](03-external-interface-requirements.md#371-pagination-and-access-semantics)         | [Query/authorization integration](09-verification-validation-and-acceptance.md#93-context-and-database)       |
+
+### 10.4.1 Source-to-spec reconciliation
+
+The global grammar does not define the allowed fields for every operation. Only the owning module's referenced field table is authoritative for each operation. Static OpenAPI extensions cannot promise dynamically scoped Ticket custom fields.
+
+For future changes, classify a finding as **approved requirement**, **observed as-is**, **proposed to-be**, **conflict/drift**, or **unresolved** before rewriting the normative contract. Source evidence should identify the actual backend commit or generated artifact. OpenAPI generation and test presence alone are not conformance evidence; compare the owning module contract, generated schema, and executed test outcome.

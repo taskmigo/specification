@@ -1,21 +1,27 @@
 # 2. Overall Description
 
-## 2.1 Product Function
+## 2.1 Ticket Types and template lifecycle
 
-Taskmigo permits runtime definition of Ticket Types with custom templates. A Ticket Type owns an internal EAV schema definition; each published version defines the custom fields used by newly created Tickets. Tickets retain stable common fields independent of custom-field storage.
+Users can define Ticket Types and publish versioned custom-field templates. Each Type has a stable key and EAV schema definition. A new template begins as a DRAFT, can be populated or fully replaced, and becomes usable for new Tickets only when PUBLISHED. A published version can be RETIRED, but historical Tickets and template definitions must remain readable.
 
-## 2.2 Version Independence
+## 2.2 Create and update flow
 
-Published template versions and historical schema instances protect existing Tickets when a new template is published or an older version is retired. Existing Tickets continue to be validated and updated using their pinned schema version, not automatically migrated to the newest template.
+Creating a Ticket requires an ACTIVE Type, the current PUBLISHED template, a nonblank title and status, and values consistent with the template's required fields and constraints. The server derives Ticket identity, creator and time metadata and persists custom fields against the selected version.
 
-## 2.3 Query Integration
+A PATCH updates only supplied common fields or supplied `customFields` entries. An omitted key retains its prior value; an explicit null for an optional field removes its stored value; required fields cannot be cleared. A PATCH does not change the Ticket's creator, Type or pinned historical template version.
 
-The Ticket list API combines optional `ticketTypeId`, logical `filterBy`, repeated `sortBy`, and Object Authorization in database-side queries before pagination. Runtime custom-field paths come from EAV metadata. For global queries, ambiguous field definitions are excluded; for one Type, the query schema considers its published/retired history; for one Ticket, read/update authorization uses its exact historical version.
+## 2.3 Schema evolution
 
-## 2.4 Domain Scope
+Templates are **immutable after publication**. Draft replacement may reuse a stable field ID only where its key/type identity remains valid. New versions do not migrate existing Ticket values or reinterpret them under the latest schema; every Ticket remains validated against its historical version.
 
-Ticket status is a required nonblank string, not a configured workflow or transition engine. The reviewed API does not implement Ticket deletion, assignment, projects, comments, attachment management or sprints. This SRS SHALL NOT imply those capabilities exist.
+## 2.4 Query and security integration
 
-## 2.5 Stakeholders
+Ticket list queries may combine optional Type scope, the client FilterBy expression, ordered repeated SortBy clauses and the mandatory Object Authorization predicate. Sorting and filtering occur in the **database before offset pagination**. Object Authorization for a Ticket read/update uses the exact pinned schema metadata; global list queries allow only unambiguous, compatible dynamic fields.
 
-API clients create/manage Types, publish templates, create Tickets, and query accessible work. Administrators configure authorization through the existing Authorization feature rather than a special Ticket-specific policy DSL.
+## 2.5 Public capability boundary
+
+The v0 API exposes Ticket creation/list/read/update and Ticket Type/template management. Type and template list responses are not paginated; Ticket collection is offset-paginated. No Ticket DELETE, Type DELETE, assignment, sprint/project association, comment thread, attachment route or configured status-transition engine is part of this SRS.
+
+## 2.6 Stakeholders and consequences
+
+API consumers need the exact schema, allowed fields, version identity and error responses to construct compatible requests. Security reviewers must confirm no unauthorized Ticket is returned or counted. QA must cover template history, missing/invalid custom fields, partial updates and query/authorization composition without generating redundant test combinations.

@@ -1,5 +1,7 @@
 # 11. Appendices
 
+The examples use canonical syntax and are illustrative unless expressly linked to normative requirement IDs. They do not create new intrinsics.
+
 The examples in this section are supporting material and do not add requirements.
 
 ## 11.1 Source Examples

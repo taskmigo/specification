@@ -1,5 +1,7 @@
 # 8. Requirements Allocation and Dependencies
 
+Query owns the logical contract; resource owners own its binding; Web owns HTTP parsing; Authorization supplies independent mandatory predicates.
+
 ## 8.1 Module Allocation
 
 - **`:modules:query`:** Opaque query predicate and sort contracts, operation Query Schema, field descriptors, compiler and schema validator.

@@ -1,5 +1,7 @@
 # 11. Appendices
 
+Wire examples illustrate a possible response payload, not a runtime sample or timing promise.
+
 ## 11.1 Example API Envelope
 
 ```json

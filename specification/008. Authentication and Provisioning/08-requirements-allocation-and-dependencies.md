@@ -1,5 +1,7 @@
 # 8. Requirements Allocation and Dependencies
 
+Web owns protocol/security adaptation; Identity owns User status; Authorization owns policy decisions; Migration owns managed installation and schema initialization.
+
 ## 8.1 Modules
 
 - **Web:** OAuth/OIDC server, resource-server security, token claims, JWT key management, request guard, Spring Session, guarded OAuth persistence.

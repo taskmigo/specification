@@ -1,5 +1,7 @@
 # 11. Appendices
 
+Examples are valid only under operations whose explicit field allowlists permit their paths and operators.
+
 ## 11.1 Example Request
 
 ```text

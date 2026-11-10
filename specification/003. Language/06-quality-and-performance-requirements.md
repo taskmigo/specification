@@ -1,17 +1,19 @@
 # 6. Quality and Performance Requirements
 
+Determinism, termination and bounded diagnostics are observable quality requirements. Configuration values may differ, but an unbounded compiler is not permitted.
+
 ## 6.1 Determinism and Termination
 
 ### QUAL-001 — Deterministic semantics
 
-Parsing, profile validation, static validation, Semantic AST construction, direct evaluation, partial evaluation, intrinsic evaluation, and constant folding SHALL be deterministic for identical source, language version, Environment Schema, Compilation Profile, and input values.
+**Normative requirement.** Parsing, profile validation, static validation, Semantic AST construction, direct evaluation, partial evaluation, intrinsic evaluation, and constant folding SHALL be deterministic for identical source, language version, Environment Schema, Compilation Profile, and input values.
 
 Verification: Repeat compilation/evaluation and compare Semantic AST structure modulo non-semantic metadata, residual expressions, results, and failure classes.
 Traceability: LANG-001; LANG-005; EVAL-002; PARTIAL-001.
 
 ### QUAL-002 — Guaranteed termination
 
-Every valid source SHALL terminate without general runtime instruction quotas for loops or recursion because the language SHALL provide neither. Restricted quantifiers SHALL iterate only finite concrete lists during direct evaluation and SHALL remain symbolic when their source collection is unknown.
+**Normative requirement.** Every valid source SHALL terminate without general runtime instruction quotas for loops or recursion because the language SHALL provide neither. Restricted quantifiers SHALL iterate only finite concrete lists during direct evaluation and SHALL remain symbolic when their source collection is unknown.
 
 Verification: Inspect the grammar and exercise large finite quantified lists under compiler/runtime resource limits.
 Traceability: TECH-002; TYPE-005.
@@ -20,7 +22,7 @@ Traceability: TECH-002; TYPE-005.
 
 ### PERF-001 — Bounded source complexity
 
-The compiler SHALL enforce finite configurable upper bounds for source size, token count, syntax-tree depth, Semantic AST node count, applicable block nesting, list literal size, quantifier nesting, and restricted-lambda nesting.
+**Normative requirement.** The compiler SHALL enforce finite configurable upper bounds for source size, token count, syntax-tree depth, Semantic AST node count, applicable block nesting, list literal size, quantifier nesting, and restricted-lambda nesting.
 
 A source exceeding a configured bound SHALL be rejected before execution with `ComplexityError`.
 
@@ -29,7 +31,7 @@ Traceability: TECH-005; DIAG-001.
 
 ### PERF-002 — Dependency-aware partial evaluation
 
-Partial evaluation SHALL use dependency metadata required by PARTIAL-004, or equivalent precomputed analysis, to avoid repeatedly traversing unchanged subtrees solely to rediscover unknown-root dependencies.
+**Normative requirement.** Partial evaluation SHALL use dependency metadata required by PARTIAL-004, or equivalent precomputed analysis, to avoid repeatedly traversing unchanged subtrees solely to rediscover unknown-root dependencies.
 
 Verification: Instrument large multi-root and quantified Semantic ASTs.
 Traceability: PARTIAL-004; PARTIAL-005.
@@ -38,7 +40,7 @@ Traceability: PARTIAL-004; PARTIAL-005.
 
 ### PERF-003 — Compile before execution
 
-A source SHALL pass parsing, profile validation, binding, applicable control-flow validation, type checking, and complexity validation before its Semantic AST becomes executable.
+**Normative requirement.** A source SHALL pass parsing, profile validation, binding, applicable control-flow validation, type checking, and complexity validation before its Semantic AST becomes executable.
 
 An exact compiled artifact MAY be reused only when DATA-002 and DATA-003 identity requirements are satisfied.
 
@@ -49,7 +51,7 @@ Traceability: DATA-002; DATA-003; LANG-005.
 
 ### DIAG-001 — Actionable diagnostics
 
-Failures SHALL report a stable diagnostic category and source location where available. Diagnostics SHALL distinguish at least:
+**Normative requirement.** Failures SHALL report a stable diagnostic category and source location where available. Diagnostics SHALL distinguish at least:
 
 ```text
 SyntaxError
@@ -67,7 +69,7 @@ Traceability: DATA-004; ENV-004.
 
 ### QUAL-003 — Frontend replacement boundary
 
-Core semantics SHALL depend on the language-owned Semantic AST rather than generated parser node types.
+**Normative requirement.** Core semantics SHALL depend on the language-owned Semantic AST rather than generated parser node types.
 
 Verification: Inspect dependency direction between syntax, semantic analysis, evaluation, and partial evaluation.
 Traceability: LANG-001; TECH-001.

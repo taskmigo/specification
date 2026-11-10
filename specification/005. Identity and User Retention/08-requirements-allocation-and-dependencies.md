@@ -1,5 +1,7 @@
 # 8. Requirements Allocation and Dependencies
 
+Identity coordinates access cleanup and audit scrubbing through published services. Worker schedules retention; it does not manipulate private User persistence directly.
+
 ## 8.1 Owning Modules
 
 - **`:modules:identity`:** User/Group/Membership domain and application services, normalized User data, lifecycle, configuration, and query/persistence.
