@@ -1,3 +1,5 @@
+<!-- prettier-ignore-start -->
+
 # 12. API v0 HTTP and JSON Reference
 
 ## 12.1 Scope and Conventions
@@ -567,3 +569,5 @@ The actual field-level message content can vary by validator and field. Malforme
 ## 12.11 Traceability
 
 These DTO shapes are based on the current [v0 HTTP controllers](https://github.com/taskmigo/taskmigo/tree/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/web/src/main/java/io/taskmigo/web/api/v0), the [API response factory](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/web/src/main/java/io/taskmigo/web/api/v0/support/response/ApiResponseFactory.java), and the [generated OpenAPI snapshot](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/web/src/main/resources/static/api/docs/openapi.yaml). The [Authorization SRS](../002.%20Authorization/README.md), [Identity SRS](../005.%20Identity%20and%20User%20Retention/README.md), and [Ticket SRS](../006.%20Tickets%20and%20Dynamic%20Fields/README.md) remain authoritative for resource-specific behavior; this descriptive reference does not introduce new normative feature requirements.
+
+<!-- prettier-ignore-end -->
