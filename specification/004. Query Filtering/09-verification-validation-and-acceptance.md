@@ -1,42 +1,44 @@
 # 9. Verification, Validation, and Acceptance Evidence
 
+Acceptance SHALL validate actual HTTP results, authorized counts, invalid operator errors, static OpenAPI metadata, and context identity.
+
 ## 9.1 Filter Acceptance
 
 ### QRY-VER-001 — Valid expressions
 
-Verify field-to-literal comparison, compound AND/OR, allowed contains, ISO-time/enum serialized literals, missing filter identity and parenthesized expressions.
+**Verification objective.** Verify field-to-literal comparison, compound AND/OR, allowed contains, ISO-time/enum serialized literals, missing filter identity and parenthesized expressions.
 
 ### QRY-VER-002 — Unsafe/rejected expressions
 
-Verify rejection of unknown/persistence-only path, unsupported operator, nonboolean expression, IN, arithmetic, bare object reference, field-to-field and literal-to-field comparisons, and contains on non-string fields.
+**Verification objective.** Verify rejection of unknown/persistence-only path, unsupported operator, nonboolean expression, IN, arithmetic, bare object reference, field-to-field and literal-to-field comparisons, and contains on non-string fields.
 
 ### QRY-VER-003 — Null rules
 
-Verify null EQ/NE for nullable fields, rejection of null ordering and null tests on nonnullable fields.
+**Verification objective.** Verify null EQ/NE for nullable fields, rejection of null ordering and null tests on nonnullable fields.
 
 ## 9.2 Sort Acceptance
 
 ### SORT-VER-001 — Multi-sort order
 
-Verify `sortBy=name&sortBy=-createdAt` produces ASC name followed by DESC createdAt; verify priority and nulls-last behavior in generated database orders.
+**Verification objective.** Verify `sortBy=name&sortBy=-createdAt` produces ASC name followed by DESC createdAt; verify priority and nulls-last behavior in generated database orders.
 
 ### SORT-VER-002 — Invalid sort
 
-Verify blank field, leading `+`, duplicate, unknown and nonsortable field errors use `INVALID_SORT` and HTTP 400.
+**Verification objective.** Verify blank field, leading `+`, duplicate, unknown and nonsortable field errors use `INVALID_SORT` and HTTP 400.
 
 ## 9.3 Context and Database
 
 ### QRY-VER-004 — Query identity
 
-Verify that a field metadata/source identity change makes a compiled predicate incompatible with the prior schema/context.
+**Verification objective.** Verify that a field metadata/source identity change makes a compiled predicate incompatible with the prior schema/context.
 
 ### QRY-VER-005 — Authorization composition
 
-Verify SQL-side client filtering, Object Authorization, type-scoped dynamic field resolution, sorting and pagination together for a large dataset.
+**Verification objective.** Verify SQL-side client filtering, Object Authorization, type-scoped dynamic field resolution, sorting and pagination together for a large dataset.
 
 ### QRY-VER-006 — OpenAPI metadata
 
-Verify operation-specific `x-filter-by` operator lists and `x-sort-by` sortable field allowlists match static registered Query Schemas.
+**Verification objective.** Verify operation-specific `x-filter-by` operator lists and `x-sort-by` sortable field allowlists match static registered Query Schemas.
 
 ## 9.4 Evidence
 

@@ -1,5 +1,7 @@
 # 10. Traceability and Unresolved Issues
 
+This source-derived baseline preserves previously approved semantics but distinguishes older unsupported query syntaxes from the current restricted contract.
+
 ## 10.1 Source Traceability
 
 | Requirements                 | Implementation                                                                                                                                                                                                                                                                                                                                                       |
