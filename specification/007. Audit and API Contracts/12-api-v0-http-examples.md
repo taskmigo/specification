@@ -94,3 +94,14 @@ Malformed JSON returns HTTP 400; body validation generally uses HTTP 422 and may
 Resource operations require an applicable Bearer token, validated User state, and Request Authorization. Their Object Authorization and query filtering vary by module. OAuth2 login and token issuance are provided by Spring Authorization Server and are described under [Authentication and Provisioning](../008.%20Authentication%20and%20Provisioning/README.md), not listed as extra `/api/v0` CRUD operations.
 
 Static query-field/operator information is documented under [Query Filtering](../004.%20Query%20Filtering/11-appendices.md#115-static-operation-capability-matrix). The source-derived OpenAPI files are checked for missing schema references and operation overlap; see `scripts/validate-module-openapi.mjs`.
+
+## 12.6 Regenerating OpenAPI Snapshots
+
+The backend still emits one aggregated, authoritative OpenAPI document. When backend controllers or DTOs change, regenerate module snapshots from that document rather than editing the four files independently.
+
+```bash
+node scripts/module-openapi.mjs --generate ../taskmigo/server/apps/web/src/main/resources/static/api/docs/openapi.yaml
+npm run openapi:check
+```
+
+The relative backend path above assumes that the `specification` and `taskmigo` checkouts share a parent directory; any local path to the backend-generated OpenAPI can be passed. The generator preserves path ownership, includes only transitively referenced component schemas, and checks all module files for syntax and unresolved references. The CI check verifies the committed module snapshots' internal integrity and complete 29-operation baseline; it does **not** independently detect later backend changes unless a newer backend OpenAPI is supplied and the snapshots are regenerated.
