@@ -1,38 +1,40 @@
 # 9. Verification, Validation, and Acceptance Evidence
 
+Conformance evidence requires executed checks and inspection of the dependency graph. Scenario descriptions specify what must pass but do not imply a test was run.
+
 ## 9.1 Architecture Verification
 
 ### ARCH-VER-001 — Foundation
 
-Tests SHALL detect any higher-level Taskmigo project dependency from Foundation Core.
+**Verification obligation.** Tests SHALL detect any higher-level Taskmigo project dependency from Foundation Core.
 
 ### ARCH-VER-002 — Capability isolation
 
-Tests SHALL detect Language/Query consumer-dependency inversion, wrong internal-module ownership, and unexpected project cycles.
+**Verification obligation.** Tests SHALL detect Language/Query consumer-dependency inversion, wrong internal-module ownership, and unexpected project cycles.
 
 ### ARCH-VER-003 — Domain ownership
 
-Tests SHALL verify that Role/Statement state belongs to Authorization, User/Group to Identity, and Ticket/Type to Ticket.
+**Verification obligation.** Tests SHALL verify that Role/Statement state belongs to Authorization, User/Group to Identity, and Ticket/Type to Ticket.
 
 ### ARCH-VER-004 — Executable isolation
 
-Tests SHALL reject reusable modules depending on Web/Worker/Migration and executable applications importing internal-only module APIs.
+**Verification obligation.** Tests SHALL reject reusable modules depending on Web/Worker/Migration and executable applications importing internal-only module APIs.
 
 ### ARCH-VER-005 — Spring Modulith
 
-Each applicable executable SHALL verify its Spring Modulith graph and published named interfaces.
+**Verification obligation.** Each applicable executable SHALL verify its Spring Modulith graph and published named interfaces.
 
 ### ARCH-VER-006 — ArchUnit Onion rules
 
-The architecture tests SHALL reject outward Domain dependencies, forbidden concrete persistence use by application services, and disallowed framework imports.
+**Verification obligation.** The architecture tests SHALL reject outward Domain dependencies, forbidden concrete persistence use by application services, and disallowed framework imports.
 
 ### ARCH-VER-007 — Cross-context contract boundaries
 
-Tests SHALL reject use of a provider's private packages in a consumer and SHALL permit deliberate named interfaces and published events.
+**Verification obligation.** Tests SHALL reject use of a provider's private packages in a consumer and SHALL permit deliberate named interfaces and published events.
 
 ### ARCH-VER-008 — Persistence isolation
 
-Tests SHALL detect cross-context private repositories, ORM relationships and table access as integration shortcuts.
+**Verification obligation.** Tests SHALL detect cross-context private repositories, ORM relationships and table access as integration shortcuts.
 
 ## 9.2 Implementation Evidence
 

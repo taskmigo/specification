@@ -1,41 +1,38 @@
 # 2. Overall Description
 
-## 2.1 Architectural Context
+## 2.1 Architecture choice
 
-Taskmigo's normative server model is **Domain-Driven Design + Onion Architecture + Modular Monolith**. The architecture is not required to adopt Hexagonal Architecture or universal `port.in`/`port.out` package conventions. Implementations MAY use port/adapter terms locally when these improve readability without contradicting dependency direction.
+Taskmigo deliberately combines **bounded contexts, Onion dependency direction, and a modular-monolith deployment model**. No requirement mandates mandatory Hexagonal `port.in`/`port.out` packages or a callback-based transaction runner in every module. Port/adapter patterns may be used selectively where they clarify a boundary.
 
-## 2.2 Module Categories
+## 2.2 Capability ownership
 
-### 2.2.1 Business bounded contexts
+| Owner | Responsibilities | Ownership exclusions |
+| --- | --- | --- |
+| Authorization | Role, Statement, effective grants and Request/Object Authorization | User/Group identity data |
+| Identity | User, Group, membership, lifecycle, retention and configuration | Role and Statement lifecycle |
+| Ticket | Ticket/Type/template state, version-pinned custom fields, resource queries | Generic language parser or global authorization rules |
+| Query | Operation query schemas, allowed filtering/sorting and opaque logical predicates | Business-specific JPA mappings |
+| Audit | Transactional entity audit, privacy scrubbing and audit queries | Authorization decision-history feature |
+| Internal Language | Source grammar, typed compilation/evaluation, partial evaluation and diagnostics | Consumer-specific policies |
+| Internal JPA Query | Trusted reusable criteria and sort binding | Resource ownership |
+| Internal EAV | Typed versioned schemas, field instances and generic EAV query support | Ticket HTTP API |
+| Foundation Core/Spring | Domain-neutral primitives and generic Spring support | Business aggregates |
+| Database | Shared runtime database wiring and schema migration resources | Cross-context domain repositories |
 
-- **Authorization (`:modules:authorization`):** Role, Statement, subject grants, Request Authorization, Object Authorization, and policy evaluation. It owns authorization decisions, not User/Group identity.
-- **Identity (`:modules:identity`):** User, Group, membership, account lifecycle, application configuration, and identity-owned query/persistence contracts. It consumes published Authorization and Audit contracts.
-- **Ticket (`:modules:ticket`):** Ticket, Ticket Type, published template management, dynamic-field-aware query surfaces, and Ticket-owned persistence.
+Physical project names and dependencies are mapped in [section 8](08-requirements-allocation-and-dependencies.md); each owner SHALL expose published interfaces rather than private implementation types.
 
-### 2.2.2 Supporting capabilities
+## 2.3 Runtime composition
 
-- **Query (`:modules:query`):** Operation-scoped logical query metadata and safe filter compiler.
-- **Audit (`:modules:audit`):** Synchronous, transactional entity audit append/query/privacy functionality.
-- **Language (`:modules:internal:language`):** Pure bounded expression/program compiler used internally.
-- **JPA Query (`:modules:internal:jpa-query`):** Generic JPA Criteria binding and database-side sorting.
-- **EAV (`:modules:internal:eav`):** Versioned typed schema and instance persistence used by Ticket.
+Web adapts public HTTP/OAuth/security operations to published use cases. Worker triggers scheduled retention activity through Identity's exposed service. Migration installs database and managed resource state through dedicated transaction coordination. The OpenAPI generator and benchmark/test projects are tooling rather than new product runtimes.
 
-### 2.2.3 Foundation and infrastructure
+## 2.4 Dependency model
 
-`:modules:foundation:core` owns domain-neutral primitives. `:modules:foundation:spring` owns reusable Spring integration. `:modules:database` provides runtime database configuration and the major-version Flyway schema; it does not own business aggregates.
+The default direction is from infrastructure, persistence and configuration **toward application and domain**. Domain rules SHALL not depend on Spring, JPA, web or executable modules. Concrete application services may use Spring declarative transactions without turning domain models into framework adapters. Cross-context synchronous work uses provider-owned contracts; event consumers receive stable published event data.
 
-## 2.3 Executable Applications
+## 2.5 Operational constraints
 
-Exactly three production application roots own runtime composition: `apps:web` (REST, OAuth, security), `apps:worker` (retention scheduling), and `apps:migration` (schema migration and managed-resource reconciliation). `apps:openapi-generator` is a tooling project, not an independently deployed business application.
+Gradle constrains physical project relationships, Spring Modulith verifies published logical interfaces and permitted dependencies, and ArchUnit enforces package-level Onion rules. These mechanisms complement one another; passing a single mechanism does not imply complete architecture conformance.
 
-## 2.4 Tactical DDD and Onion Model
+## 2.6 Boundary of this SRS
 
-Dependencies point inward from persistence/configuration/framework to application to domain. Domain packages do not depend on Spring or JPA. Published application contracts are framework-neutral; concrete application services MAY use Spring `@Transactional` to own their use-case transaction boundaries. Specialized persistence consistency and Migration installation retain explicitly justified transaction mechanisms.
-
-## 2.5 Cross-Context Integration
-
-Consumers use deliberate provider-owned public APIs, named interfaces, or published events rather than private implementation/persistence packages. Spring Modulith verification and ArchUnit enforce complementary architectural restrictions.
-
-## 2.6 Out of Scope
-
-This specification does not impose a particular internal class name, universally mandatory repository-interface layer, REST API shape, or runtime performance target; feature SRSs own their public behavior.
+No universal API shape, latency SLO, database query strategy or source package name is invented here. Such behavior belongs to a feature owner. The architecture SRS can be changed only with a recorded ownership/dependency decision and updated conformance evidence.

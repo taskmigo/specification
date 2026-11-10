@@ -1,5 +1,7 @@
 # 10. Traceability and Unresolved Issues
 
+Use requirement IDs and source links to trace approved architecture to the inspected implementation. Historical superseded conventions are not revived by code examples.
+
 ## 10.1 Traceability
 
 | Concern                             | Requirement references                     | Implementation evidence                                                                                                                                                                                  |
