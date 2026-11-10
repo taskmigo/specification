@@ -1,5 +1,7 @@
 # 10. Traceability and Unresolved Issues
 
+Preserve the stable audit/API requirement IDs, annotate source evidence and record rather than conceal generated-schema drift.
+
 ## 10.1 Contract-to-Code Traceability
 
 | Area                       | Requirement IDs             | Source                                                                                                                                                                                                         |

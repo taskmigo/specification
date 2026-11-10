@@ -1,5 +1,7 @@
 # 8. Requirements Allocation and Dependencies
 
+Audit owns storage and scrub; Web owns transport; Identity owns User lifecycle; Authorization owns access decisions. Each uses published contracts.
+
 ## 8.1 Owning Modules
 
 - **Audit module:** Event and model contracts, append/query/privacy application services, JPA storage.

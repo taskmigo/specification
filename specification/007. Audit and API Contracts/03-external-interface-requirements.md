@@ -1,46 +1,48 @@
 # 3. External Interface Requirements
 
+This chapter defines the **canonical shared transport and Audit-list wire contract**. Resource-specific schema and business rules remain in the owning module.
+
 ## 3.1 Audit HTTP API
 
 ### AUD-API-001 — Audit list
 
-`GET /api/v0/audit/{entityType}/logs` SHALL return a paginated list for supported entity types. The current supported entity type SHALL be exactly `user`.
+**Normative requirement.** `GET /api/v0/audit/{entityType}/logs` SHALL return a paginated list for supported entity types. The current supported entity type SHALL be exactly `user`.
 
 ### AUD-API-002 — Audit access
 
-Audit list SHALL require authenticated Request Authorization and unrestricted User Object visibility. A restricted User object predicate SHALL result in forbidden access to the Audit list.
+**Normative requirement.** Audit list SHALL require authenticated Request Authorization and unrestricted User Object visibility. A restricted User object predicate SHALL result in forbidden access to the Audit list.
 
 ### AUD-API-003 — Audit representation
 
-The public Audit record SHALL include `id`, `entityType`, `entityId`, `actor {id, username}`, `occurredAt`, and `changes [{field, before, after, sensitive}]`.
+**Normative requirement.** The public Audit record SHALL include `id`, `entityType`, `entityId`, `actor {id, username}`, `occurredAt`, and `changes [{field, before, after, sensitive}]`.
 
 ## 3.2 API Response Envelope
 
 ### API-IF-001 — Standard envelope
 
-Version 0 API responses SHALL contain `success` boolean, `statusCode` integer, `message {code,text}`, nullable `error`, `meta`, and nullable `data`.
+**Normative requirement.** Version 0 API responses SHALL contain `success` boolean, `statusCode` integer, `message {code,text}`, nullable `error`, `meta`, and nullable `data`.
 
 ### API-IF-002 — Error representation
 
-Failure responses SHALL set `success=false`, `data=null`, and `error {code,message,formErrors?}`; success responses SHALL set `error=null`.
+**Normative requirement.** Failure responses SHALL set `success=false`, `data=null`, and `error {code,message,formErrors?}`; success responses SHALL set `error=null`.
 
 ### API-IF-003 — Execution timing
 
-Version 0 responses SHALL expose `meta.execution.startedAt` (instant) and `meta.execution.duration` (nonnegative elapsed milliseconds), captured by the request timing filter where available.
+**Normative requirement.** Version 0 responses SHALL expose `meta.execution.startedAt` (instant) and `meta.execution.duration` (nonnegative elapsed milliseconds), captured by the request timing filter where available.
 
 ### API-IF-004 — Offset pagination
 
-Offset-paginated responses SHALL expose `meta.pagination.type="offset"` and `offset {currentPage,pageSize,totalItems,totalPages}`. Request parameters SHALL default to `page=1`, `pageSize=20`, with `page>=1` and `1<=pageSize<=100`.
+**Normative requirement.** Offset-paginated responses SHALL expose `meta.pagination.type="offset"` and `offset {currentPage,pageSize,totalItems,totalPages}`. Request parameters SHALL default to `page=1`, `pageSize=20`, with `page>=1` and `1<=pageSize<=100`.
 
 ## 3.3 OpenAPI
 
 ### API-IF-005 — Query capability metadata
 
-Generated OpenAPI SHALL describe each declared operation's `filterBy` allowlisted fields/operators as `x-filter-by` and sortable fields as `x-sort-by` when applicable. Dynamic runtime fields SHALL NOT be assumed to be enumerated by static OpenAPI generation.
+**Normative requirement.** Generated OpenAPI SHALL describe each declared operation's `filterBy` allowlisted fields/operators as `x-filter-by` and sortable fields as `x-sort-by` when applicable. Dynamic runtime fields SHALL NOT be assumed to be enumerated by static OpenAPI generation.
 
 ### API-IF-006 — Versioned resources
 
-HTTP operation paths and methods SHALL match the checked-in generated [OpenAPI v0 snapshot](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/web/src/main/resources/static/api/docs/openapi.yaml).
+**Normative requirement.** HTTP operation paths and methods SHALL match the checked-in generated [OpenAPI v0 snapshot](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/web/src/main/resources/static/api/docs/openapi.yaml).
 
 ## 3.4 HTTP Contract Details and Error Matrix
 
