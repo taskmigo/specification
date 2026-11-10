@@ -101,6 +101,6 @@ In `filterBy` and `sortBy`, these last two target fields are referenced as logic
 
 ## 12.3 Cross-Context User Statements
 
-The `PATCH /api/v0/users/{userId}/statements` route uses Authorization's grant service, but its HTTP controller and User lifecycle constraints belong to **Identity**. See the [Identity API examples](../005.%20Identity%20and%20User%20Retention/12-api-v0-examples.md) and [Identity OpenAPI](../005.%20Identity%20and%20User%20Retention/openapi.yaml).
+The `PATCH /api/v0/users/{userId}/statements` route uses Authorization's grant service, but its HTTP controller and User lifecycle constraints belong to **Identity**. See the [Identity API examples](../005.%20Identity%20and%20User%20Retention/12-api-v0-examples.md) and [Identity API contract](../005.%20Identity%20and%20User%20Retention/api-contract.md).
 
 <!-- prettier-ignore-end -->
