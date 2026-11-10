@@ -25,8 +25,6 @@ jobs:
 
       - run: npm ci
 
-      - run: npm run style:fix && git diff -- skills/srs-writer/references/taskmigo-modular-srs-guide.md
-
       - run: npm run style:check
 
       - run: npm run markdown:check
