@@ -27,18 +27,18 @@ A successful module SRS SHALL allow an independent backend team, frontend team, 
 
 Capture the following where applicable; use **Not applicable** with a reason or an explicit **TBD/TBR** with owner/resolution condition where the contract is genuinely absent.
 
-| Dimension | Required questions |
-| --- | --- |
-| Context | Who uses it, why, and under what preconditions? |
-| Observable behavior | What trigger, sequence, business rules, and output must hold? |
-| State and data | Which states, transitions, invariants, side effects, persistence, and retention rules apply? |
-| Authorization | Which request-level and object-level permissions apply, including collection visibility and counts? |
-| Input boundaries | Which fields, types, allowed values, null/omission semantics, defaults, ranges, and uniqueness rules apply? |
-| Failures | What happens for malformed, invalid, forbidden, missing, conflicting, repeated, and concurrent operations? |
-| Collections | Which filters/operators, sort fields/directions, precedence, pagination limits, and total-count semantics apply? |
-| Integrations | Which other modules, events, external services, and clients depend on this contract? |
-| Quality | Which measurable performance, capacity, security, consistency, privacy, and reliability guarantees apply? |
-| Verification | How can the requirement be objectively accepted without knowledge of its implementation? |
+| Dimension           | Required questions                                                                                               |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Context             | Who uses it, why, and under what preconditions?                                                                  |
+| Observable behavior | What trigger, sequence, business rules, and output must hold?                                                    |
+| State and data      | Which states, transitions, invariants, side effects, persistence, and retention rules apply?                     |
+| Authorization       | Which request-level and object-level permissions apply, including collection visibility and counts?              |
+| Input boundaries    | Which fields, types, allowed values, null/omission semantics, defaults, ranges, and uniqueness rules apply?      |
+| Failures            | What happens for malformed, invalid, forbidden, missing, conflicting, repeated, and concurrent operations?       |
+| Collections         | Which filters/operators, sort fields/directions, precedence, pagination limits, and total-count semantics apply? |
+| Integrations        | Which other modules, events, external services, and clients depend on this contract?                             |
+| Quality             | Which measurable performance, capacity, security, consistency, privacy, and reliability guarantees apply?        |
+| Verification        | How can the requirement be objectively accepted without knowledge of its implementation?                         |
 
 An independently verifiable rule SHALL have a stable ID, an explicit subject and condition, a normative outcome, and linked verification. Break up multi-behavior requirements when failure of one behavior would not imply failure of another. Avoid splitting trivial field descriptions into dozens of noisy standalone requirements: use one operation requirement plus a normative contract table when that is clearer.
 
@@ -46,17 +46,17 @@ An independently verifiable rule SHALL have a stable ID, an explicit subject and
 
 **A route list, prose such as “accepts filtering,” or a link to generated OpenAPI alone is insufficient.** Document every in-scope public operation, including operations that do not require a request body. For each operation, make the following discoverable in the module's section 3; use links for identical shared conventions rather than duplicating them.
 
-| Contract area | Information to specify |
-| --- | --- |
-| Identity | Stable operation/requirement ID, HTTP method and full path, intended consumer, purpose, and lifecycle/status if relevant |
-| Security | Authentication, request authorization, object authorization, and visibility/non-disclosure behavior |
-| Inputs | Path, query, header, and body parameters with exact names, types, required/optional status, nullable/omitted semantics, defaults, enumerations, formats, validation, and limits |
-| Request model | Field-level schema, nested objects/arrays, relation/identifier semantics, conditional fields, partial-update vs replacement behavior, and examples for nontrivial payloads |
-| Success | HTTP status, headers when contractually relevant, response body/envelope, exact exposed fields with types/nullability, nested projections, and empty-result behavior |
-| Failure | HTTP status **and** stable application error code, response structure, and behavior for each relevant validation, access, missing-resource, conflict, and retry/idempotency case |
+| Contract area  | Information to specify                                                                                                                                                                      |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Identity       | Stable operation/requirement ID, HTTP method and full path, intended consumer, purpose, and lifecycle/status if relevant                                                                    |
+| Security       | Authentication, request authorization, object authorization, and visibility/non-disclosure behavior                                                                                         |
+| Inputs         | Path, query, header, and body parameters with exact names, types, required/optional status, nullable/omitted semantics, defaults, enumerations, formats, validation, and limits             |
+| Request model  | Field-level schema, nested objects/arrays, relation/identifier semantics, conditional fields, partial-update vs replacement behavior, and examples for nontrivial payloads                  |
+| Success        | HTTP status, headers when contractually relevant, response body/envelope, exact exposed fields with types/nullability, nested projections, and empty-result behavior                        |
+| Failure        | HTTP status **and** stable application error code, response structure, and behavior for each relevant validation, access, missing-resource, conflict, and retry/idempotency case            |
 | Query features | Actual allowlisted filter fields/operators and sort fields, query syntax/precedence, default order, deterministic ordering rules, pagination boundaries, and visible-result count semantics |
-| Side effects | State changes, audits, emitted events, consistency/timing guarantees, and transaction/atomicity expectations if externally observable |
-| Traceability | Links to functional rules, domain states, shared contract, examples, and acceptance/contract tests |
+| Side effects   | State changes, audits, emitted events, consistency/timing guarantees, and transaction/atomicity expectations if externally observable                                                       |
+| Traceability   | Links to functional rules, domain states, shared contract, examples, and acceptance/contract tests                                                                                          |
 
 ### Field-level contracts
 
