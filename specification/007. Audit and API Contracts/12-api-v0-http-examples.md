@@ -83,61 +83,61 @@ A `null` value in a response example is literal JSON null. A DTO field annotated
 ### Users
 
 <!-- prettier-ignore -->
-| Method | Path | Request / query | Success | `data` shape |
-| --- | --- | --- | --- | --- |
-|  `GET` | `/api/v0/users` | `page, pageSize, filterBy, sortBy` | `200` | `UserInfo[] + OffsetMeta` |
-|  `POST` | `/api/v0/users` | `CreateUserRequest` | `201` | `{id} + BasicMeta; Location` |
-|  `DELETE` | `/api/v0/users/{userId}` | `No body` | `200` | `null + BasicMeta` |
-|  `PATCH` | `/api/v0/users/{userId}/statements` | `{statementIds?}` | `200` | `null + BasicMeta` |
+|Method|Path|Request / query|Success|`data` shape|
+|---|---|---|---|---|
+|`GET`|`/api/v0/users`|`page, pageSize, filterBy, sortBy`|`200`|`UserInfo[] + OffsetMeta`|
+|`POST`|`/api/v0/users`|`CreateUserRequest`|`201`|`{id} + BasicMeta; Location`|
+|`DELETE`|`/api/v0/users/{userId}`|`No body`|`200`|`null + BasicMeta`|
+|`PATCH`|`/api/v0/users/{userId}/statements`|`{statementIds?}`|`200`|`null + BasicMeta`|
 
 ### Groups, Roles, Statements
 
 <!-- prettier-ignore -->
-| Method | Path | Request / query | Success | `data` shape |
-| --- | --- | --- | --- | --- |
-|  `GET` | `/api/v0/groups` | `page, pageSize, filterBy, sortBy` | `200` | `GroupInfo[] + OffsetMeta` |
-|  `POST` | `/api/v0/groups` | `CreateGroupRequest` | `201` | `{id} + BasicMeta; Location` |
-|  `GET` | `/api/v0/roles` | `page, pageSize, filterBy, sortBy` | `200` | `RoleInfo[] + OffsetMeta` |
-|  `POST` | `/api/v0/roles` | `CreateRoleRequest` | `201` | `{id} + BasicMeta; Location` |
-|  `PATCH` | `/api/v0/roles/{roleId}/statements` | `{statementIds?}` | `200` | `null + BasicMeta` |
-|  `GET` | `/api/v0/statements` | `page, pageSize, filterBy, sortBy` | `200` | `StatementInfo[] + OffsetMeta` |
-|  `POST` | `/api/v0/statements` | `CreateStatementRequest` | `201` | `{id} + BasicMeta; Location` |
-|  `DELETE` | `/api/v0/statements/{statementId}` | `No body` | `200` | `null + BasicMeta` |
+|Method|Path|Request / query|Success|`data` shape|
+|---|---|---|---|---|
+|`GET`|`/api/v0/groups`|`page, pageSize, filterBy, sortBy`|`200`|`GroupInfo[] + OffsetMeta`|
+|`POST`|`/api/v0/groups`|`CreateGroupRequest`|`201`|`{id} + BasicMeta; Location`|
+|`GET`|`/api/v0/roles`|`page, pageSize, filterBy, sortBy`|`200`|`RoleInfo[] + OffsetMeta`|
+|`POST`|`/api/v0/roles`|`CreateRoleRequest`|`201`|`{id} + BasicMeta; Location`|
+|`PATCH`|`/api/v0/roles/{roleId}/statements`|`{statementIds?}`|`200`|`null + BasicMeta`|
+|`GET`|`/api/v0/statements`|`page, pageSize, filterBy, sortBy`|`200`|`StatementInfo[] + OffsetMeta`|
+|`POST`|`/api/v0/statements`|`CreateStatementRequest`|`201`|`{id} + BasicMeta; Location`|
+|`DELETE`|`/api/v0/statements/{statementId}`|`No body`|`200`|`null + BasicMeta`|
 
 ### Tickets
 
 <!-- prettier-ignore -->
-| Method | Path | Request / query | Success | `data` shape |
-| --- | --- | --- | --- | --- |
-|  `GET` | `/api/v0/tickets` | `page, pageSize, ticketTypeId?, filterBy, sortBy` | `200` | `TicketInfo[] + OffsetMeta` |
-|  `POST` | `/api/v0/tickets` | `CreateTicketRequest` | `201` | `{id} + BasicMeta; Location` |
-|  `GET` | `/api/v0/tickets/{ticketId}` | `No body` | `200` | `TicketInfo + BasicMeta` |
-|  `PATCH` | `/api/v0/tickets/{ticketId}` | `UpdateTicketRequest` | `200` | `TicketInfo + BasicMeta` |
+|Method|Path|Request / query|Success|`data` shape|
+|---|---|---|---|---|
+|`GET`|`/api/v0/tickets`|`page, pageSize, ticketTypeId?, filterBy, sortBy`|`200`|`TicketInfo[] + OffsetMeta`|
+|`POST`|`/api/v0/tickets`|`CreateTicketRequest`|`201`|`{id} + BasicMeta; Location`|
+|`GET`|`/api/v0/tickets/{ticketId}`|`No body`|`200`|`TicketInfo + BasicMeta`|
+|`PATCH`|`/api/v0/tickets/{ticketId}`|`UpdateTicketRequest`|`200`|`TicketInfo + BasicMeta`|
 
 ### Ticket Types and Templates
 
 <!-- prettier-ignore -->
-| Method | Path | Request / query | Success | `data` shape |
-| --- | --- | --- | --- | --- |
-|  `GET` | `/api/v0/ticket-types` | `No query options` | `200` | `TicketTypeInfo[] + BasicMeta` |
-|  `POST` | `/api/v0/ticket-types` | `{key,name}` | `201` | `{id} + BasicMeta; Location` |
-|  `GET` | `/api/v0/ticket-types/{ticketTypeId}` | `No body` | `200` | `TicketTypeInfo + BasicMeta` |
-|  `PATCH` | `/api/v0/ticket-types/{ticketTypeId}` | `{name?,status?}` | `200` | `TicketTypeInfo + BasicMeta` |
-|  `GET` | `/api/v0/ticket-types/{ticketTypeId}/templates` | `No body` | `200` | `TicketTemplateVersion[] + BasicMeta` |
-|  `POST` | `/api/v0/ticket-types/{ticketTypeId}/templates` | `No body` | `201` | `TicketTemplateVersion + BasicMeta; Location` |
-|  `GET` | `/api/v0/ticket-types/{ticketTypeId}/templates/{templateVersionId}` | `No body` | `200` | `TicketTemplateVersion + BasicMeta` |
-|  `PATCH` | `/api/v0/ticket-types/{ticketTypeId}/templates/{templateVersionId}` | `{fields:[TicketTemplateFieldRequest]}` | `200` | `TicketTemplateVersion + BasicMeta` |
-|  `POST` | `/api/v0/ticket-types/{ticketTypeId}/templates/{templateVersionId}/publish` | `No body` | `200` | `TicketTemplateVersion + BasicMeta` |
-|  `POST` | `/api/v0/ticket-types/{ticketTypeId}/templates/{templateVersionId}/retire` | `No body` | `200` | `TicketTemplateVersion + BasicMeta` |
+|Method|Path|Request / query|Success|`data` shape|
+|---|---|---|---|---|
+|`GET`|`/api/v0/ticket-types`|`No query options`|`200`|`TicketTypeInfo[] + BasicMeta`|
+|`POST`|`/api/v0/ticket-types`|`{key,name}`|`201`|`{id} + BasicMeta; Location`|
+|`GET`|`/api/v0/ticket-types/{ticketTypeId}`|`No body`|`200`|`TicketTypeInfo + BasicMeta`|
+|`PATCH`|`/api/v0/ticket-types/{ticketTypeId}`|`{name?,status?}`|`200`|`TicketTypeInfo + BasicMeta`|
+|`GET`|`/api/v0/ticket-types/{ticketTypeId}/templates`|`No body`|`200`|`TicketTemplateVersion[] + BasicMeta`|
+|`POST`|`/api/v0/ticket-types/{ticketTypeId}/templates`|`No body`|`201`|`TicketTemplateVersion + BasicMeta; Location`|
+|`GET`|`/api/v0/ticket-types/{ticketTypeId}/templates/{templateVersionId}`|`No body`|`200`|`TicketTemplateVersion + BasicMeta`|
+|`PATCH`|`/api/v0/ticket-types/{ticketTypeId}/templates/{templateVersionId}`|`{fields:[TicketTemplateFieldRequest]}`|`200`|`TicketTemplateVersion + BasicMeta`|
+|`POST`|`/api/v0/ticket-types/{ticketTypeId}/templates/{templateVersionId}/publish`|`No body`|`200`|`TicketTemplateVersion + BasicMeta`|
+|`POST`|`/api/v0/ticket-types/{ticketTypeId}/templates/{templateVersionId}/retire`|`No body`|`200`|`TicketTemplateVersion + BasicMeta`|
 
 ### Configuration and Audit
 
 <!-- prettier-ignore -->
-| Method | Path | Request / query | Success | `data` shape |
-| --- | --- | --- | --- | --- |
-|  `GET` | `/api/v0/configuration` | `No body` | `200` | `ApplicationConfiguration + BasicMeta` |
-|  `PATCH` | `/api/v0/configuration` | `{retention?:{user?:string}}` | `200` | `ApplicationConfiguration + BasicMeta` |
-|  `GET` | `/api/v0/audit/{entityType}/logs` | `entityType=user, page, pageSize` | `200` | `AuditLog[] + OffsetMeta` |
+|Method|Path|Request / query|Success|`data` shape|
+|---|---|---|---|---|
+|`GET`|`/api/v0/configuration`|`No body`|`200`|`ApplicationConfiguration + BasicMeta`|
+|`PATCH`|`/api/v0/configuration`|`{retention?:{user?:string}}`|`200`|`ApplicationConfiguration + BasicMeta`|
+|`GET`|`/api/v0/audit/{entityType}/logs`|`entityType=user, page, pageSize`|`200`|`AuditLog[] + OffsetMeta`|
 
 The optional `filterBy` and repeated `sortBy` query parameters are supported only on the five list routes that declare them; see the exact [field/operator catalog](../004.%20Query%20Filtering/11-appendices.md#115-static-operation-capability-matrix). `page` defaults to 1, `pageSize` to 20, and page size must be between 1 and 100. `sortBy=-createdAt&sortBy=title` requests two ordered sort clauses. Ticket dynamic custom field paths use `object.<fieldKey>` rather than `object.customFields.<fieldKey>`.
 
