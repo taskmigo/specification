@@ -14,15 +14,15 @@ This document specifies: physical Gradle module edges; logical Spring Modulith b
 
 ## 1.3 Terminology
 
-| Term | Meaning |
-| --- | --- |
-| Bounded context | Exclusive owner of a domain aggregate, its invariants and application use cases |
-| Supporting capability | Reusable functionality (for example Query or Language) without business aggregate ownership |
-| Published interface | Provider-owned public contract or explicitly named Spring Modulith interface |
-| Internal module | Implementation-support module under `modules/internal`, not directly imported by production executable apps |
-| Domain | Framework-neutral business rules, entities and value objects |
-| Application implementation | Use-case orchestration; may own Spring declarative transaction boundaries |
-| Composition root | Runtime application assembling previously published capabilities |
+| Term                       | Meaning                                                                                                     |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Bounded context            | Exclusive owner of a domain aggregate, its invariants and application use cases                             |
+| Supporting capability      | Reusable functionality (for example Query or Language) without business aggregate ownership                 |
+| Published interface        | Provider-owned public contract or explicitly named Spring Modulith interface                                |
+| Internal module            | Implementation-support module under `modules/internal`, not directly imported by production executable apps |
+| Domain                     | Framework-neutral business rules, entities and value objects                                                |
+| Application implementation | Use-case orchestration; may own Spring declarative transaction boundaries                                   |
+| Composition root           | Runtime application assembling previously published capabilities                                            |
 
 ## 1.4 Normative and evidence references
 

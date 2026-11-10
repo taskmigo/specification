@@ -14,16 +14,16 @@ Identity owns User and Group lifecycle and supplies effective subjects through p
 
 ## 1.3 Vocabulary
 
-| Term | Meaning |
-| --- | --- |
-| Statement | Unique-code policy rule with effect, scope, HTTP target and source expression |
-| Effect | `allow` or `deny` on creation, with domain values `ALLOW` and `DENY` |
-| Request scope | Policy evaluated to a Boolean operation admission decision |
-| Object scope | Policy partially evaluated to a typed resource-selection predicate |
-| Effective Statement | Direct or inherited rule applicable to the current subject set |
+| Term                   | Meaning                                                                                 |
+| ---------------------- | --------------------------------------------------------------------------------------- |
+| Statement              | Unique-code policy rule with effect, scope, HTTP target and source expression           |
+| Effect                 | `allow` or `deny` on creation, with domain values `ALLOW` and `DENY`                    |
+| Request scope          | Policy evaluated to a Boolean operation admission decision                              |
+| Object scope           | Policy partially evaluated to a typed resource-selection predicate                      |
+| Effective Statement    | Direct or inherited rule applicable to the current subject set                          |
 | Authorization snapshot | Immutable matching Statement set and approved principal/request input for one operation |
-| Fail closed | Errors and unsupported policies never become permission grants |
-| Decision log | Separate authorization evaluation history—**not implemented** in this baseline |
+| Fail closed            | Errors and unsupported policies never become permission grants                          |
+| Decision log           | Separate authorization evaluation history—**not implemented** in this baseline          |
 
 ## 1.4 Source and related specifications
 

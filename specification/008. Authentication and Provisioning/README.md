@@ -12,19 +12,19 @@ The authoritative contract for Taskmigo's **OAuth/OIDC security, versioned JWT r
 
 ## Contents
 
-| Section | Subject | Document |
-| --- | --- | --- |
-| 1 | Purpose, actors and security vocabulary | [01-introduction.md](01-introduction.md) |
-| 2 | OAuth, JWT, session and migration flows | [02-overall-description.md](02-overall-description.md) |
-| 3 | Client/claims/security interfaces | [03-external-interface-requirements.md](03-external-interface-requirements.md) |
-| 4 | Token, session and installation rules | [04-functional-and-behavioral-requirements.md](04-functional-and-behavioral-requirements.md) |
-| 5 | OAuth persistence, session and key data | [05-data-and-information-requirements.md](05-data-and-information-requirements.md) |
-| 6 | Security and installation quality | [06-quality-and-performance-requirements.md](06-quality-and-performance-requirements.md) |
-| 7 | Authentication and management constraints | [07-constraints.md](07-constraints.md) |
-| 8 | Protocol and module ownership | [08-requirements-allocation-and-dependencies.md](08-requirements-allocation-and-dependencies.md) |
-| 9 | OAuth, session and migration acceptance | [09-verification-validation-and-acceptance.md](09-verification-validation-and-acceptance.md) |
-| 10 | Evidence and unsupported capabilities | [10-traceability-and-unresolved-issues.md](10-traceability-and-unresolved-issues.md) |
-| 11 | Flowcharts and managed defaults | [11-appendices.md](11-appendices.md) |
+| Section | Subject                                   | Document                                                                                         |
+| ------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| 1       | Purpose, actors and security vocabulary   | [01-introduction.md](01-introduction.md)                                                         |
+| 2       | OAuth, JWT, session and migration flows   | [02-overall-description.md](02-overall-description.md)                                           |
+| 3       | Client/claims/security interfaces         | [03-external-interface-requirements.md](03-external-interface-requirements.md)                   |
+| 4       | Token, session and installation rules     | [04-functional-and-behavioral-requirements.md](04-functional-and-behavioral-requirements.md)     |
+| 5       | OAuth persistence, session and key data   | [05-data-and-information-requirements.md](05-data-and-information-requirements.md)               |
+| 6       | Security and installation quality         | [06-quality-and-performance-requirements.md](06-quality-and-performance-requirements.md)         |
+| 7       | Authentication and management constraints | [07-constraints.md](07-constraints.md)                                                           |
+| 8       | Protocol and module ownership             | [08-requirements-allocation-and-dependencies.md](08-requirements-allocation-and-dependencies.md) |
+| 9       | OAuth, session and migration acceptance   | [09-verification-validation-and-acceptance.md](09-verification-validation-and-acceptance.md)     |
+| 10      | Evidence and unsupported capabilities     | [10-traceability-and-unresolved-issues.md](10-traceability-and-unresolved-issues.md)             |
+| 11      | Flowcharts and managed defaults           | [11-appendices.md](11-appendices.md)                                                             |
 
 ## How to read
 

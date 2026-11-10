@@ -12,19 +12,19 @@ The normative contract for Taskmigo **Statements, Roles, grants, Request Authori
 
 ## Contents
 
-| Section | Subject | Document |
-| --- | --- | --- |
-| 1 | Intent, scope and glossary | [01-introduction.md](01-introduction.md) |
-| 2 | Authorization process and actors | [02-overall-description.md](02-overall-description.md) |
-| 3 | HTTP and policy interface contracts | [03-external-interface-requirements.md](03-external-interface-requirements.md) |
-| 4 | Policy/request/object behavior | [04-functional-and-behavioral-requirements.md](04-functional-and-behavioral-requirements.md) |
-| 5 | Statement, Role and snapshot data | [05-data-and-information-requirements.md](05-data-and-information-requirements.md) |
-| 6 | Security and consistency quality | [06-quality-and-performance-requirements.md](06-quality-and-performance-requirements.md) |
-| 7 | Policy and dependency constraints | [07-constraints.md](07-constraints.md) |
-| 8 | Owning interfaces and consumers | [08-requirements-allocation-and-dependencies.md](08-requirements-allocation-and-dependencies.md) |
-| 9 | Authorization and HTTP acceptance | [09-verification-validation-and-acceptance.md](09-verification-validation-and-acceptance.md) |
-| 10 | Traceability and withdrawn contracts | [10-traceability-and-unresolved-issues.md](10-traceability-and-unresolved-issues.md) |
-| 11 | Policy examples | [11-appendices.md](11-appendices.md) |
+| Section | Subject                              | Document                                                                                         |
+| ------- | ------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| 1       | Intent, scope and glossary           | [01-introduction.md](01-introduction.md)                                                         |
+| 2       | Authorization process and actors     | [02-overall-description.md](02-overall-description.md)                                           |
+| 3       | HTTP and policy interface contracts  | [03-external-interface-requirements.md](03-external-interface-requirements.md)                   |
+| 4       | Policy/request/object behavior       | [04-functional-and-behavioral-requirements.md](04-functional-and-behavioral-requirements.md)     |
+| 5       | Statement, Role and snapshot data    | [05-data-and-information-requirements.md](05-data-and-information-requirements.md)               |
+| 6       | Security and consistency quality     | [06-quality-and-performance-requirements.md](06-quality-and-performance-requirements.md)         |
+| 7       | Policy and dependency constraints    | [07-constraints.md](07-constraints.md)                                                           |
+| 8       | Owning interfaces and consumers      | [08-requirements-allocation-and-dependencies.md](08-requirements-allocation-and-dependencies.md) |
+| 9       | Authorization and HTTP acceptance    | [09-verification-validation-and-acceptance.md](09-verification-validation-and-acceptance.md)     |
+| 10      | Traceability and withdrawn contracts | [10-traceability-and-unresolved-issues.md](10-traceability-and-unresolved-issues.md)             |
+| 11      | Policy examples                      | [11-appendices.md](11-appendices.md)                                                             |
 
 ## Consumer read order
 

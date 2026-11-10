@@ -14,16 +14,16 @@ Authorization owns Role/Statement grants and Request/Object authorization polici
 
 ## 1.3 Terms and lifecycle semantics
 
-| Term | Meaning |
-| --- | --- |
-| User | Stable UUID and identity/profile state |
-| Group | Acyclic hierarchy plus membership relationships |
-| Reserved System User | Managed account with username `system`, prohibited from runtime registration and deletion |
-| RETAINED | Read-only account whose PII remains until configured expiry; interactive access revoked |
-| TOMBSTONE | Terminal preserved User UUID with explicitly enumerated PII purged |
-| `retainedAt` | Timestamp set when a User enters RETAINED; absent for direct zero-day tombstone |
-| `retention.user` | Database-backed nonnegative whole-day ISO-8601 duration |
-| PII scrub | Remove identifying profile, credential, relationship and sensitive audit values without deleting unrelated business data |
+| Term                 | Meaning                                                                                                                  |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| User                 | Stable UUID and identity/profile state                                                                                   |
+| Group                | Acyclic hierarchy plus membership relationships                                                                          |
+| Reserved System User | Managed account with username `system`, prohibited from runtime registration and deletion                                |
+| RETAINED             | Read-only account whose PII remains until configured expiry; interactive access revoked                                  |
+| TOMBSTONE            | Terminal preserved User UUID with explicitly enumerated PII purged                                                       |
+| `retainedAt`         | Timestamp set when a User enters RETAINED; absent for direct zero-day tombstone                                          |
+| `retention.user`     | Database-backed nonnegative whole-day ISO-8601 duration                                                                  |
+| PII scrub            | Remove identifying profile, credential, relationship and sensitive audit values without deleting unrelated business data |
 
 ## 1.4 Evidence and related requirements
 

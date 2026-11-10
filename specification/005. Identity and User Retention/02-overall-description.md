@@ -10,13 +10,13 @@ On a valid `POST /api/v0/users`, Identity normalizes username, names and email a
 
 ## 2.3 Deletion and retention lifecycle
 
-| Condition | Mutation and visible outcome |
-| --- | --- |
+| Condition                                               | Mutation and visible outcome                                                                                                |
+| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | Ordinary mutable User deleted when `retention.user=P0D` | Immediately TOMBSTONE in the owning transaction; revoke access and scrub listed PII; do not synthesize a RETAINED timestamp |
-| Ordinary mutable User deleted with positive duration | Move to RETAINED with first `retainedAt`; revoke Roles, direct Statements, Group memberships and sessions |
-| RETAINED User reaches configured expiry | Worker safely claims/rechecks eligible User and tombstones it |
-| RETAINED/TOMBSTONE targeted for normal mutation | Reject without modifying protected lifecycle state |
-| Reserved System User targeted for deletion | Reject under the reserved-account constraint |
+| Ordinary mutable User deleted with positive duration    | Move to RETAINED with first `retainedAt`; revoke Roles, direct Statements, Group memberships and sessions                   |
+| RETAINED User reaches configured expiry                 | Worker safely claims/rechecks eligible User and tombstones it                                                               |
+| RETAINED/TOMBSTONE targeted for normal mutation         | Reject without modifying protected lifecycle state                                                                          |
+| Reserved System User targeted for deletion              | Reject under the reserved-account constraint                                                                                |
 
 The worker's fixed-delay trigger is one hour. Retention eligibility is computed from the effective persisted configuration, not a hard-coded duration captured when the User was deleted.
 

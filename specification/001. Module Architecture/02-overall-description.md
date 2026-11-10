@@ -6,18 +6,18 @@ Taskmigo deliberately combines **bounded contexts, Onion dependency direction, a
 
 ## 2.2 Capability ownership
 
-| Owner | Responsibilities | Ownership exclusions |
-| --- | --- | --- |
-| Authorization | Role, Statement, effective grants and Request/Object Authorization | User/Group identity data |
-| Identity | User, Group, membership, lifecycle, retention and configuration | Role and Statement lifecycle |
-| Ticket | Ticket/Type/template state, version-pinned custom fields, resource queries | Generic language parser or global authorization rules |
-| Query | Operation query schemas, allowed filtering/sorting and opaque logical predicates | Business-specific JPA mappings |
-| Audit | Transactional entity audit, privacy scrubbing and audit queries | Authorization decision-history feature |
-| Internal Language | Source grammar, typed compilation/evaluation, partial evaluation and diagnostics | Consumer-specific policies |
-| Internal JPA Query | Trusted reusable criteria and sort binding | Resource ownership |
-| Internal EAV | Typed versioned schemas, field instances and generic EAV query support | Ticket HTTP API |
-| Foundation Core/Spring | Domain-neutral primitives and generic Spring support | Business aggregates |
-| Database | Shared runtime database wiring and schema migration resources | Cross-context domain repositories |
+| Owner                  | Responsibilities                                                                 | Ownership exclusions                                  |
+| ---------------------- | -------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| Authorization          | Role, Statement, effective grants and Request/Object Authorization               | User/Group identity data                              |
+| Identity               | User, Group, membership, lifecycle, retention and configuration                  | Role and Statement lifecycle                          |
+| Ticket                 | Ticket/Type/template state, version-pinned custom fields, resource queries       | Generic language parser or global authorization rules |
+| Query                  | Operation query schemas, allowed filtering/sorting and opaque logical predicates | Business-specific JPA mappings                        |
+| Audit                  | Transactional entity audit, privacy scrubbing and audit queries                  | Authorization decision-history feature                |
+| Internal Language      | Source grammar, typed compilation/evaluation, partial evaluation and diagnostics | Consumer-specific policies                            |
+| Internal JPA Query     | Trusted reusable criteria and sort binding                                       | Resource ownership                                    |
+| Internal EAV           | Typed versioned schemas, field instances and generic EAV query support           | Ticket HTTP API                                       |
+| Foundation Core/Spring | Domain-neutral primitives and generic Spring support                             | Business aggregates                                   |
+| Database               | Shared runtime database wiring and schema migration resources                    | Cross-context domain repositories                     |
 
 Physical project names and dependencies are mapped in [section 8](08-requirements-allocation-and-dependencies.md); each owner SHALL expose published interfaces rather than private implementation types.
 

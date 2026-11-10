@@ -12,15 +12,15 @@ Web configures the authorization server, JWT claims, request security and sessio
 
 ## 1.3 Terminology
 
-| Term | Meaning |
-| --- | --- |
-| Interactive User | Identity User with a configured password credential and ACTIVE lifecycle state |
+| Term              | Meaning                                                                                      |
+| ----------------- | -------------------------------------------------------------------------------------------- |
+| Interactive User  | Identity User with a configured password credential and ACTIVE lifecycle state               |
 | Service principal | Client-credentials token subject marked `principal_type=service`, distinct from a User login |
-| PKCE | Proof Key for Code Exchange required by the managed browser authorization-code client |
-| Registered client | Persisted OAuth client identity with allowed grants, redirects, scopes and secrets |
-| Guarded session | Persisted authenticated session that rechecks User lifecycle eligibility |
-| Managed resource | Declaratively configured identity/authorization/client record reconciled by Migration |
-| Managed client | Registered OAuth client explicitly marked as owned by the installation reconciler |
+| PKCE              | Proof Key for Code Exchange required by the managed browser authorization-code client        |
+| Registered client | Persisted OAuth client identity with allowed grants, redirects, scopes and secrets           |
+| Guarded session   | Persisted authenticated session that rechecks User lifecycle eligibility                     |
+| Managed resource  | Declaratively configured identity/authorization/client record reconciled by Migration        |
+| Managed client    | Registered OAuth client explicitly marked as owned by the installation reconciler            |
 
 ## 1.4 Source and related contracts
 

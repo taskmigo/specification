@@ -14,15 +14,15 @@ The Query module owns schemas and logical predicates. Web owns transport binding
 
 ## 1.3 Terms
 
-| Term | Definition |
-| --- | --- |
-| Operation Query Schema | Stable operation identifier and its supported field/operator metadata |
-| Logical field | Public allowlisted query path independent of JPA/storage field spelling |
-| `filterBy` | Restricted Boolean expression over `object.<field>` and supported literals |
-| `sortBy` | Repeated query field ordered by priority, optionally prefixed with `-` |
-| QueryFieldContext | Server-owned runtime metadata for dynamic or versioned fields |
-| Schema-bound predicate | Validated typed expression associated with one schema/context identity |
-| Object predicate | Mandatory authorization filter resolved independently of client input |
+| Term                   | Definition                                                                 |
+| ---------------------- | -------------------------------------------------------------------------- |
+| Operation Query Schema | Stable operation identifier and its supported field/operator metadata      |
+| Logical field          | Public allowlisted query path independent of JPA/storage field spelling    |
+| `filterBy`             | Restricted Boolean expression over `object.<field>` and supported literals |
+| `sortBy`               | Repeated query field ordered by priority, optionally prefixed with `-`     |
+| QueryFieldContext      | Server-owned runtime metadata for dynamic or versioned fields              |
+| Schema-bound predicate | Validated typed expression associated with one schema/context identity     |
+| Object predicate       | Mandatory authorization filter resolved independently of client input      |
 
 ## 1.4 Evidence and related SRS
 

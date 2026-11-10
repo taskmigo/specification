@@ -12,19 +12,19 @@ The authoritative contract for **User, Group, retention configuration, lifecycle
 
 ## Contents
 
-| Section | Subject | Document |
-| --- | --- | --- |
-| 1 | Scope, lifecycle vocabulary and actors | [01-introduction.md](01-introduction.md) |
-| 2 | Registration, retention and privacy flow | [02-overall-description.md](02-overall-description.md) |
-| 3 | User, Group and Configuration API contracts | [03-external-interface-requirements.md](03-external-interface-requirements.md) |
-| 4 | Registration, deletion, worker and visibility rules | [04-functional-and-behavioral-requirements.md](04-functional-and-behavioral-requirements.md) |
-| 5 | Identity fields, tombstone and audit data | [05-data-and-information-requirements.md](05-data-and-information-requirements.md) |
-| 6 | Privacy, concurrency and query quality | [06-quality-and-performance-requirements.md](06-quality-and-performance-requirements.md) |
-| 7 | System User and immutability constraints | [07-constraints.md](07-constraints.md) |
-| 8 | Service ownership and transactions | [08-requirements-allocation-and-dependencies.md](08-requirements-allocation-and-dependencies.md) |
-| 9 | HTTP/lifecycle acceptance cases | [09-verification-validation-and-acceptance.md](09-verification-validation-and-acceptance.md) |
-| 10 | Source trace and unresolved decisions | [10-traceability-and-unresolved-issues.md](10-traceability-and-unresolved-issues.md) |
-| 11 | State diagrams and JSON examples | [11-appendices.md](11-appendices.md) |
+| Section | Subject                                             | Document                                                                                         |
+| ------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| 1       | Scope, lifecycle vocabulary and actors              | [01-introduction.md](01-introduction.md)                                                         |
+| 2       | Registration, retention and privacy flow            | [02-overall-description.md](02-overall-description.md)                                           |
+| 3       | User, Group and Configuration API contracts         | [03-external-interface-requirements.md](03-external-interface-requirements.md)                   |
+| 4       | Registration, deletion, worker and visibility rules | [04-functional-and-behavioral-requirements.md](04-functional-and-behavioral-requirements.md)     |
+| 5       | Identity fields, tombstone and audit data           | [05-data-and-information-requirements.md](05-data-and-information-requirements.md)               |
+| 6       | Privacy, concurrency and query quality              | [06-quality-and-performance-requirements.md](06-quality-and-performance-requirements.md)         |
+| 7       | System User and immutability constraints            | [07-constraints.md](07-constraints.md)                                                           |
+| 8       | Service ownership and transactions                  | [08-requirements-allocation-and-dependencies.md](08-requirements-allocation-and-dependencies.md) |
+| 9       | HTTP/lifecycle acceptance cases                     | [09-verification-validation-and-acceptance.md](09-verification-validation-and-acceptance.md)     |
+| 10      | Source trace and unresolved decisions               | [10-traceability-and-unresolved-issues.md](10-traceability-and-unresolved-issues.md)             |
+| 11      | State diagrams and JSON examples                    | [11-appendices.md](11-appendices.md)                                                             |
 
 ## How to read
 

@@ -25,6 +25,7 @@ This data contract distinguishes immutable Ticket identity and Type ownership, c
 ### TKT-DATA-005 — Field types and constraints
 
 **Normative requirement.** - **STRING:** `minLength`, `maxLength`.
+
 - **NUMBER:** `minimum`, `maximum`.
 - **BOOLEAN:** No additional constraints.
 - **DATE/DATETIME:** `minimum`, `maximum`.

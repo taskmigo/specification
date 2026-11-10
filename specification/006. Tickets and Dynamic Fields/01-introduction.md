@@ -14,15 +14,15 @@ Creation requires an ACTIVE Type and an eligible PUBLISHED template. Existing Ti
 
 ## 1.3 Domain vocabulary
 
-| Term | Meaning |
-| --- | --- |
-| Ticket Type | Named stable classification with immutable key and ACTIVE/RETIRED status |
-| Template version | DRAFT editable field set, PUBLISHED creation schema, or RETIRED historical schema |
-| Field definition | Stable field ID, key, label, data type, required flag and type-specific constraints |
-| EAV schema instance | Typed value storage pinned to a particular historical schema version |
-| Ticket common field | Fixed API property such as title, status, creator or timestamps |
+| Term                  | Meaning                                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------- |
+| Ticket Type           | Named stable classification with immutable key and ACTIVE/RETIRED status                          |
+| Template version      | DRAFT editable field set, PUBLISHED creation schema, or RETIRED historical schema                 |
+| Field definition      | Stable field ID, key, label, data type, required flag and type-specific constraints               |
+| EAV schema instance   | Typed value storage pinned to a particular historical schema version                              |
+| Ticket common field   | Fixed API property such as title, status, creator or timestamps                                   |
 | Dynamic query context | Server-owned compatible field metadata for a global, Type-specific or individual Ticket operation |
-| Historical pinning | Reading/updating an existing Ticket using the schema version it originally selected |
+| Historical pinning    | Reading/updating an existing Ticket using the schema version it originally selected               |
 
 ## 1.4 Evidence and dependencies
 

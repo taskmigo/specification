@@ -20,10 +20,10 @@ A Statement has immutable identity, unique code, optional description, effect, s
 
 ## 2.4 Policy-language boundary
 
-| Policy scope | Source mode | Important limitation |
-| --- | --- | --- |
-| Request | `PROGRAM` | May use allowed local bindings and conditional flow, but no unrestricted language features |
-| Object | `EXPRESSION` | Approved `object` paths remain symbolic until query-schema validation and database binding |
+| Policy scope | Source mode  | Important limitation                                                                       |
+| ------------ | ------------ | ------------------------------------------------------------------------------------------ |
+| Request      | `PROGRAM`    | May use allowed local bindings and conditional flow, but no unrestricted language features |
+| Object       | `EXPRESSION` | Approved `object` paths remain symbolic until query-schema validation and database binding |
 
 The [Language SRS](../003.%20Language/README.md) defines canonical grammar, but a compiler-recognized feature is **not** automatically valid in an Authorization policy. The [Query SRS](../004.%20Query%20Filtering/README.md) defines safe object field/operator binding.
 

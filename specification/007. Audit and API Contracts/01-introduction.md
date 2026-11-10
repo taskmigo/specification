@@ -14,15 +14,15 @@ Domain-specific endpoints, required/optional resource fields and allowed query p
 
 ## 1.3 Vocabulary
 
-| Term | Meaning |
-| --- | --- |
-| Audit event | Stable UUID plus entity, actor, occurrence and ordered field changes |
-| Sensitive change | Field marker with `sensitive=true` and null before/after values |
+| Term               | Meaning                                                                                 |
+| ------------------ | --------------------------------------------------------------------------------------- |
+| Audit event        | Stable UUID plus entity, actor, occurrence and ordered field changes                    |
+| Sensitive change   | Field marker with `sensitive=true` and null before/after values                         |
 | User privacy scrub | Remove historical identifying values while retaining audit event identities and linkage |
-| Response envelope | `success`, `statusCode`, `message`, `error`, `meta` and `data` |
-| Machine error code | Stable `error.code` distinct from `message.code` and human text |
-| Offset pagination | One-based `page` and `pageSize` with `totalItems` and `totalPages` |
-| Authorization Log | Separate persistent policy-decision history, not implemented in this baseline |
+| Response envelope  | `success`, `statusCode`, `message`, `error`, `meta` and `data`                          |
+| Machine error code | Stable `error.code` distinct from `message.code` and human text                         |
+| Offset pagination  | One-based `page` and `pageSize` with `totalItems` and `totalPages`                      |
+| Authorization Log  | Separate persistent policy-decision history, not implemented in this baseline           |
 
 ## 1.4 Evidence and related SRS
 

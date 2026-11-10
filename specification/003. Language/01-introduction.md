@@ -14,16 +14,16 @@ The language **does not** implement arbitrary function calls, modules/imports, m
 
 ## 1.3 Terms and type vocabulary
 
-| Term | Meaning |
-| --- | --- |
-| Source mode | `PROGRAM` statement-bearing source or `EXPRESSION` single-expression source |
-| Compilation Profile | Mode and enabled feature families supplied by the consumer |
-| Environment Schema | Allowed roots, typed property paths, nullability and symbolic availability |
-| Semantic AST | Language-owned typed representation, independent of ANTLR parse-tree classes |
-| Residual expression | Typed symbolic expression retained after partial evaluation |
-| Intrinsic | Bounded compiler-recognized `len`/`contains`/quantifier form, not a general host call |
-| Restricted lambda | One element binding accepted only within a quantifier predicate |
-| Known input | Value available now; contrast an explicit symbolic root required for partial evaluation |
+| Term                | Meaning                                                                                 |
+| ------------------- | --------------------------------------------------------------------------------------- |
+| Source mode         | `PROGRAM` statement-bearing source or `EXPRESSION` single-expression source             |
+| Compilation Profile | Mode and enabled feature families supplied by the consumer                              |
+| Environment Schema  | Allowed roots, typed property paths, nullability and symbolic availability              |
+| Semantic AST        | Language-owned typed representation, independent of ANTLR parse-tree classes            |
+| Residual expression | Typed symbolic expression retained after partial evaluation                             |
+| Intrinsic           | Bounded compiler-recognized `len`/`contains`/quantifier form, not a general host call   |
+| Restricted lambda   | One element binding accepted only within a quantifier predicate                         |
+| Known input         | Value available now; contrast an explicit symbolic root required for partial evaluation |
 
 ## 1.4 Source authority and consumers
 

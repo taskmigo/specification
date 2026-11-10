@@ -12,19 +12,19 @@ This document defines the public contract for **Tickets, Ticket Types, custom-fi
 
 ## Contents
 
-| Section | Subject | Document |
-| --- | --- | --- |
-| 1 | Scope, users and template vocabulary | [01-introduction.md](01-introduction.md) |
-| 2 | Ticket lifecycle and version evolution | [02-overall-description.md](02-overall-description.md) |
-| 3 | Ticket/Type/Template API contract | [03-external-interface-requirements.md](03-external-interface-requirements.md) |
-| 4 | Business rules and historical pinning | [04-functional-and-behavioral-requirements.md](04-functional-and-behavioral-requirements.md) |
-| 5 | Ticket and EAV data schema | [05-data-and-information-requirements.md](05-data-and-information-requirements.md) |
-| 6 | Authorization and query quality | [06-quality-and-performance-requirements.md](06-quality-and-performance-requirements.md) |
-| 7 | Version and ownership constraints | [07-constraints.md](07-constraints.md) |
-| 8 | Component ownership and dependencies | [08-requirements-allocation-and-dependencies.md](08-requirements-allocation-and-dependencies.md) |
-| 9 | Contract and lifecycle verification | [09-verification-validation-and-acceptance.md](09-verification-validation-and-acceptance.md) |
-| 10 | Source trace and unresolved features | [10-traceability-and-unresolved-issues.md](10-traceability-and-unresolved-issues.md) |
-| 11 | Version diagrams and JSON examples | [11-appendices.md](11-appendices.md) |
+| Section | Subject                                | Document                                                                                         |
+| ------- | -------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| 1       | Scope, users and template vocabulary   | [01-introduction.md](01-introduction.md)                                                         |
+| 2       | Ticket lifecycle and version evolution | [02-overall-description.md](02-overall-description.md)                                           |
+| 3       | Ticket/Type/Template API contract      | [03-external-interface-requirements.md](03-external-interface-requirements.md)                   |
+| 4       | Business rules and historical pinning  | [04-functional-and-behavioral-requirements.md](04-functional-and-behavioral-requirements.md)     |
+| 5       | Ticket and EAV data schema             | [05-data-and-information-requirements.md](05-data-and-information-requirements.md)               |
+| 6       | Authorization and query quality        | [06-quality-and-performance-requirements.md](06-quality-and-performance-requirements.md)         |
+| 7       | Version and ownership constraints      | [07-constraints.md](07-constraints.md)                                                           |
+| 8       | Component ownership and dependencies   | [08-requirements-allocation-and-dependencies.md](08-requirements-allocation-and-dependencies.md) |
+| 9       | Contract and lifecycle verification    | [09-verification-validation-and-acceptance.md](09-verification-validation-and-acceptance.md)     |
+| 10      | Source trace and unresolved features   | [10-traceability-and-unresolved-issues.md](10-traceability-and-unresolved-issues.md)             |
+| 11      | Version diagrams and JSON examples     | [11-appendices.md](11-appendices.md)                                                             |
 
 ## Read order and boundaries
 

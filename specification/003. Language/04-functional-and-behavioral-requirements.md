@@ -72,11 +72,11 @@ none(collection, element => predicate)
 
 The collection SHALL have `List<T>` type; the bound element SHALL have type `T`; the predicate SHALL be Bool; and the result SHALL be Bool. For empty collections:
 
-| Expression | Required result |
-| --- | --- |
-| `all([], p)` | `true` |
-| `any([], p)` | `false` |
-| `none([], p)` | `true` |
+| Expression    | Required result |
+| ------------- | --------------- |
+| `all([], p)`  | `true`          |
+| `any([], p)`  | `false`         |
+| `none([], p)` | `true`          |
 
 A concrete null collection SHALL fail, and statically nullable collection operands SHALL be rejected rather than treated as empty unless a future null-safe construct is explicitly specified. When `LENGTH_INTRINSIC` is enabled, `len(value)` SHALL accept only a nonnull String or `List<T>`, returning Number; it SHALL not dispatch to arbitrary host reflection.
 

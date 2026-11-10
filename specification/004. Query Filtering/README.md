@@ -12,19 +12,19 @@ This SRS is the canonical shared contract for **FilterBy, SortBy, pagination, op
 
 ## Contents
 
-| Section | Subject | Document |
-| --- | --- | --- |
-| 1 | Purpose, scope and terms | [01-introduction.md](01-introduction.md) |
-| 2 | Request pipeline and query safety | [02-overall-description.md](02-overall-description.md) |
-| 3 | Wire grammar, sorting and allowlists | [03-external-interface-requirements.md](03-external-interface-requirements.md) |
-| 4 | Compilation, sorting and authorization | [04-functional-and-behavioral-requirements.md](04-functional-and-behavioral-requirements.md) |
-| 5 | Schema and dynamic-field data | [05-data-and-information-requirements.md](05-data-and-information-requirements.md) |
-| 6 | Safety and query quality | [06-quality-and-performance-requirements.md](06-quality-and-performance-requirements.md) |
-| 7 | Supported syntax boundaries | [07-constraints.md](07-constraints.md) |
-| 8 | Cross-module allocation | [08-requirements-allocation-and-dependencies.md](08-requirements-allocation-and-dependencies.md) |
-| 9 | Filter/sort/paging acceptance | [09-verification-validation-and-acceptance.md](09-verification-validation-and-acceptance.md) |
-| 10 | Traceability and superseded syntax | [10-traceability-and-unresolved-issues.md](10-traceability-and-unresolved-issues.md) |
-| 11 | Request and pipeline examples | [11-appendices.md](11-appendices.md) |
+| Section | Subject                                | Document                                                                                         |
+| ------- | -------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| 1       | Purpose, scope and terms               | [01-introduction.md](01-introduction.md)                                                         |
+| 2       | Request pipeline and query safety      | [02-overall-description.md](02-overall-description.md)                                           |
+| 3       | Wire grammar, sorting and allowlists   | [03-external-interface-requirements.md](03-external-interface-requirements.md)                   |
+| 4       | Compilation, sorting and authorization | [04-functional-and-behavioral-requirements.md](04-functional-and-behavioral-requirements.md)     |
+| 5       | Schema and dynamic-field data          | [05-data-and-information-requirements.md](05-data-and-information-requirements.md)               |
+| 6       | Safety and query quality               | [06-quality-and-performance-requirements.md](06-quality-and-performance-requirements.md)         |
+| 7       | Supported syntax boundaries            | [07-constraints.md](07-constraints.md)                                                           |
+| 8       | Cross-module allocation                | [08-requirements-allocation-and-dependencies.md](08-requirements-allocation-and-dependencies.md) |
+| 9       | Filter/sort/paging acceptance          | [09-verification-validation-and-acceptance.md](09-verification-validation-and-acceptance.md)     |
+| 10      | Traceability and superseded syntax     | [10-traceability-and-unresolved-issues.md](10-traceability-and-unresolved-issues.md)             |
+| 11      | Request and pipeline examples          | [11-appendices.md](11-appendices.md)                                                             |
 
 ## Recommended read order
 

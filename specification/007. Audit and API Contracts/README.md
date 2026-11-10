@@ -12,19 +12,19 @@ The canonical shared specification for **Entity Audit, API v0 envelopes, error s
 
 ## Contents
 
-| Section | Subject | Document |
-| --- | --- | --- |
-| 1 | Scope and API/Audit terms | [01-introduction.md](01-introduction.md) |
-| 2 | Entity Audit and transport context | [02-overall-description.md](02-overall-description.md) |
-| 3 | Audit list, envelope and error matrix | [03-external-interface-requirements.md](03-external-interface-requirements.md) |
-| 4 | Audit privacy and API error behavior | [04-functional-and-behavioral-requirements.md](04-functional-and-behavioral-requirements.md) |
-| 5 | Audit/event and API metadata | [05-data-and-information-requirements.md](05-data-and-information-requirements.md) |
-| 6 | Security, privacy and contract quality | [06-quality-and-performance-requirements.md](06-quality-and-performance-requirements.md) |
-| 7 | Audit and public API constraints | [07-constraints.md](07-constraints.md) |
-| 8 | Owning modules and transaction dependencies | [08-requirements-allocation-and-dependencies.md](08-requirements-allocation-and-dependencies.md) |
-| 9 | Wire contract acceptance | [09-verification-validation-and-acceptance.md](09-verification-validation-and-acceptance.md) |
-| 10 | Code/schema trace and absent APIs | [10-traceability-and-unresolved-issues.md](10-traceability-and-unresolved-issues.md) |
-| 11 | Envelope and audit JSON examples | [11-appendices.md](11-appendices.md) |
+| Section | Subject                                     | Document                                                                                         |
+| ------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| 1       | Scope and API/Audit terms                   | [01-introduction.md](01-introduction.md)                                                         |
+| 2       | Entity Audit and transport context          | [02-overall-description.md](02-overall-description.md)                                           |
+| 3       | Audit list, envelope and error matrix       | [03-external-interface-requirements.md](03-external-interface-requirements.md)                   |
+| 4       | Audit privacy and API error behavior        | [04-functional-and-behavioral-requirements.md](04-functional-and-behavioral-requirements.md)     |
+| 5       | Audit/event and API metadata                | [05-data-and-information-requirements.md](05-data-and-information-requirements.md)               |
+| 6       | Security, privacy and contract quality      | [06-quality-and-performance-requirements.md](06-quality-and-performance-requirements.md)         |
+| 7       | Audit and public API constraints            | [07-constraints.md](07-constraints.md)                                                           |
+| 8       | Owning modules and transaction dependencies | [08-requirements-allocation-and-dependencies.md](08-requirements-allocation-and-dependencies.md) |
+| 9       | Wire contract acceptance                    | [09-verification-validation-and-acceptance.md](09-verification-validation-and-acceptance.md)     |
+| 10      | Code/schema trace and absent APIs           | [10-traceability-and-unresolved-issues.md](10-traceability-and-unresolved-issues.md)             |
+| 11      | Envelope and audit JSON examples            | [11-appendices.md](11-appendices.md)                                                             |
 
 ## Read order
 

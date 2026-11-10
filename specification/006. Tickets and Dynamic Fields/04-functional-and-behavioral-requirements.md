@@ -86,11 +86,11 @@ This chapter specifies the **observable Ticket, Ticket Type and Template behavio
 
 ### TKT-FR-014 — Queryable custom types
 
-| Custom field type | Allowed query operators | Sortable |
-| --- | --- | --- |
-| `STRING` | EQ, NE, CONTAINS | Yes |
-| `NUMBER`, `DATE`, `DATETIME` | EQ, NE, GT, GTE, LT, LTE | Yes |
-| `BOOLEAN`, `UUID`, `ENUM` | EQ, NE | No |
+| Custom field type            | Allowed query operators  | Sortable |
+| ---------------------------- | ------------------------ | -------- |
+| `STRING`                     | EQ, NE, CONTAINS         | Yes      |
+| `NUMBER`, `DATE`, `DATETIME` | EQ, NE, GT, GTE, LT, LTE | Yes      |
+| `BOOLEAN`, `UUID`, `ENUM`    | EQ, NE                   | No       |
 
 These capabilities SHALL be applied only when a corresponding runtime field is actually present in the resolved Query Schema. A custom-field response property alone does not make the field queryable.
 

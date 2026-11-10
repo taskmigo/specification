@@ -6,11 +6,11 @@ Web exposes Spring Authorization Server/OIDC capability, JDBC-backed OAuth regis
 
 ## 2.2 Principal kinds and claims
 
-| Principal | Claim semantics | Versioned API eligibility |
-| --- | --- | --- |
-| User | `principal_type=user`, `user_id` UUID string and `principal_username` | Referenced User must be ACTIVE; Request Authorization must allow the operation |
-| Service | `principal_type=service` and registered-client subject; optional System User claims only if active | Must not bypass persisted User identity and Request Authorization requirements |
-| Missing/invalid | No valid supported principal or claims | Denied; distinguish unauthenticated 401 from authenticated forbidden 403 |
+| Principal       | Claim semantics                                                                                    | Versioned API eligibility                                                      |
+| --------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| User            | `principal_type=user`, `user_id` UUID string and `principal_username`                              | Referenced User must be ACTIVE; Request Authorization must allow the operation |
+| Service         | `principal_type=service` and registered-client subject; optional System User claims only if active | Must not bypass persisted User identity and Request Authorization requirements |
+| Missing/invalid | No valid supported principal or claims                                                             | Denied; distinguish unauthenticated 401 from authenticated forbidden 403       |
 
 A token signature being valid is **not sufficient** when the referenced User has been deleted, retained, disabled or otherwise made ineligible.
 

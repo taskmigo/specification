@@ -12,19 +12,19 @@ Defines enforceable boundaries of the Taskmigo modular monolith, not the busines
 
 ## Contents
 
-| Section | What it answers | Document |
-| --- | --- | --- |
-| 1 | Purpose, actors and scope | [01-introduction.md](01-introduction.md) |
-| 2 | Ownership and runtime model | [02-overall-description.md](02-overall-description.md) |
-| 3 | Published interfaces and consumer boundaries | [03-external-interface-requirements.md](03-external-interface-requirements.md) |
-| 4 | Normative module behavior | [04-functional-and-behavioral-requirements.md](04-functional-and-behavioral-requirements.md) |
-| 5 | Project and contract metadata | [05-data-and-information-requirements.md](05-data-and-information-requirements.md) |
-| 6 | Architecture quality | [06-quality-and-performance-requirements.md](06-quality-and-performance-requirements.md) |
-| 7 | Prohibited dependencies and constraints | [07-constraints.md](07-constraints.md) |
-| 8 | Project graph and allocation | [08-requirements-allocation-and-dependencies.md](08-requirements-allocation-and-dependencies.md) |
-| 9 | Architecture acceptance | [09-verification-validation-and-acceptance.md](09-verification-validation-and-acceptance.md) |
-| 10 | Evidence, decisions and drift | [10-traceability-and-unresolved-issues.md](10-traceability-and-unresolved-issues.md) |
-| 11 | Examples and diagrams | [11-appendices.md](11-appendices.md) |
+| Section | What it answers                              | Document                                                                                         |
+| ------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| 1       | Purpose, actors and scope                    | [01-introduction.md](01-introduction.md)                                                         |
+| 2       | Ownership and runtime model                  | [02-overall-description.md](02-overall-description.md)                                           |
+| 3       | Published interfaces and consumer boundaries | [03-external-interface-requirements.md](03-external-interface-requirements.md)                   |
+| 4       | Normative module behavior                    | [04-functional-and-behavioral-requirements.md](04-functional-and-behavioral-requirements.md)     |
+| 5       | Project and contract metadata                | [05-data-and-information-requirements.md](05-data-and-information-requirements.md)               |
+| 6       | Architecture quality                         | [06-quality-and-performance-requirements.md](06-quality-and-performance-requirements.md)         |
+| 7       | Prohibited dependencies and constraints      | [07-constraints.md](07-constraints.md)                                                           |
+| 8       | Project graph and allocation                 | [08-requirements-allocation-and-dependencies.md](08-requirements-allocation-and-dependencies.md) |
+| 9       | Architecture acceptance                      | [09-verification-validation-and-acceptance.md](09-verification-validation-and-acceptance.md)     |
+| 10      | Evidence, decisions and drift                | [10-traceability-and-unresolved-issues.md](10-traceability-and-unresolved-issues.md)             |
+| 11      | Examples and diagrams                        | [11-appendices.md](11-appendices.md)                                                             |
 
 ## How to use
 
