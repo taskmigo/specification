@@ -65,3 +65,17 @@ STRING custom fields SHALL support EQ/NE/CONTAINS and sorting. NUMBER, DATE and 
 ### TKT-FR-015 — No unapproved fields
 
 Only declared common and compatible runtime custom fields SHALL be available to filtering, sorting, and Object Authorization. An unknown or ambiguous field SHALL not silently become an unrestricted persistence expression.
+
+## 4.4 Ticket Type Collection Semantics
+
+### TKT-FR-016 — Key-ordered complete collection
+
+The Ticket Type list application use case SHALL retrieve all persisted Ticket Types and order them by their stable `key`. It SHALL NOT apply Ticket list filters, Object Authorization predicates, or offset pagination.
+
+### TKT-FR-017 — Different authorization surfaces
+
+Ticket item list/read/update SHALL use operation-specific Object Authorization as defined by [TKT-FR-012](#tkt-fr-012--database-side-authorization). Ticket Type and Template operations currently use Request Authorization only, as specified by [TKT-API-010](03-external-interface-requirements.md#tkt-api-010--current-type-and-template-access-boundary).
+
+### TKT-FR-018 — Dynamic logical path syntax
+
+A queryable Ticket custom field SHALL appear under its field `key` as the logical `object.<fieldKey>` path for the operation. It SHALL NOT require a `customFields` namespace, even though the Ticket HTTP response carries the value inside the `customFields` object. The operation's runtime field context SHALL determine whether the key is eligible.

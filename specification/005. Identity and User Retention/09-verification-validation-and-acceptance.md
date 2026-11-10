@@ -34,3 +34,13 @@ Verify default `P30D`, persisted GET/PATCH, canonical duration, acceptance of `P
 - [Configuration API tests](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/web/src/test/java/io/taskmigo/web/api/v0/configuration/ConfigurationApiIntegrationTest.java).
 
 These test files are evidence of intended coverage, not a claim that the test suite has been executed successfully as part of this documentation update.
+
+## 9.3 Registration Credential and Membership Acceptance
+
+### ID-VER-007 — No implicit credential or Group
+
+Verify a newly registered ACTIVE User has no interactive credential, cannot perform password login without subsequent managed credential initialization, and has no Role or Group memberships when those input fields are omitted. Verify explicitly supplied assignments remain atomic with User creation.
+
+## Specification-First OpenAPI Verification
+
+Verify the backend-generated OpenAPI against the [authored module HTTP contract](api-contract.md): every specified operation, query/path parameter, request model and required field, response status/data DTO, schema field type, and documented error response MUST match the spec. Extra generated operations are rejected. Run `npm run openapi:check` against the generated backend OpenAPI. Known backend-generation discrepancies remain explicitly reported; `npm run openapi:strict` fails until they are corrected.

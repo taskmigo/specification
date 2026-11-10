@@ -37,3 +37,7 @@ Migration SHALL load declarative `users.yaml`, `roles.yaml`, `statements.yaml`, 
 ### AUTHN-API-008 — Browser provisioning toggle
 
 When `TM_BROWSER_AUTHENTICATION_ENABLED=false`, the Migration resource loader SHALL omit the managed browser-client definitions from its installation plan; it SHALL NOT infer external login configuration.
+
+## 3.4 Versioned API Wire Examples
+
+The [API v0 HTTP and JSON reference](../007.%20Audit%20and%20API%20Contracts/12-api-v0-http-examples.md) contains authenticated resource API requests and responses. OAuth/OIDC protocol routes are provided by Spring Authorization Server rather than by the 29 `/api/v0` resource controllers, and their protocol surface is not represented as additional v0 CRUD routes.

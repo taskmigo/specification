@@ -42,3 +42,7 @@ Verify the current OpenAPI surface does not claim `GET /api/v0/authorization/log
 - [Web ObjectAuthorization integration tests](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/web/src/test/java/io/taskmigo/web/security/objectauthorization/ObjectAuthorizationRouteIntegrationTest.java).
 
 This SRS describes required test coverage, not a claim that the tests have run during document generation.
+
+## Specification-First OpenAPI Verification
+
+Verify the backend-generated OpenAPI against the [authored module HTTP contract](api-contract.md): every specified operation, query/path parameter, request model and required field, response status/data DTO, schema field type, and documented error response MUST match the spec. Extra generated operations are rejected. Run `npm run openapi:check` against the generated backend OpenAPI. Known backend-generation discrepancies remain explicitly reported; `npm run openapi:strict` fails until they are corrected.

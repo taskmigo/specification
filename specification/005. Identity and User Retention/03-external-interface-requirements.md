@@ -39,3 +39,23 @@ Worker SHALL invoke `UserRetentionService.purgeExpiredUsers(Instant)`. Runtime c
 ## 3.5 Transport and Errors
 
 User API input validation, domain failures and authorization failures SHALL follow [API v0 response contracts](../007.%20Audit%20and%20API%20Contracts/README.md). Lists SHALL obey [Query Filtering](../004.%20Query%20Filtering/README.md).
+
+## 3.6 Runtime Credential and Assignment Contract
+
+### ID-API-008 — Credential-free runtime registration
+
+The public `POST /api/v0/users` request SHALL NOT accept an initial password/credential field as part of its defined request contract. The newly registered User SHALL not receive an interactive password hash from registration; ACTIVE status alone does not make the account immediately password-login-capable.
+
+### ID-API-009 — Explicit initial grants
+
+Only `roleIds` and `groupIds` supplied in the runtime registration request SHALL determine the User's initial direct Role and Group membership sets. When omitted or null, each set SHALL be empty; this endpoint SHALL NOT implicitly enroll the new User in the managed `global` Group.
+
+Verification: Compare registration with omitted, empty and explicitly populated assignment lists.
+
+## HTTP/JSON Examples
+
+See the [API v0 HTTP and JSON reference](../007.%20Audit%20and%20API%20Contracts/12-api-v0-http-examples.md) for concrete method/path, input DTO, sample request, successful response, and error envelope for the Identity and Group APIs.
+
+## Normative HTTP API Contract
+
+The [module's normative API contract](api-contract.md) specifies each supported HTTP method/path, parameter, request/response DTO, success and error status, field name/type/required/constraints, message code, and authorization boundary. The [JSON examples](12-api-v0-examples.md) show representative serialized requests and responses. **Implementation and generated OpenAPI MUST conform to this authored contract; generated documentation is not authoritative requirements text.**

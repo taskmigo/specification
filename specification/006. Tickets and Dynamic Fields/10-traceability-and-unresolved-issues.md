@@ -18,3 +18,7 @@ The implementation does not specify project association, a status workflow, assi
 ## 10.3 Source Snapshot
 
 Based on backend commit `9c1cd242fe4c5210fdd8dd88311e328a3784d0e1`; subsequent implementation changes require renewed contract review.
+
+## 10.4 Missing Query and Object-Authorization Surface for Types
+
+The [Ticket Type controller](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/web/src/main/java/io/taskmigo/web/api/v0/ticket/TicketTypeController.java) implements an unpaginated, key-ordered list and does not resolve Object Authorization. This is **not** equivalent to [Ticket list authorization](04-functional-and-behavioral-requirements.md#tkt-fr-012--database-side-authorization). Extending filtering, sorting, paging, or Type-level Object Authorization is an unresolved feature decision that would require implementation and corresponding specification review.

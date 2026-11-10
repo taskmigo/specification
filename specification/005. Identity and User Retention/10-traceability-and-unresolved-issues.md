@@ -18,3 +18,7 @@ The v0 implementation does not expose a generic User status-transition endpoint 
 ## 10.3 Source Snapshot
 
 This is an implementation-derived baseline, pinned to backend commit `9c1cd242fe4c5210fdd8dd88311e328a3784d0e1`. Changes to runtime behavior after that snapshot require a new review of specification parity.
+
+## 10.4 Managed Group Description Versus Runtime Behavior
+
+The [managed `global` Group YAML](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/migration/src/main/resources/migration/groups.yaml) describes automatic assignment to all new Users. However, [runtime User registration](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/identity/src/main/java/io/taskmigo/identity/user/application/UserRegistrationApplicationService.java) assigns only the supplied `groupIds`; it does not load or auto-enroll `global`. Current implemented behavior is specified by [ID-FR-019](04-functional-and-behavioral-requirements.md#id-fr-019--no-implicit-group-or-role-assignment). Whether automatic global membership is desired remains a product decision, not an implied implemented feature.

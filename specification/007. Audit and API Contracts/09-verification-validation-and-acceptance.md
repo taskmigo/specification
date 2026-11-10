@@ -37,3 +37,17 @@ Verify defaults 1/20, max pageSize 100, matching offset metadata and OpenAPI fie
 - [API response factory](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/web/src/main/java/io/taskmigo/web/api/v0/support/response/ApiResponseFactory.java).
 
 Test references do not indicate that test jobs were executed as part of authoring.
+
+## 9.3 HTTP/JSON Contract Verification
+
+### API-VER-004 — Endpoint and payload parity
+
+Verify that every operation in the [API v0 HTTP/JSON reference](12-api-v0-http-examples.md#2-module-api-contract-index) exists in the generated OpenAPI, that its request fields and successful response `data` shape match the controller DTO, and that the v0 envelope includes `success`, `statusCode`, `message`, `error`, `meta` and `data`.
+
+### API-VER-005 — Examples and generated responses
+
+Validate example JSON syntax and compare create, paginated list, detail, patch, no-data mutation, and validation/error envelopes with API integration tests. Detect discrepancies between controller-returned 200 statuses and the generated OpenAPI status list.
+
+## Specification-First OpenAPI Verification
+
+Verify the generated backend OpenAPI against all authored [module API contract tables](12-api-v0-http-examples.md#2-module-api-contract-index) using `npm run openapi:check` and `npm run openapi:strict`. Missing documented HTTP 200 responses on Ticket Type/Template operations remain reported as known backend-generation defects rather than being removed from the spec.

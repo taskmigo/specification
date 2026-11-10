@@ -77,3 +77,13 @@ Absent a persisted `retention.user` configuration row, the effective value SHALL
 ### ID-FR-017 — Tombstone query exclusion
 
 Ordinary User lookup/list and authorized mutation target selection SHALL exclude TOMBSTONE rows; User list SHALL additionally apply Request/Object Authorization and client query predicates before pagination. RETAINED visibility SHALL depend on the applicable policies rather than an unconditional System User exception.
+
+## 4.6 Runtime Credential and Default Membership
+
+### ID-FR-018 — Credential initialization boundary
+
+Runtime User registration SHALL create a persisted ACTIVE account with an empty interactive credential; the managed provisioning lifecycle is responsible for initializing passwords of managed accounts such as `system`. Authentication SHALL continue to require an existing credential as specified by [AUTHN-FR-001](../008.%20Authentication%20and%20Provisioning/04-functional-and-behavioral-requirements.md#authn-fr-001--interactive-login-eligibility).
+
+### ID-FR-019 — No implicit group or role assignment
+
+Runtime registration SHALL use exactly the caller-specified Role and Group IDs, treating omitted collections as empty. A managed Group's descriptive text SHALL NOT be treated as an implemented automatic enrollment rule.

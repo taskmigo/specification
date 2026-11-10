@@ -18,12 +18,15 @@
     }
   },
   "scripts": {
-    "markdown:check": "markdownlint-cli2 --config \".markdownlint-cli2.jsonc\" \"**/*.md\" \"#node_modules\"",
+    "markdown:check": "markdownlint-cli2 --config \".markdownlint-cli2.jsonc\" \"**/*.md\" \"#node_modules\" \"#_backend\"",
     "style:check": "prettier --check .",
-    "style:fix": "prettier --write ."
+    "style:fix": "prettier --write .",
+    "openapi:check": "node scripts/check-openapi-against-spec.mjs",
+    "openapi:strict": "node scripts/check-openapi-against-spec.mjs --strict"
   },
   "devDependencies": {
     "markdownlint-cli2": "^0.23.2",
-    "prettier": "3.9.6"
+    "prettier": "3.9.6",
+    "js-yaml": "5.2.2"
   }
 }

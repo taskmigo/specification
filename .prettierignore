@@ -1,0 +1,5 @@
+# The backend checkout is evidence, not specification source content.
+_backend/
+
+# Checker's source is syntax-checked/executed by the contract verification job.
+scripts/check-openapi-against-spec.mjs
