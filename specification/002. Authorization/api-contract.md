@@ -1,3 +1,5 @@
+<!-- prettier-ignore-start -->
+
 # API v0 contract — Authorization (Role, Statement)
 
 **Normative interface specification.** Taskmigo backend implementations and their generated OpenAPI SHALL conform to this contract. Update this document through requirements review **before** changing endpoint behavior, and compare generated OpenAPI with `npm run openapi:check`. This document is not generated from OpenAPI.
@@ -7,24 +9,24 @@ The following operation table is authoritative for HTTP method/path, accepted qu
 ## 1. Operation contracts
 
 <!-- prettier-ignore -->
-| Method | Path | Query parameters | JSON request DTO | Success HTTP | Response `data` | Message code | Authz | Errors |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `GET` | `/api/v0/roles` | `page,pageSize,filterBy,sortBy` | `-` | `200` | `RoleInfo[]` | `resource.role.listed` | `request` | `400,401,403,422` |
-| `POST` | `/api/v0/roles` | `-` | `CreateRoleRequest` | `201` | `IdResponse` | `resource.role.created` | `request` | `400,401,403,409,415,422` |
-| `PATCH` | `/api/v0/roles/{roleId}/statements` | `-` | `ReplaceRoleStatementsRequest` | `200` | `Void` | `resource.role.statements.updated` | `request` | `400,401,403,415,422` |
-| `GET` | `/api/v0/statements` | `page,pageSize,filterBy,sortBy` | `-` | `200` | `StatementInfo[]` | `resource.statement.listed` | `request` | `400,401,403,422` |
-| `POST` | `/api/v0/statements` | `-` | `CreateStatementRequest` | `201` | `IdResponse` | `resource.statement.created` | `request` | `400,401,403,409,415,422` |
-| `DELETE` | `/api/v0/statements/{statementId}` | `-` | `-` | `200` | `Void` | `resource.statement.deleted` | `request` | `400,401,403,404,422` |
+| Method   | Path                                | Query parameters                | JSON request DTO               | Success HTTP | Response `data`   | Message code                       | Authz     | Errors                    |
+| -------- | ----------------------------------- | ------------------------------- | ------------------------------ | ------------ | ----------------- | ---------------------------------- | --------- | ------------------------- |
+| `GET`    | `/api/v0/roles`                     | `page,pageSize,filterBy,sortBy` | `-`                            | `200`        | `RoleInfo[]`      | `resource.role.listed`             | `request` | `400,401,403,422`         |
+| `POST`   | `/api/v0/roles`                     | `-`                             | `CreateRoleRequest`            | `201`        | `IdResponse`      | `resource.role.created`            | `request` | `400,401,403,409,415,422` |
+| `PATCH`  | `/api/v0/roles/{roleId}/statements` | `-`                             | `ReplaceRoleStatementsRequest` | `200`        | `Void`            | `resource.role.statements.updated` | `request` | `400,401,403,415,422`     |
+| `GET`    | `/api/v0/statements`                | `page,pageSize,filterBy,sortBy` | `-`                            | `200`        | `StatementInfo[]` | `resource.statement.listed`        | `request` | `400,401,403,422`         |
+| `POST`   | `/api/v0/statements`                | `-`                             | `CreateStatementRequest`       | `201`        | `IdResponse`      | `resource.statement.created`       | `request` | `400,401,403,409,415,422` |
+| `DELETE` | `/api/v0/statements/{statementId}`  | `-`                             | `-`                            | `200`        | `Void`            | `resource.statement.deleted`       | `request` | `400,401,403,404,422`     |
 
 ### Query and path parameter definitions
 
-| Parameter | Type | Required | Validation and semantics |
-| --- | --- | --- | --- |
-| `page` | integer | No | Defaults 1; minimum 1 (only on paginated routes). |
-| `pageSize` | integer | No | Defaults 20; between 1 and 100 (only on paginated routes). |
-| `filterBy` | string | No | Safe expression validated against the route's Query Schema. Only on declared list operations. |
-| `sortBy` | repeated string | No | Ordered field list, `-field` descending; no `+field`. Only on declared list operations. |
-| `{...Id}` | UUID | Yes | Every UUID placeholder in the route path is mandatory and must parse as a UUID. |
+| Parameter  | Type            | Required | Validation and semantics                                                                      |
+| ---------- | --------------- | -------- | --------------------------------------------------------------------------------------------- |
+| `page`     | integer         | No       | Defaults 1; minimum 1 (only on paginated routes).                                             |
+| `pageSize` | integer         | No       | Defaults 20; between 1 and 100 (only on paginated routes).                                    |
+| `filterBy` | string          | No       | Safe expression validated against the route's Query Schema. Only on declared list operations. |
+| `sortBy`   | repeated string | No       | Ordered field list, `-field` descending; no `+field`. Only on declared list operations.       |
+| `{...Id}`  | UUID            | Yes      | Every UUID placeholder in the route path is mandatory and must parse as a UUID.               |
 
 **Note:** A parameter absent from an operation's row SHALL NOT be exposed as an accepted option for that operation. For example, Ticket Type list has no paging or filtering parameters. Exact `filterBy` field/operator and `sortBy` lists are in [Query Filtering](../004.%20Query%20Filtering/11-appendices.md#115-static-operation-capability-matrix).
 
@@ -34,77 +36,77 @@ These are **explicit JSON field contracts**. `Required=yes` means required in a 
 
 ### CreateRoleRequest
 
-| Field | JSON type | Required | Validation / meaning |
-| --- | --- | --- | --- |
-| `code` | `string` | yes | Nonblank; unique Role code |
-| `displayName` | `string` | yes | Nonblank |
-| `description` | `string` | no | Optional description |
-| `roleIds` | `array<uuid>` | no | Unique child Role IDs; validate hierarchy, no cycles |
+| Field         | JSON type     | Required | Validation / meaning                                 |
+| ------------- | ------------- | -------- | ---------------------------------------------------- |
+| `code`        | `string`      | yes      | Nonblank; unique Role code                           |
+| `displayName` | `string`      | yes      | Nonblank                                             |
+| `description` | `string`      | no       | Optional description                                 |
+| `roleIds`     | `array<uuid>` | no       | Unique child Role IDs; validate hierarchy, no cycles |
 
 ### ReplaceRoleStatementsRequest
 
-| Field | JSON type | Required | Validation / meaning |
-| --- | --- | --- | --- |
-| `statementIds` | `array<uuid>` | no | Full replacement; omitted or null means empty set; unique IDs |
+| Field          | JSON type     | Required | Validation / meaning                                          |
+| -------------- | ------------- | -------- | ------------------------------------------------------------- |
+| `statementIds` | `array<uuid>` | no       | Full replacement; omitted or null means empty set; unique IDs |
 
 ### RoleInfo
 
-| Field | JSON type | Required | Validation / meaning |
-| --- | --- | --- | --- |
-| `id` | `uuid` | yes | Stable Role ID |
-| `code` | `string` | yes | Role code |
-| `displayName` | `string` | yes | Readable name |
-| `description` | `string` | no | Omitted when null |
-| `children` | `array<RoleInfo>` | no | Recursive; omitted when empty |
+| Field         | JSON type         | Required | Validation / meaning          |
+| ------------- | ----------------- | -------- | ----------------------------- |
+| `id`          | `uuid`            | yes      | Stable Role ID                |
+| `code`        | `string`          | yes      | Role code                     |
+| `displayName` | `string`          | yes      | Readable name                 |
+| `description` | `string`          | no       | Omitted when null             |
+| `children`    | `array<RoleInfo>` | no       | Recursive; omitted when empty |
 
 ### CreateStatementRequest
 
-| Field | JSON type | Required | Validation / meaning |
-| --- | --- | --- | --- |
-| `code` | `string` | yes | Unique, nonblank |
-| `description` | `string` | no | Optional |
-| `effect` | `enum:allow,deny` | yes | Request accepts lower-case; response uses upper-case |
-| `scope` | `enum:request,object` | yes | Request accepts lower-case; response uses upper-case |
-| `target` | `Target` | yes | Target includes API method and path |
-| `policy` | `string` | yes | Nonblank policy source; compilation depends on scope |
+| Field         | JSON type             | Required | Validation / meaning                                 |
+| ------------- | --------------------- | -------- | ---------------------------------------------------- |
+| `code`        | `string`              | yes      | Unique, nonblank                                     |
+| `description` | `string`              | no       | Optional                                             |
+| `effect`      | `enum:allow,deny`     | yes      | Request accepts lower-case; response uses upper-case |
+| `scope`       | `enum:request,object` | yes      | Request accepts lower-case; response uses upper-case |
+| `target`      | `Target`              | yes      | Target includes API method and path                  |
+| `policy`      | `string`              | yes      | Nonblank policy source; compilation depends on scope |
 
 ### StatementInfo
 
-| Field | JSON type | Required | Validation / meaning |
-| --- | --- | --- | --- |
-| `id` | `uuid` | yes | Stable Statement ID |
-| `code` | `string` | yes | Statement code |
-| `description` | `string` | no | Optional |
-| `effect` | `enum:ALLOW,DENY` | yes | Upper-case response |
-| `scope` | `enum:OBJECT,REQUEST` | yes | Upper-case response |
-| `target` | `TargetResponse` | yes | Nested API target |
-| `policy` | `string` | yes | Persisted policy source |
+| Field         | JSON type             | Required | Validation / meaning    |
+| ------------- | --------------------- | -------- | ----------------------- |
+| `id`          | `uuid`                | yes      | Stable Statement ID     |
+| `code`        | `string`              | yes      | Statement code          |
+| `description` | `string`              | no       | Optional                |
+| `effect`      | `enum:ALLOW,DENY`     | yes      | Upper-case response     |
+| `scope`       | `enum:OBJECT,REQUEST` | yes      | Upper-case response     |
+| `target`      | `TargetResponse`      | yes      | Nested API target       |
+| `policy`      | `string`              | yes      | Persisted policy source |
 
 ### Target
 
-| Field | JSON type | Required | Validation / meaning |
-| --- | --- | --- | --- |
-| `api` | `ApiInfo` | yes | Required nested API target |
+| Field | JSON type | Required | Validation / meaning       |
+| ----- | --------- | -------- | -------------------------- |
+| `api` | `ApiInfo` | yes      | Required nested API target |
 
 ### ApiInfo
 
-| Field | JSON type | Required | Validation / meaning |
-| --- | --- | --- | --- |
-| `method` | `string` | yes | HTTP method or wildcard * |
-| `path` | `string` | yes | Whole-path bounded regex |
+| Field    | JSON type | Required | Validation / meaning      |
+| -------- | --------- | -------- | ------------------------- |
+| `method` | `string`  | yes      | HTTP method or wildcard * |
+| `path`   | `string`  | yes      | Whole-path bounded regex  |
 
 ### TargetResponse
 
-| Field | JSON type | Required | Validation / meaning |
-| --- | --- | --- | --- |
-| `api` | `ApiResponseData` | yes | Nested response target |
+| Field | JSON type         | Required | Validation / meaning   |
+| ----- | ----------------- | -------- | ---------------------- |
+| `api` | `ApiResponseData` | yes      | Nested response target |
 
 ### ApiResponseData
 
-| Field | JSON type | Required | Validation / meaning |
-| --- | --- | --- | --- |
-| `method` | `string` | yes | HTTP method or * |
-| `path` | `string` | yes | Bounded regex path |
+| Field    | JSON type | Required | Validation / meaning |
+| -------- | --------- | -------- | -------------------- |
+| `method` | `string`  | yes      | HTTP method or *     |
+| `path`   | `string`  | yes      | Bounded regex path   |
 
 ### Shared response DTOs
 
@@ -119,3 +121,5 @@ These are **explicit JSON field contracts**. `Required=yes` means required in a 
 ## 4. Concrete HTTP examples and verification
 
 The [module-specific request/response examples](12-api-v0-examples.md) illustrate serialized bodies and success envelopes. The module's [External Interface Requirements](03-external-interface-requirements.md) and [behavioral SRS](04-functional-and-behavioral-requirements.md) specify further lifecycle invariants. To verify backend conformance, run `npm run openapi:check` with the generated backend OpenAPI; the contract checker reads these **authored tables** rather than copying generated schemas into specification.
+
+<!-- prettier-ignore-end -->

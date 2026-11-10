@@ -1,3 +1,5 @@
+<!-- prettier-ignore-start -->
+
 # API v0 — Shared HTTP conventions and normative module contracts
 
 ## 1. Specification-first contract model
@@ -9,12 +11,12 @@ The backend generates a single aggregate OpenAPI for clients and tooling. That g
 ## 2. Module API contract index
 
 <!-- prettier-ignore -->
-| Module | Normative contract | Illustrative HTTP/JSON examples | Operations |
-| --- | --- | --- | --- |
-| Authorization | [Role and Statement API contract](../002.%20Authorization/api-contract.md) | [Examples](../002.%20Authorization/12-api-v0-examples.md) | 6 |
-| Identity and User Retention | [User, Group and Configuration API contract](../005.%20Identity%20and%20User%20Retention/api-contract.md) | [Examples](../005.%20Identity%20and%20User%20Retention/12-api-v0-examples.md) | 8 |
-| Tickets and Dynamic Fields | [Ticket, Type and Template API contract](../006.%20Tickets%20and%20Dynamic%20Fields/api-contract.md) | [Examples](../006.%20Tickets%20and%20Dynamic%20Fields/12-api-v0-examples.md) | 14 |
-| Audit | [Audit API contract](api-contract.md) | [Examples](12-api-v0-examples.md) | 1 |
+| Module                      | Normative contract                                                                                        | Illustrative HTTP/JSON examples                                               | Operations |
+| --------------------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- | ---------- |
+| Authorization               | [Role and Statement API contract](../002.%20Authorization/api-contract.md)                                | [Examples](../002.%20Authorization/12-api-v0-examples.md)                     | 6          |
+| Identity and User Retention | [User, Group and Configuration API contract](../005.%20Identity%20and%20User%20Retention/api-contract.md) | [Examples](../005.%20Identity%20and%20User%20Retention/12-api-v0-examples.md) | 8          |
+| Tickets and Dynamic Fields  | [Ticket, Type and Template API contract](../006.%20Tickets%20and%20Dynamic%20Fields/api-contract.md)      | [Examples](../006.%20Tickets%20and%20Dynamic%20Fields/12-api-v0-examples.md)  | 14         |
+| Audit                       | [Audit API contract](api-contract.md)                                                                     | [Examples](12-api-v0-examples.md)                                             | 1          |
 
 The 29 API v0 operations have one HTTP controller owner apiece. For example, `PATCH /api/v0/users/{userId}/statements` belongs to Identity's HTTP contract even though it delegates grant changes to Authorization. Query Filtering exposes supporting DSL and schema capabilities; it does not have an additional HTTP controller. OAuth2/OIDC authorization server endpoints are specified separately under [Authentication and Provisioning](../008.%20Authentication%20and%20Provisioning/README.md).
 
@@ -121,3 +123,5 @@ The normal `openapi:check` CI command reports these named, narrowly allowlisted 
 - A spec/API change SHALL update its owning module's API contract, field definitions, examples and relevant verification requirements before backend behavior is changed.
 - Backend generated OpenAPI SHALL be regenerated and evaluated against that contract. Inconsistencies SHALL be fixed in the backend generator/DTO/controller or resolved through an explicit requirements change.
 - The specification CI uses the current backend `next` snapshot for comparison and does not itself run the entire backend integration-test suite. Endpoint behavior must additionally be checked with API integration and E2E tests.
+
+<!-- prettier-ignore-end -->

@@ -75,7 +75,7 @@ function readContracts() {
         }
         continue;
       }
-      if (!line.startsWith("|")) continue;
+      if (!line.startsWith("|") || /^\|\s*-{3,}/.test(line)) continue;
       const columns = row(line);
 
       if (

@@ -1,3 +1,5 @@
+<!-- prettier-ignore-start -->
+
 # API v0 contract — Identity (User, Group, Configuration)
 
 **Normative interface specification.** Taskmigo backend implementations and their generated OpenAPI SHALL conform to this contract. Update this document through requirements review **before** changing endpoint behavior, and compare generated OpenAPI with `npm run openapi:check`. This document is not generated from OpenAPI.
@@ -7,26 +9,26 @@ The following operation table is authoritative for HTTP method/path, accepted qu
 ## 1. Operation contracts
 
 <!-- prettier-ignore -->
-| Method | Path | Query parameters | JSON request DTO | Success HTTP | Response `data` | Message code | Authz | Errors |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `GET` | `/api/v0/users` | `page,pageSize,filterBy,sortBy` | `-` | `200` | `UserInfo[]` | `resource.user.listed` | `request+object` | `400,401,403,422` |
-| `POST` | `/api/v0/users` | `-` | `CreateUserRequest` | `201` | `IdResponse` | `resource.user.created` | `request` | `400,401,403,409,415,422` |
-| `DELETE` | `/api/v0/users/{userId}` | `-` | `-` | `200` | `Void` | `resource.user.deleted` | `request+object` | `400,401,403,404,422` |
-| `PATCH` | `/api/v0/users/{userId}/statements` | `-` | `ReplaceUserStatementsRequest` | `200` | `Void` | `resource.user.statements.updated` | `request+object` | `400,401,403,404,415,422` |
-| `GET` | `/api/v0/groups` | `page,pageSize,filterBy,sortBy` | `-` | `200` | `GroupInfo[]` | `resource.group.listed` | `request+object` | `400,401,403,422` |
-| `POST` | `/api/v0/groups` | `-` | `CreateGroupRequest` | `201` | `IdResponse` | `resource.group.created` | `request` | `400,401,403,409,415,422` |
-| `GET` | `/api/v0/configuration` | `-` | `-` | `200` | `ApplicationConfiguration` | `resource.configuration.read` | `request` | `400,401,403,422` |
-| `PATCH` | `/api/v0/configuration` | `-` | `PatchApplicationConfiguration` | `200` | `ApplicationConfiguration` | `resource.configuration.updated` | `request` | `400,401,403,415,422` |
+| Method   | Path                                | Query parameters                | JSON request DTO                | Success HTTP | Response `data`            | Message code                       | Authz            | Errors                    |
+| -------- | ----------------------------------- | ------------------------------- | ------------------------------- | ------------ | -------------------------- | ---------------------------------- | ---------------- | ------------------------- |
+| `GET`    | `/api/v0/users`                     | `page,pageSize,filterBy,sortBy` | `-`                             | `200`        | `UserInfo[]`               | `resource.user.listed`             | `request+object` | `400,401,403,422`         |
+| `POST`   | `/api/v0/users`                     | `-`                             | `CreateUserRequest`             | `201`        | `IdResponse`               | `resource.user.created`            | `request`        | `400,401,403,409,415,422` |
+| `DELETE` | `/api/v0/users/{userId}`            | `-`                             | `-`                             | `200`        | `Void`                     | `resource.user.deleted`            | `request+object` | `400,401,403,404,422`     |
+| `PATCH`  | `/api/v0/users/{userId}/statements` | `-`                             | `ReplaceUserStatementsRequest`  | `200`        | `Void`                     | `resource.user.statements.updated` | `request+object` | `400,401,403,404,415,422` |
+| `GET`    | `/api/v0/groups`                    | `page,pageSize,filterBy,sortBy` | `-`                             | `200`        | `GroupInfo[]`              | `resource.group.listed`            | `request+object` | `400,401,403,422`         |
+| `POST`   | `/api/v0/groups`                    | `-`                             | `CreateGroupRequest`            | `201`        | `IdResponse`               | `resource.group.created`           | `request`        | `400,401,403,409,415,422` |
+| `GET`    | `/api/v0/configuration`             | `-`                             | `-`                             | `200`        | `ApplicationConfiguration` | `resource.configuration.read`      | `request`        | `400,401,403,422`         |
+| `PATCH`  | `/api/v0/configuration`             | `-`                             | `PatchApplicationConfiguration` | `200`        | `ApplicationConfiguration` | `resource.configuration.updated`   | `request`        | `400,401,403,415,422`     |
 
 ### Query and path parameter definitions
 
-| Parameter | Type | Required | Validation and semantics |
-| --- | --- | --- | --- |
-| `page` | integer | No | Defaults 1; minimum 1 (only on paginated routes). |
-| `pageSize` | integer | No | Defaults 20; between 1 and 100 (only on paginated routes). |
-| `filterBy` | string | No | Safe expression validated against the route's Query Schema. Only on declared list operations. |
-| `sortBy` | repeated string | No | Ordered field list, `-field` descending; no `+field`. Only on declared list operations. |
-| `{...Id}` | UUID | Yes | Every UUID placeholder in the route path is mandatory and must parse as a UUID. |
+| Parameter  | Type            | Required | Validation and semantics                                                                      |
+| ---------- | --------------- | -------- | --------------------------------------------------------------------------------------------- |
+| `page`     | integer         | No       | Defaults 1; minimum 1 (only on paginated routes).                                             |
+| `pageSize` | integer         | No       | Defaults 20; between 1 and 100 (only on paginated routes).                                    |
+| `filterBy` | string          | No       | Safe expression validated against the route's Query Schema. Only on declared list operations. |
+| `sortBy`   | repeated string | No       | Ordered field list, `-field` descending; no `+field`. Only on declared list operations.       |
+| `{...Id}`  | UUID            | Yes      | Every UUID placeholder in the route path is mandatory and must parse as a UUID.               |
 
 **Note:** A parameter absent from an operation's row SHALL NOT be exposed as an accepted option for that operation. For example, Ticket Type list has no paging or filtering parameters. Exact `filterBy` field/operator and `sortBy` lists are in [Query Filtering](../004.%20Query%20Filtering/11-appendices.md#115-static-operation-capability-matrix).
 
@@ -36,77 +38,77 @@ These are **explicit JSON field contracts**. `Required=yes` means required in a 
 
 ### CreateUserRequest
 
-| Field | JSON type | Required | Validation / meaning |
-| --- | --- | --- | --- |
-| `username` | `string` | yes | Trimmed, nonblank, unique; system reserved |
-| `firstName` | `string` | yes | Trimmed, nonblank |
-| `lastName` | `string` | yes | Trimmed, nonblank |
-| `emails` | `array<string>` | no | Unique valid email addresses; normalize lowercase |
-| `roleIds` | `array<uuid>` | no | Unique initial Role IDs; omitted means none |
-| `groupIds` | `array<uuid>` | no | Unique initial Group IDs; omitted means none |
+| Field       | JSON type       | Required | Validation / meaning                              |
+| ----------- | --------------- | -------- | ------------------------------------------------- |
+| `username`  | `string`        | yes      | Trimmed, nonblank, unique; system reserved        |
+| `firstName` | `string`        | yes      | Trimmed, nonblank                                 |
+| `lastName`  | `string`        | yes      | Trimmed, nonblank                                 |
+| `emails`    | `array<string>` | no       | Unique valid email addresses; normalize lowercase |
+| `roleIds`   | `array<uuid>`   | no       | Unique initial Role IDs; omitted means none       |
+| `groupIds`  | `array<uuid>`   | no       | Unique initial Group IDs; omitted means none      |
 
 ### UserInfo
 
-| Field | JSON type | Required | Validation / meaning |
-| --- | --- | --- | --- |
-| `id` | `uuid` | yes | Stable User ID |
-| `username` | `string` | yes | Username |
-| `firstName` | `string` | yes | Name |
-| `lastName` | `string` | yes | Name |
-| `emails` | `array<string>` | yes | Normalized unique emails |
-| `displayName` | `string` | yes | Derived full name |
-| `status` | `enum:ACTIVE,SUSPENDED,DISABLED,RETAINED` | yes | TOMBSTONE excluded from public User lists |
-| `retainedAt` | `date-time` | no | Nullable timestamp on retained lifecycle |
+| Field         | JSON type                                 | Required | Validation / meaning                      |
+| ------------- | ----------------------------------------- | -------- | ----------------------------------------- |
+| `id`          | `uuid`                                    | yes      | Stable User ID                            |
+| `username`    | `string`                                  | yes      | Username                                  |
+| `firstName`   | `string`                                  | yes      | Name                                      |
+| `lastName`    | `string`                                  | yes      | Name                                      |
+| `emails`      | `array<string>`                           | yes      | Normalized unique emails                  |
+| `displayName` | `string`                                  | yes      | Derived full name                         |
+| `status`      | `enum:ACTIVE,SUSPENDED,DISABLED,RETAINED` | yes      | TOMBSTONE excluded from public User lists |
+| `retainedAt`  | `date-time`                               | no       | Nullable timestamp on retained lifecycle  |
 
 ### ReplaceUserStatementsRequest
 
-| Field | JSON type | Required | Validation / meaning |
-| --- | --- | --- | --- |
-| `statementIds` | `array<uuid>` | no | Full replacement; omitted or null means empty |
+| Field          | JSON type     | Required | Validation / meaning                          |
+| -------------- | ------------- | -------- | --------------------------------------------- |
+| `statementIds` | `array<uuid>` | no       | Full replacement; omitted or null means empty |
 
 ### CreateGroupRequest
 
-| Field | JSON type | Required | Validation / meaning |
-| --- | --- | --- | --- |
-| `code` | `string` | yes | Nonblank unique Group code |
-| `displayName` | `string` | yes | Nonblank |
-| `description` | `string` | no | Optional |
-| `groupIds` | `array<uuid>` | no | Unique child Group IDs; acyclic |
-| `roleIds` | `array<uuid>` | no | Unique Role IDs |
+| Field         | JSON type     | Required | Validation / meaning            |
+| ------------- | ------------- | -------- | ------------------------------- |
+| `code`        | `string`      | yes      | Nonblank unique Group code      |
+| `displayName` | `string`      | yes      | Nonblank                        |
+| `description` | `string`      | no       | Optional                        |
+| `groupIds`    | `array<uuid>` | no       | Unique child Group IDs; acyclic |
+| `roleIds`     | `array<uuid>` | no       | Unique Role IDs                 |
 
 ### GroupInfo
 
-| Field | JSON type | Required | Validation / meaning |
-| --- | --- | --- | --- |
-| `id` | `uuid` | yes | Stable Group ID |
-| `code` | `string` | yes | Group code |
-| `displayName` | `string` | yes | Name |
-| `description` | `string` | no | Optional |
-| `children` | `array<GroupInfo>` | yes | Recursive list; empty list allowed |
+| Field         | JSON type          | Required | Validation / meaning               |
+| ------------- | ------------------ | -------- | ---------------------------------- |
+| `id`          | `uuid`             | yes      | Stable Group ID                    |
+| `code`        | `string`           | yes      | Group code                         |
+| `displayName` | `string`           | yes      | Name                               |
+| `description` | `string`           | no       | Optional                           |
+| `children`    | `array<GroupInfo>` | yes      | Recursive list; empty list allowed |
 
 ### PatchApplicationConfiguration
 
-| Field | JSON type | Required | Validation / meaning |
-| --- | --- | --- | --- |
-| `retention` | `PatchRetentionConfiguration` | no | Optional; unknown properties rejected |
+| Field       | JSON type                     | Required | Validation / meaning                  |
+| ----------- | ----------------------------- | -------- | ------------------------------------- |
+| `retention` | `PatchRetentionConfiguration` | no       | Optional; unknown properties rejected |
 
 ### PatchRetentionConfiguration
 
-| Field | JSON type | Required | Validation / meaning |
-| --- | --- | --- | --- |
-| `user` | `string` | no | ISO-8601 nonnegative whole-day duration; P0D immediate |
+| Field  | JSON type | Required | Validation / meaning                                   |
+| ------ | --------- | -------- | ------------------------------------------------------ |
+| `user` | `string`  | no       | ISO-8601 nonnegative whole-day duration; P0D immediate |
 
 ### ApplicationConfiguration
 
-| Field | JSON type | Required | Validation / meaning |
-| --- | --- | --- | --- |
-| `retention` | `RetentionConfiguration` | yes | Effective application retention configuration |
+| Field       | JSON type                | Required | Validation / meaning                          |
+| ----------- | ------------------------ | -------- | --------------------------------------------- |
+| `retention` | `RetentionConfiguration` | yes      | Effective application retention configuration |
 
 ### RetentionConfiguration
 
-| Field | JSON type | Required | Validation / meaning |
-| --- | --- | --- | --- |
-| `user` | `string` | yes | Canonical P<n>D value; default P30D |
+| Field  | JSON type | Required | Validation / meaning                |
+| ------ | --------- | -------- | ----------------------------------- |
+| `user` | `string`  | yes      | Canonical P<n>D value; default P30D |
 
 ### Shared response DTOs
 
@@ -122,3 +124,5 @@ These are **explicit JSON field contracts**. `Required=yes` means required in a 
 ## 4. Concrete HTTP examples and verification
 
 The [module-specific request/response examples](12-api-v0-examples.md) illustrate serialized bodies and success envelopes. The module's [External Interface Requirements](03-external-interface-requirements.md) and [behavioral SRS](04-functional-and-behavioral-requirements.md) specify further lifecycle invariants. To verify backend conformance, run `npm run openapi:check` with the generated backend OpenAPI; the contract checker reads these **authored tables** rather than copying generated schemas into specification.
+
+<!-- prettier-ignore-end -->
