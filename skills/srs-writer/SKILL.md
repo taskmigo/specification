@@ -1,6 +1,6 @@
 ---
 name: srs-writer
-description: Draft, restructure, or review software requirements specifications with tailored information-item content, README-first navigation, stable requirement IDs, and human- and agent-friendly traceability.
+description: Draft, review, or reconcile modular software requirements specifications with precise module-owned API contracts, verifiable behavior, stable requirement IDs, and traceability.
 ---
 
 # SRS Writer
@@ -18,8 +18,13 @@ Produce a decision-ready Software Requirements Specification (SRS) that expresse
 - Separate product requirements from implementation choices. Avoid roadmap language such as implementation phases, migration tasks, TODOs, “Done” statements, or development-only instructions.
 - Write each requirement so its subject, condition, action or capability, and measurable outcome are clear. Check the individual requirement and the requirement set for necessity, feasibility, consistency, completeness, singularity, unambiguity, verifiability, correctness, and traceability; tailor the checks to the deliverable instead of asserting unsupported conformance.
 - Include failure behavior, security boundaries, consistency, performance, persistence, and conformance criteria when they affect the requested system.
+- Write for independent consumers: a backend, frontend, integration, or QA team SHALL be able to implement and verify the approved behavior without reverse-engineering the existing backend. In particular, a mere endpoint list or generated OpenAPI link is not an adequate public API specification.
+- For Taskmigo modules, document each in-scope operation's security, parameters, field-level request/response schemas, validation, defaults, error contracts, filtering/sorting/pagination capabilities, and observable side effects. Link to shared conventions rather than duplicating them.
+- When deriving a baseline from existing code, explicitly distinguish observed **as-is**, approved requirements, and proposed **to-be** behavior. Surface disagreements among code, tests, generated OpenAPI, and the SRS instead of silently rewriting product requirements to match implementation.
 
 For the detailed standard information-item mapping and requirement-writing pattern, read [references/iso-iec-ieee-29148-outline.md](references/iso-iec-ieee-29148-outline.md).
+
+When working on **Taskmigo module SRS, HTTP API completeness, or implementation-to-spec reconciliation**, also read and apply [references/taskmigo-modular-srs-guide.md](references/taskmigo-modular-srs-guide.md). It defines the per-operation contract, baseline evidence, contract-drift review, and acceptance-coverage gates. The existing numbered module directories and split-section layout remain canonical; do not replace them with a new generic directory hierarchy.
 
 ## Repository and document structure
 
@@ -66,8 +71,9 @@ Each file SHALL contain the corresponding numbered section and its normative or 
 3. Capture the operational context, stakeholders, users, external systems, assumptions, constraints, and dependencies that bound the requirements. Use scenarios or models where they clarify behavior, and label them as supporting material rather than normative requirements.
 4. Organize requirements by behavior and consumer, not by implementation class or development phase. Give each independently verifiable requirement a stable ID and intention-revealing title.
 5. For each requirement, make the subject, condition or trigger, required capability or behavior, data boundary, constraints, failure behavior, and observable verification outcome clear. Use examples or tables where they improve retrieval.
-6. Add bidirectional traceability from needs or stakeholder expectations to derived software requirements and verification evidence when those artifacts exist. Identify derived requirements and unresolved conflicts instead of hiding the derivation.
-7. Update Markdown links, anchors, and cross-references after restructuring. Keep section numbering, information-item boundaries, and requirement IDs consistent across files.
+6. For public interfaces, inventory every in-scope operation and document the full client-visible contract in the owning module, including request and response field semantics, errors, authorization, query capabilities, and side effects. Compare approved contract details with generated OpenAPI when available; record mismatches instead of guessing.
+7. Add bidirectional traceability from needs or stakeholder expectations to derived software requirements and verification evidence when those artifacts exist. Identify derived requirements and unresolved conflicts instead of hiding the derivation.
+8. Update Markdown links, anchors, and cross-references after restructuring. Keep section numbering, information-item boundaries, and requirement IDs consistent across files.
 
 ## Audience and content discipline
 
@@ -94,6 +100,9 @@ Write for both HUMAN and AGENT readers:
 - Requirements are necessary, feasible, consistent, complete enough for their scope, singular, unambiguous, correct, verifiable, and traceable—or any exception is explicit.
 - Normative language is consistent and non-normative rationale is distinguishable.
 - Public interfaces, persistence effects, authorization/security rules, failure modes, freshness/consistency, and performance limits are not ambiguous.
+- Every in-scope API operation has independently consumable field-level inputs, outputs, authorization and errors, plus links to relevant business rules and acceptance evidence; module-specific filter/sort capabilities are not hidden behind a generic shared contract.
+- Where a code-backed baseline is used, approved intent, observed behavior, proposals, and unresolved code/spec/OpenAPI drift are labeled distinctly. Generated API schemas are checked against, not assumed to define, the approved contract.
+- Acceptance cases cover meaningful negative, permission, and boundary behavior without multiplying redundant scenarios.
 - All internal references use Markdown links rather than unlinked section notation. Every relative link to another Markdown file resolves to an existing file and valid anchor, including after restructuring. Each external issue, pull request, and artifact has one canonical descriptive Markdown link per document, with later mentions using the established short name where context remains clear. No stale duplicate document, broken anchor, unexplained acronym, or development-only phrase remains.
 - Every prose sentence, bullet-point item, and table-cell sentence begins with an uppercase letter, except where a literal value must retain its original case.
 - Run the repository’s Markdown lint and link/format checks when available; report actual results separately from checks that could not run.
