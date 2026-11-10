@@ -23,11 +23,11 @@ Based on backend commit `9c1cd242fe4c5210fdd8dd88311e328a3784d0e1`; subsequent i
 
 The [backend source snapshot](https://github.com/taskmigo/taskmigo/tree/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server) is **observed implementation evidence**, not an automatic replacement for approved SRS requirements. The table below links existing normative IDs to interface contracts and objective acceptance obligations. The stated acceptance coverage does **not** claim those tests were run during this documentation edit.
 
-| Requirement IDs | Behavior or interface | Normative SRS contract | Verification obligation |
-| --- | --- | --- | --- |
-| TKT-API-001–004, TKT-FR-007–015 | Ticket create/list/read/update and runtime field semantics | [Ticket HTTP contract](03-external-interface-requirements.md#34-explicit-http-operation-inventory) | [Contract matrix](09-verification-validation-and-acceptance.md#93-public-contract-acceptance-matrix) |
-| TKT-API-005–008, TKT-FR-001–006 | Ticket Type and Template lifecycle | [Type and Template contract](03-external-interface-requirements.md#342-ticket-type-and-template-schemas) | [Contract matrix](09-verification-validation-and-acceptance.md#93-public-contract-acceptance-matrix) |
-| TKT-FR-012–015 | Authorized Ticket field queries and compatible dynamic schema context | [Query allowlist](03-external-interface-requirements.md#343-ticket-list-filter-and-sort-allowlists) | [TKT-VER-005–006](09-verification-validation-and-acceptance.md#91-acceptance-cases) |
+| Requirement IDs                 | Behavior or interface                                                 | Normative SRS contract                                                                                   | Verification obligation                                                                              |
+| ------------------------------- | --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| TKT-API-001–004, TKT-FR-007–015 | Ticket create/list/read/update and runtime field semantics            | [Ticket HTTP contract](03-external-interface-requirements.md#34-explicit-http-operation-inventory)       | [Contract matrix](09-verification-validation-and-acceptance.md#93-public-contract-acceptance-matrix) |
+| TKT-API-005–008, TKT-FR-001–006 | Ticket Type and Template lifecycle                                    | [Type and Template contract](03-external-interface-requirements.md#342-ticket-type-and-template-schemas) | [Contract matrix](09-verification-validation-and-acceptance.md#93-public-contract-acceptance-matrix) |
+| TKT-FR-012–015                  | Authorized Ticket field queries and compatible dynamic schema context | [Query allowlist](03-external-interface-requirements.md#343-ticket-list-filter-and-sort-allowlists)      | [TKT-VER-005–006](09-verification-validation-and-acceptance.md#91-acceptance-cases)                  |
 
 ### 10.4.1 Source-to-spec reconciliation
 

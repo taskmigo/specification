@@ -22,10 +22,10 @@ No new architecture runtime SLAs or module decomposition mandates are introduced
 
 The [backend source snapshot](https://github.com/taskmigo/taskmigo/tree/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server) is **observed implementation evidence**, not an automatic replacement for approved SRS requirements. The table below links existing normative IDs to interface contracts and objective acceptance obligations. The stated acceptance coverage does **not** claim those tests were run during this documentation edit.
 
-| Requirement IDs | Behavior or interface | Normative SRS contract | Verification obligation |
-| --- | --- | --- | --- |
-| ARCH-IF-002, ARCH-MOD-010–014 | Published interfaces, Gradle project boundaries and Spring Modulith declarations | [Module boundary contract](03-external-interface-requirements.md#35-consumerprovider-contract-ownership) | [ARCH-VER-001–008](09-verification-validation-and-acceptance.md#91-architecture-verification) |
-| ARCH-IF-007, ARCH-MOD-009 | Worker retention composition | [Module boundary contract](03-external-interface-requirements.md#35-consumerprovider-contract-ownership) | [Independent acceptance](09-verification-validation-and-acceptance.md#94-independent-consumer-boundary-acceptance) |
+| Requirement IDs               | Behavior or interface                                                            | Normative SRS contract                                                                                   | Verification obligation                                                                                            |
+| ----------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| ARCH-IF-002, ARCH-MOD-010–014 | Published interfaces, Gradle project boundaries and Spring Modulith declarations | [Module boundary contract](03-external-interface-requirements.md#35-consumerprovider-contract-ownership) | [ARCH-VER-001–008](09-verification-validation-and-acceptance.md#91-architecture-verification)                      |
+| ARCH-IF-007, ARCH-MOD-009     | Worker retention composition                                                     | [Module boundary contract](03-external-interface-requirements.md#35-consumerprovider-contract-ownership) | [Independent acceptance](09-verification-validation-and-acceptance.md#94-independent-consumer-boundary-acceptance) |
 
 ### 10.4.1 Source-to-spec reconciliation
 

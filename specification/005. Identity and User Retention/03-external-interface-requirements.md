@@ -44,31 +44,31 @@ User API input validation, domain failures and authorization failures SHALL foll
 
 The contracts below are the public API surface at the [reviewed backend revision](https://github.com/taskmigo/taskmigo/tree/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/web/src/main/java/io/taskmigo/web/api/v0). They use the [shared response envelope](../007.%20Audit%20and%20API%20Contracts/03-external-interface-requirements.md#32-api-response-envelope). List query syntax and pagination follow [Query Filtering](../004.%20Query%20Filtering/03-external-interface-requirements.md).
 
-| Requirement | Method and route | Input | Successful result |
-| --- | --- | --- | --- |
-| ID-API-001 | `GET /api/v0/users` | `page`, `pageSize`, `filterBy`, repeated `sortBy` | HTTP 200, User array plus offset metadata |
-| ID-API-002 | `POST /api/v0/users` | Create User JSON | HTTP 201, `data.id` UUID and `Location: /api/v0/users/{id}` |
-| ID-API-003 | `DELETE /api/v0/users/{userId}` | UUID path identifier | HTTP 200 with `data=null` |
-| ID-API-004 | `PATCH /api/v0/users/{userId}/statements` | UUID path identifier, replacement JSON | HTTP 200 with `data=null` |
-| ID-API-005 | `GET /api/v0/groups` | `page`, `pageSize`, `filterBy`, repeated `sortBy` | HTTP 200, Group array plus offset metadata |
-| ID-API-005 | `POST /api/v0/groups` | Create Group JSON | HTTP 201, `data.id` UUID and `Location: /api/v0/groups/{id}` |
-| ID-API-006 | `GET /api/v0/configuration` | No request body | HTTP 200, configuration object |
-| ID-API-006 | `PATCH /api/v0/configuration` | Configuration patch JSON | HTTP 200, effective configuration object |
+| Requirement | Method and route                          | Input                                             | Successful result                                            |
+| ----------- | ----------------------------------------- | ------------------------------------------------- | ------------------------------------------------------------ |
+| ID-API-001  | `GET /api/v0/users`                       | `page`, `pageSize`, `filterBy`, repeated `sortBy` | HTTP 200, User array plus offset metadata                    |
+| ID-API-002  | `POST /api/v0/users`                      | Create User JSON                                  | HTTP 201, `data.id` UUID and `Location: /api/v0/users/{id}`  |
+| ID-API-003  | `DELETE /api/v0/users/{userId}`           | UUID path identifier                              | HTTP 200 with `data=null`                                    |
+| ID-API-004  | `PATCH /api/v0/users/{userId}/statements` | UUID path identifier, replacement JSON            | HTTP 200 with `data=null`                                    |
+| ID-API-005  | `GET /api/v0/groups`                      | `page`, `pageSize`, `filterBy`, repeated `sortBy` | HTTP 200, Group array plus offset metadata                   |
+| ID-API-005  | `POST /api/v0/groups`                     | Create Group JSON                                 | HTTP 201, `data.id` UUID and `Location: /api/v0/groups/{id}` |
+| ID-API-006  | `GET /api/v0/configuration`               | No request body                                   | HTTP 200, configuration object                               |
+| ID-API-006  | `PATCH /api/v0/configuration`             | Configuration patch JSON                          | HTTP 200, effective configuration object                     |
 
 Each protected operation SHALL pass Request Authorization. User list, User delete, and User direct-Statement replacement SHALL use their operation-specific Object Authorization contexts; Group list SHALL use its own Object Authorization context. No User GET-by-ID, User general PATCH, Group GET-by-ID, Group PATCH/DELETE, or generic public User status-transition endpoint is included in this source-backed v0 surface.
 
 ### 3.6.1 Create and list User fields
 
-| Wire field | Create User request | List User response |
-| --- | --- | --- |
-| `id` | Server-assigned | UUID, required |
-| `username` | Required, nonblank string | String for visible non-tombstone User |
-| `firstName`, `lastName` | Each required and nonblank | Strings for visible non-tombstone User |
-| `emails` | Optional set of nonblank valid email strings | Set of normalized email strings |
-| `roleIds`, `groupIds` | Optional sets of nonnull UUID references, validated atomically | Not included |
-| `displayName` | Derived by server; not supplied | String |
-| `status` | Server-assigned initially ACTIVE | One of `ACTIVE`, `SUSPENDED`, `DISABLED`, `RETAINED` |
-| `retainedAt` | Server-managed | Nullable ISO-8601 instant |
+| Wire field              | Create User request                                            | List User response                                   |
+| ----------------------- | -------------------------------------------------------------- | ---------------------------------------------------- |
+| `id`                    | Server-assigned                                                | UUID, required                                       |
+| `username`              | Required, nonblank string                                      | String for visible non-tombstone User                |
+| `firstName`, `lastName` | Each required and nonblank                                     | Strings for visible non-tombstone User               |
+| `emails`                | Optional set of nonblank valid email strings                   | Set of normalized email strings                      |
+| `roleIds`, `groupIds`   | Optional sets of nonnull UUID references, validated atomically | Not included                                         |
+| `displayName`           | Derived by server; not supplied                                | String                                               |
+| `status`                | Server-assigned initially ACTIVE                               | One of `ACTIVE`, `SUSPENDED`, `DISABLED`, `RETAINED` |
+| `retainedAt`            | Server-managed                                                 | Nullable ISO-8601 instant                            |
 
 Omitted optional grant/membership sets SHALL not imply inventing grants. Normalization and the managed `system` reservation are specified in [ID-FR-001–003](04-functional-and-behavioral-requirements.md#41-identity-registration-and-grouping). The response status field is not a public status-change input.
 
@@ -80,14 +80,14 @@ Omitted optional grant/membership sets SHALL not imply inventing grants. Normali
 
 ### 3.6.3 Create and list Group fields
 
-| Wire field | Create Group request | List Group response |
-| --- | --- | --- |
-| `id` | Server-assigned | UUID, required |
-| `code`, `displayName` | Required nonblank strings | Strings, required |
-| `description` | Optional string | Optional string; omitted if null |
-| `groupIds` | Optional set of nonnull child Group UUIDs | Not exposed directly |
-| `roleIds` | Optional set of nonnull Role UUIDs | Not exposed |
-| `children` | Not supplied | Recursive Group projections, including empty lists |
+| Wire field            | Create Group request                      | List Group response                                |
+| --------------------- | ----------------------------------------- | -------------------------------------------------- |
+| `id`                  | Server-assigned                           | UUID, required                                     |
+| `code`, `displayName` | Required nonblank strings                 | Strings, required                                  |
+| `description`         | Optional string                           | Optional string; omitted if null                   |
+| `groupIds`            | Optional set of nonnull child Group UUIDs | Not exposed directly                               |
+| `roleIds`             | Optional set of nonnull Role UUIDs        | Not exposed                                        |
+| `children`            | Not supplied                              | Recursive Group projections, including empty lists |
 
 Group code uniqueness and acyclic child relationships are [functional rules](04-functional-and-behavioral-requirements.md#41-identity-registration-and-grouping). The Group list is an authorized paginated collection; a create request does not directly specify the recursive response projection.
 
@@ -97,14 +97,14 @@ Group code uniqueness and acyclic child relationships are [functional rules](04-
 
 ### 3.6.5 Per-operation query field allowlists
 
-| Query operation | Field | Allowed filter operators | Sortable |
-| --- | --- | --- | --- |
-| `identity.users.list` | `id` | EQ, NE | Yes |
-| `identity.users.list` | `username`, `firstName`, `lastName` | EQ, NE, CONTAINS | Yes |
-| `identity.users.list` | `status` | EQ, NE | Yes |
-| `identity.users.list` | `retainedAt` | EQ, NE, GT, GTE, LT, LTE | Yes |
-| `identity.groups.list` | `id` | EQ, NE | Yes |
-| `identity.groups.list` | `code`, `displayName`, `description` | EQ, NE, CONTAINS | Yes |
+| Query operation        | Field                                | Allowed filter operators | Sortable |
+| ---------------------- | ------------------------------------ | ------------------------ | -------- |
+| `identity.users.list`  | `id`                                 | EQ, NE                   | Yes      |
+| `identity.users.list`  | `username`, `firstName`, `lastName`  | EQ, NE, CONTAINS         | Yes      |
+| `identity.users.list`  | `status`                             | EQ, NE                   | Yes      |
+| `identity.users.list`  | `retainedAt`                         | EQ, NE, GT, GTE, LT, LTE | Yes      |
+| `identity.groups.list` | `id`                                 | EQ, NE                   | Yes      |
+| `identity.groups.list` | `code`, `displayName`, `description` | EQ, NE, CONTAINS         | Yes      |
 
 `emails` and `displayName` in the User response are **not** automatically filterable/sortable fields. Lists SHALL apply Object Authorization and the implicit TOMBSTONE exclusion before pagination and total-count computation. Static generated OpenAPI metadata SHALL advertise only approved static allowlists; invalid filter/sort shall be rejected per [FILTER-002 and SORT-002](../004.%20Query%20Filtering/03-external-interface-requirements.md).
 

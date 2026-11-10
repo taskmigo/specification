@@ -44,29 +44,29 @@ The OAuth/OIDC endpoints are provided by the configured authorization-server fra
 
 ### 3.4.1 Managed browser client and token contract
 
-| Property | Configured baseline |
-| --- | --- |
-| Client ID | `browser` |
-| Client authentication | `client_secret_basic`; configured secret is supplied through the environment |
-| Grant types | `authorization_code`, `refresh_token` |
-| Scopes | `openid`, `profile` |
-| PKCE | Required |
-| Authorization consent | Not required by the managed client defaults |
-| Redirect URI | `${TM_BROWSER_HOST_NAME:http://localhost}/api/auth/callback` |
-| Post-logout URI | `${TM_BROWSER_HOST_NAME:http://localhost}/` |
-| Access-token duration | `PT5M` |
-| Refresh-token duration | `PT8H` |
-| Refresh-token reuse | Disabled |
+| Property               | Configured baseline                                                          |
+| ---------------------- | ---------------------------------------------------------------------------- |
+| Client ID              | `browser`                                                                    |
+| Client authentication  | `client_secret_basic`; configured secret is supplied through the environment |
+| Grant types            | `authorization_code`, `refresh_token`                                        |
+| Scopes                 | `openid`, `profile`                                                          |
+| PKCE                   | Required                                                                     |
+| Authorization consent  | Not required by the managed client defaults                                  |
+| Redirect URI           | `${TM_BROWSER_HOST_NAME:http://localhost}/api/auth/callback`                 |
+| Post-logout URI        | `${TM_BROWSER_HOST_NAME:http://localhost}/`                                  |
+| Access-token duration  | `PT5M`                                                                       |
+| Refresh-token duration | `PT8H`                                                                       |
+| Refresh-token reuse    | Disabled                                                                     |
 
 The [managed security resource](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd88311e328a3784d0e1/server/apps/migration/src/main/resources/migration/security.yaml) provides source-backed deployment defaults, not a license to assume browser provisioning is enabled for every installation. The `TM_BROWSER_AUTHENTICATION_ENABLED=false` gate remains authoritative.
 
 ### 3.4.2 JWT claims and authorization outcome
 
-| Principal path | Required access-token claims | Access boundary |
-| --- | --- | --- |
-| Interactive User | `principal_type=user`, `user_id` as UUID string, `principal_username` | The referenced User SHALL be ACTIVE; Request Authorization SHALL permit the operation |
-| Client credentials | `principal_type=service` and client subject | System User claims MAY be added only if an ACTIVE managed System User exists |
-| Unknown or malformed principal | No successful grant implied | Missing/malformed `user_id`, invalid principal type or non-ACTIVE User SHALL be denied |
+| Principal path                 | Required access-token claims                                          | Access boundary                                                                        |
+| ------------------------------ | --------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Interactive User               | `principal_type=user`, `user_id` as UUID string, `principal_username` | The referenced User SHALL be ACTIVE; Request Authorization SHALL permit the operation  |
+| Client credentials             | `principal_type=service` and client subject                           | System User claims MAY be added only if an ACTIVE managed System User exists           |
+| Unknown or malformed principal | No successful grant implied                                           | Missing/malformed `user_id`, invalid principal type or non-ACTIVE User SHALL be denied |
 
 For the versioned `/api/v*/**` API, absence/invalidity of credentials SHALL be distinguished from authenticated but forbidden requests: HTTP 401 versus HTTP 403. [API envelope rendering](../007.%20Audit%20and%20API%20Contracts/03-external-interface-requirements.md) applies when the corresponding API version's renderer is registered. A service token SHALL NOT be interpreted as an interactive User token merely because its subject resembles a username.
 

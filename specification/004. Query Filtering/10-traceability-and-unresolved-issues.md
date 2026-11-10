@@ -24,11 +24,11 @@ A generalized SQL DSL, a public client-supplied dynamic Query Schema, arbitrary 
 
 The [backend source snapshot](https://github.com/taskmigo/taskmigo/tree/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server) is **observed implementation evidence**, not an automatic replacement for approved SRS requirements. The table below links existing normative IDs to interface contracts and objective acceptance obligations. The stated acceptance coverage does **not** claim those tests were run during this documentation edit.
 
-| Requirement IDs | Behavior or interface | Normative SRS contract | Verification obligation |
-| --- | --- | --- | --- |
-| FILTER-001–003, QRY-001–005 | Approved filter grammar and per-operation allowlists | [Client contract](03-external-interface-requirements.md#37-client-query-contract-for-each-list-operation) | [Consumer scenarios](09-verification-validation-and-acceptance.md#95-independent-consumer-contract-scenarios) |
-| SORT-001–003, SORT-FR-001–003 | Ordered multi-sort, null semantics, invalid sort | [Sort interface](03-external-interface-requirements.md#36-multi-sort-request) | [Sort verification](09-verification-validation-and-acceptance.md#92-sort-acceptance) |
-| PAGE-001, PERSIST-002–003 | Authorized, scope-aware SQL-side paging and totals | [Pagination interface](03-external-interface-requirements.md#371-pagination-and-access-semantics) | [Query/authorization integration](09-verification-validation-and-acceptance.md#93-context-and-database) |
+| Requirement IDs               | Behavior or interface                                | Normative SRS contract                                                                                    | Verification obligation                                                                                       |
+| ----------------------------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| FILTER-001–003, QRY-001–005   | Approved filter grammar and per-operation allowlists | [Client contract](03-external-interface-requirements.md#37-client-query-contract-for-each-list-operation) | [Consumer scenarios](09-verification-validation-and-acceptance.md#95-independent-consumer-contract-scenarios) |
+| SORT-001–003, SORT-FR-001–003 | Ordered multi-sort, null semantics, invalid sort     | [Sort interface](03-external-interface-requirements.md#36-multi-sort-request)                             | [Sort verification](09-verification-validation-and-acceptance.md#92-sort-acceptance)                          |
+| PAGE-001, PERSIST-002–003     | Authorized, scope-aware SQL-side paging and totals   | [Pagination interface](03-external-interface-requirements.md#371-pagination-and-access-semantics)         | [Query/authorization integration](09-verification-validation-and-acceptance.md#93-context-and-database)       |
 
 ### 10.4.1 Source-to-spec reconciliation
 

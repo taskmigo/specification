@@ -23,10 +23,10 @@ Source commit `9c1cd242fe4c5210fdd8dd88311e328a3784d0e1` is the audited implemen
 
 The [backend source snapshot](https://github.com/taskmigo/taskmigo/tree/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server) is **observed implementation evidence**, not an automatic replacement for approved SRS requirements. The table below links existing normative IDs to interface contracts and objective acceptance obligations. The stated acceptance coverage does **not** claim those tests were run during this documentation edit.
 
-| Requirement IDs | Behavior or interface | Normative SRS contract | Verification obligation |
-| --- | --- | --- | --- |
-| AUTHN-API-001–006, AUTHN-FR-001–007 | OAuth client, principal claims, JWT security, interactive sessions | [Security interface](03-external-interface-requirements.md#34-consumer-facing-security-and-oauth-profile) | [Client acceptance](09-verification-validation-and-acceptance.md#95-independent-client-and-lifecycle-acceptance) |
-| AUTHN-API-007–008, AUTHN-FR-008–012 | Managed YAML resource definitions and browser toggle | [Provisioning interface](03-external-interface-requirements.md#343-internal-installation-and-state-integration) | [Installation verification](09-verification-validation-and-acceptance.md#93-installation) |
+| Requirement IDs                     | Behavior or interface                                              | Normative SRS contract                                                                                          | Verification obligation                                                                                          |
+| ----------------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| AUTHN-API-001–006, AUTHN-FR-001–007 | OAuth client, principal claims, JWT security, interactive sessions | [Security interface](03-external-interface-requirements.md#34-consumer-facing-security-and-oauth-profile)       | [Client acceptance](09-verification-validation-and-acceptance.md#95-independent-client-and-lifecycle-acceptance) |
+| AUTHN-API-007–008, AUTHN-FR-008–012 | Managed YAML resource definitions and browser toggle               | [Provisioning interface](03-external-interface-requirements.md#343-internal-installation-and-state-integration) | [Installation verification](09-verification-validation-and-acceptance.md#93-installation)                        |
 
 ### 10.4.1 Source-to-spec reconciliation
 

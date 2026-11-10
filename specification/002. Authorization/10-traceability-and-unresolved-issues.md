@@ -28,11 +28,11 @@ A future Authorization decision-history facility, durable evaluation trace, cros
 
 The [backend source snapshot](https://github.com/taskmigo/taskmigo/tree/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server) is **observed implementation evidence**, not an automatic replacement for approved SRS requirements. The table below links existing normative IDs to interface contracts and objective acceptance obligations. The stated acceptance coverage does **not** claim those tests were run during this documentation edit.
 
-| Requirement IDs | Behavior or interface | Normative SRS contract | Verification obligation |
-| --- | --- | --- | --- |
-| AUTH-API-001–002, STMT-001–007 | Statements create/list/delete, field representation and query allowlist | [HTTP contract](03-external-interface-requirements.md#36-http-operation-contract-inventory) | [HTTP acceptance](09-verification-validation-and-acceptance.md#93-http-contract-and-security-acceptance) |
-| AUTH-API-003–005, AUTH-FR-001–002 | Role list/create, assignment replacement, User assignment dependency | [Role contract](03-external-interface-requirements.md#362-create-role-role-response-and-assignment-replacement) | [HTTP acceptance](09-verification-validation-and-acceptance.md#93-http-contract-and-security-acceptance) |
-| OBJ-001–005, REQ-001–003 | Request and Object Authorization on resource queries | [Authorization requirements](04-functional-and-behavioral-requirements.md#42-request-authorization) | [AUTH-VER-005–007](09-verification-validation-and-acceptance.md#91-required-scenarios) |
+| Requirement IDs                   | Behavior or interface                                                   | Normative SRS contract                                                                                          | Verification obligation                                                                                  |
+| --------------------------------- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| AUTH-API-001–002, STMT-001–007    | Statements create/list/delete, field representation and query allowlist | [HTTP contract](03-external-interface-requirements.md#36-http-operation-contract-inventory)                     | [HTTP acceptance](09-verification-validation-and-acceptance.md#93-http-contract-and-security-acceptance) |
+| AUTH-API-003–005, AUTH-FR-001–002 | Role list/create, assignment replacement, User assignment dependency    | [Role contract](03-external-interface-requirements.md#362-create-role-role-response-and-assignment-replacement) | [HTTP acceptance](09-verification-validation-and-acceptance.md#93-http-contract-and-security-acceptance) |
+| OBJ-001–005, REQ-001–003          | Request and Object Authorization on resource queries                    | [Authorization requirements](04-functional-and-behavioral-requirements.md#42-request-authorization)             | [AUTH-VER-005–007](09-verification-validation-and-acceptance.md#91-required-scenarios)                   |
 
 ### 10.4.1 Source-to-spec reconciliation
 

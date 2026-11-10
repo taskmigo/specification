@@ -42,14 +42,14 @@ For API-specific contracts, see [Authorization](../002.%20Authorization/README.m
 
 The following allocation is the source-backed module ownership boundary. It supplements [ARCH-IF-001–007](#31-published-module-contracts), rather than providing an alternate implementation architecture.
 
-| Consumer | Provider and approved contract | Forbidden shortcut |
-| --- | --- | --- |
-| Web API adapters | Identity, Authorization, Ticket, Query and Audit published use cases | Business invariants in controllers or another context's private JPA repositories |
-| Worker retention scheduler | Identity's published retention service | Direct mutation of Identity User rows |
-| User/Group workflows | Authorization's published Role/Statement grants and Audit append | Owning or duplicating Authorization grant state inside Identity |
-| Authorization Object query | Query operation schemas and resource-owned persistence field binding | Raw SQL or unsafe JPA path access derived from policy text |
-| Ticket custom fields | Ticket-owned schema/version and internal EAV service interface | Web/Worker importing the EAV implementation as a public business module |
-| Migration | Published installation and managed resource contracts | Granting public applications unrestricted access to module internals |
+| Consumer                   | Provider and approved contract                                       | Forbidden shortcut                                                               |
+| -------------------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Web API adapters           | Identity, Authorization, Ticket, Query and Audit published use cases | Business invariants in controllers or another context's private JPA repositories |
+| Worker retention scheduler | Identity's published retention service                               | Direct mutation of Identity User rows                                            |
+| User/Group workflows       | Authorization's published Role/Statement grants and Audit append     | Owning or duplicating Authorization grant state inside Identity                  |
+| Authorization Object query | Query operation schemas and resource-owned persistence field binding | Raw SQL or unsafe JPA path access derived from policy text                       |
+| Ticket custom fields       | Ticket-owned schema/version and internal EAV service interface       | Web/Worker importing the EAV implementation as a public business module          |
+| Migration                  | Published installation and managed resource contracts                | Granting public applications unrestricted access to module internals             |
 
 The [Module Architecture behavior](04-functional-and-behavioral-requirements.md#41-capability-ownership) defines ownership. Each consumer SHALL resolve its provider through a published boundary, and those boundaries SHALL be independently verifiable by Gradle/Spring Modulith/ArchUnit checks. All public HTTP field-level wire contracts SHALL be documented **in their owning module's section 3**, not duplicated in this architecture SRS.
 

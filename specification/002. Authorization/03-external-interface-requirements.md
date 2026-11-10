@@ -108,43 +108,43 @@ The prior `LOG-API-001`, `LOG-API-002`, and `LOG-API-003` described `GET /api/v0
 
 The operations below constitute the public Authorization-owned HTTP surface in the [reviewed backend snapshot](https://github.com/taskmigo/taskmigo/tree/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/web/src/main/java/io/taskmigo/web/api/v0/auth/authorization). All use the [API v0 envelope](../007.%20Audit%20and%20API%20Contracts/03-external-interface-requirements.md#32-api-response-envelope). The [Query Filtering contract](../004.%20Query%20Filtering/03-external-interface-requirements.md) owns shared query grammar, error behavior, and pagination rules.
 
-| Operation | Method and route | Request | Successful data and status |
-| --- | --- | --- | --- |
-| AUTH-API-001 | `POST /api/v0/statements` | Create Statement body | HTTP 201, `data.id` UUID, `Location: /api/v0/statements/{id}` |
-| AUTH-API-001 | `GET /api/v0/statements` | `page`, `pageSize`, `filterBy`, repeated `sortBy` | HTTP 200, Statement array and offset pagination metadata |
-| AUTH-API-002 | `DELETE /api/v0/statements/{statementId}` | UUID path identifier | HTTP 200, `data=null` |
-| AUTH-API-003 | `POST /api/v0/roles` | Create Role body | HTTP 201, `data.id` UUID, `Location: /api/v0/roles/{id}` |
-| AUTH-API-003 | `GET /api/v0/roles` | `page`, `pageSize`, `filterBy`, repeated `sortBy` | HTTP 200, Role array and offset pagination metadata |
-| AUTH-API-004 | `PATCH /api/v0/roles/{roleId}/statements` | UUID path identifier and direct Statement assignment body | HTTP 200, `data=null` |
+| Operation    | Method and route                          | Request                                                   | Successful data and status                                                                                                                          |
+| ------------ | ----------------------------------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AUTH-API-001 | `POST /api/v0/statements`                 | Create Statement body                                     | HTTP 201, `data.id` UUID, `Location: /api/v0/statements/{id}`                                                                                       |
+| AUTH-API-001 | `GET /api/v0/statements`                  | `page`, `pageSize`, `filterBy`, repeated `sortBy`         | HTTP 200, Statement array and offset pagination metadata                                                                                            |
+| AUTH-API-002 | `DELETE /api/v0/statements/{statementId}` | UUID path identifier                                      | HTTP 200, `data=null`                                                                                                                               |
+| AUTH-API-003 | `POST /api/v0/roles`                      | Create Role body                                          | HTTP 201, `data.id` UUID, `Location: /api/v0/roles/{id}`                                                                                            |
+| AUTH-API-003 | `GET /api/v0/roles`                       | `page`, `pageSize`, `filterBy`, repeated `sortBy`         | HTTP 200, Role array and offset pagination metadata                                                                                                 |
+| AUTH-API-004 | `PATCH /api/v0/roles/{roleId}/statements` | UUID path identifier and direct Statement assignment body | HTTP 200, `data=null`                                                                                                                               |
 | AUTH-API-005 | `PATCH /api/v0/users/{userId}/statements` | UUID path identifier and direct Statement assignment body | HTTP 200, `data=null`; User lifecycle rules are [Identity-owned](../005.%20Identity%20and%20User%20Retention/03-external-interface-requirements.md) |
 
 All operations SHALL require the applicable Request Authorization decision. List operations SHALL additionally resolve their operation-specific Object Authorization predicates; permitted list results and `totalItems` SHALL reflect the authorized collection before pagination. The User assignment operation SHALL use Identity's User mutation Object Authorization; other operations SHALL NOT be described as object-scoped unless their registered resource operation declares it.
 
 ### 3.6.1 Create Statement and Statement response
 
-| Field | Create request | Statement response |
-| --- | --- | --- |
-| `id` | Not accepted as client-assigned identity | UUID, required |
-| `code` | Required nonblank string, unique | String, required |
-| `description` | Optional string | Nullable string |
-| `effect` | Required exact lowercase `allow` or `deny` | Enum `ALLOW` or `DENY` |
-| `scope` | Required exact lowercase `request` or `object` | Enum `REQUEST` or `OBJECT` |
+| Field               | Create request                                              | Statement response            |
+| ------------------- | ----------------------------------------------------------- | ----------------------------- |
+| `id`                | Not accepted as client-assigned identity                    | UUID, required                |
+| `code`              | Required nonblank string, unique                            | String, required              |
+| `description`       | Optional string                                             | Nullable string               |
+| `effect`            | Required exact lowercase `allow` or `deny`                  | Enum `ALLOW` or `DENY`        |
+| `scope`             | Required exact lowercase `request` or `object`              | Enum `REQUEST` or `OBJECT`    |
 | `target.api.method` | Required method or `*` under [target rules](#14-public-api) | String at `target.api.method` |
-| `target.api.path` | Required bounded target path expression | String at `target.api.path` |
-| `policy` | Required nonblank source string | String, required |
+| `target.api.path`   | Required bounded target path expression                     | String at `target.api.path`   |
+| `policy`            | Required nonblank source string                             | String, required              |
 
 Creation SHALL reject missing or invalid field constraints according to the shared [validation contract](../007.%20Audit%20and%20API%20Contracts/04-functional-and-behavioral-requirements.md#42-api-v0-error-semantics). The response SHALL not be assumed to be a copy of the request: enums are domain enum names.
 
 ### 3.6.2 Create Role, Role response and assignment replacement
 
-| Field | Create Role request | Role list item |
-| --- | --- | --- |
-| `id` | Server-assigned | UUID, required |
-| `code` | Required nonblank string, unique | String, required |
-| `displayName` | Required nonblank string | String, required |
-| `description` | Optional string | Optional string; omitted when null |
-| `roleIds` | Optional set of child Role UUIDs; referenced Roles SHALL exist | Not projected directly |
-| `children` | Not accepted in create body | Recursive Role projections; empty collections are omitted |
+| Field         | Create Role request                                            | Role list item                                            |
+| ------------- | -------------------------------------------------------------- | --------------------------------------------------------- |
+| `id`          | Server-assigned                                                | UUID, required                                            |
+| `code`        | Required nonblank string, unique                               | String, required                                          |
+| `displayName` | Required nonblank string                                       | String, required                                          |
+| `description` | Optional string                                                | Optional string; omitted when null                        |
+| `roleIds`     | Optional set of child Role UUIDs; referenced Roles SHALL exist | Not projected directly                                    |
+| `children`    | Not accepted in create body                                    | Recursive Role projections; empty collections are omitted |
 
 For `PATCH /api/v0/roles/{roleId}/statements`, the request body SHALL be an object with optional `statementIds` as a set of nonnull UUIDs. An omitted or null `statementIds` SHALL replace the direct grant set with an empty set, **not** preserve existing grants. The operation SHALL be treated as replacement, not additive assignment. This rule also applies to the Identity-owned User assignment endpoint.
 
@@ -152,12 +152,12 @@ For `PATCH /api/v0/roles/{roleId}/statements`, the request body SHALL be an obje
 
 `filterBy` SHALL use field-to-literal expressions over `object.<field>`. `sortBy` SHALL accept repeated field names with an optional leading `-` for descending order. The allowlists below are per-operation; they are not the complete set of response fields.
 
-| Operation ID | Field | Allowed filter operators | Sortable |
-| --- | --- | --- | --- |
-| `access-control.statements.list` | `id` | EQ, NE | Yes |
-| `access-control.statements.list` | `code`, `description`, `method`, `path` | EQ, NE, CONTAINS | Yes |
-| `access-control.roles.list` | `id` | EQ, NE | Yes |
-| `access-control.roles.list` | `code`, `displayName`, `description` | EQ, NE, CONTAINS | Yes |
+| Operation ID                     | Field                                   | Allowed filter operators | Sortable |
+| -------------------------------- | --------------------------------------- | ------------------------ | -------- |
+| `access-control.statements.list` | `id`                                    | EQ, NE                   | Yes      |
+| `access-control.statements.list` | `code`, `description`, `method`, `path` | EQ, NE, CONTAINS         | Yes      |
+| `access-control.roles.list`      | `id`                                    | EQ, NE                   | Yes      |
+| `access-control.roles.list`      | `code`, `displayName`, `description`    | EQ, NE, CONTAINS         | Yes      |
 
 The Statement list's `method` and `path` query fields refer to the stored API target; these are **logical query fields**, not top-level response properties. Unsupported fields or operators SHALL yield `INVALID_FILTER`; unsupported or duplicate sorting SHALL yield `INVALID_SORT`. Generated OpenAPI SHALL expose these static allowlists via `x-filter-by` and `x-sort-by` as required by [API-IF-005](../007.%20Audit%20and%20API%20Contracts/03-external-interface-requirements.md#api-if-005--query-capability-metadata).
 

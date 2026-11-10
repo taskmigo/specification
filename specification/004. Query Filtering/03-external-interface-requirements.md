@@ -72,24 +72,24 @@ Generated OpenAPI SHALL expose supported filter paths/operators via `x-filter-by
 
 The Query module defines **shared syntax, validation and typed operation binding**; the owning resource module defines the field allowlist. A response field SHALL NOT be assumed filterable merely because it appears in JSON. Use the following canonical operation contracts for field/operator and sort metadata.
 
-| Operation ID | Owning module | Query field allowlist |
-| --- | --- | --- |
-| `access-control.roles.list` | [Authorization](../002.%20Authorization/03-external-interface-requirements.md#363-allowed-filter-and-sort-fields) | `id`, `code`, `displayName`, `description` |
-| `access-control.statements.list` | [Authorization](../002.%20Authorization/03-external-interface-requirements.md#363-allowed-filter-and-sort-fields) | `id`, `code`, `description`, `method`, `path` |
-| `identity.users.list` | [Identity](../005.%20Identity%20and%20User%20Retention/03-external-interface-requirements.md#365-per-operation-query-field-allowlists) | `id`, `username`, `firstName`, `lastName`, `status`, `retainedAt` |
-| `identity.groups.list` | [Identity](../005.%20Identity%20and%20User%20Retention/03-external-interface-requirements.md#365-per-operation-query-field-allowlists) | `id`, `code`, `displayName`, `description` |
-| `tickets.list` | [Tickets](../006.%20Tickets%20and%20Dynamic%20Fields/03-external-interface-requirements.md#343-ticket-list-filter-and-sort-allowlists) | Static Ticket fields plus compatible runtime template fields |
+| Operation ID                     | Owning module                                                                                                                          | Query field allowlist                                             |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `access-control.roles.list`      | [Authorization](../002.%20Authorization/03-external-interface-requirements.md#363-allowed-filter-and-sort-fields)                      | `id`, `code`, `displayName`, `description`                        |
+| `access-control.statements.list` | [Authorization](../002.%20Authorization/03-external-interface-requirements.md#363-allowed-filter-and-sort-fields)                      | `id`, `code`, `description`, `method`, `path`                     |
+| `identity.users.list`            | [Identity](../005.%20Identity%20and%20User%20Retention/03-external-interface-requirements.md#365-per-operation-query-field-allowlists) | `id`, `username`, `firstName`, `lastName`, `status`, `retainedAt` |
+| `identity.groups.list`           | [Identity](../005.%20Identity%20and%20User%20Retention/03-external-interface-requirements.md#365-per-operation-query-field-allowlists) | `id`, `code`, `displayName`, `description`                        |
+| `tickets.list`                   | [Tickets](../006.%20Tickets%20and%20Dynamic%20Fields/03-external-interface-requirements.md#343-ticket-list-filter-and-sort-allowlists) | Static Ticket fields plus compatible runtime template fields      |
 
 For the current v0 query grammar, these externally observable rules SHALL hold:
 
-| Input | Expected behavior |
-| --- | --- |
-| `filterBy` omitted, empty or blank | Match-all **client** predicate; Object Authorization and mandatory resource visibility still apply |
-| `filterBy=object.status == "ACTIVE"` | Valid only where the operation schema declares `status` and the EQ operator |
-| `filterBy=contains(object.title, "fix")` | Valid only where `title` supports CONTAINS and has a compatible string-like type |
-| Repeated `sortBy=title&sortBy=-createdAt` | Apply ascending `title` then descending `createdAt` where both fields are sortable |
-| `sortBy=+title`, repeated field, unknown field | HTTP 400 with `error.code=INVALID_SORT` |
-| Unknown field, field-to-field comparison, unsupported operator | HTTP 400 with `error.code=INVALID_FILTER` |
+| Input                                                          | Expected behavior                                                                                  |
+| -------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `filterBy` omitted, empty or blank                             | Match-all **client** predicate; Object Authorization and mandatory resource visibility still apply |
+| `filterBy=object.status == "ACTIVE"`                           | Valid only where the operation schema declares `status` and the EQ operator                        |
+| `filterBy=contains(object.title, "fix")`                       | Valid only where `title` supports CONTAINS and has a compatible string-like type                   |
+| Repeated `sortBy=title&sortBy=-createdAt`                      | Apply ascending `title` then descending `createdAt` where both fields are sortable                 |
+| `sortBy=+title`, repeated field, unknown field                 | HTTP 400 with `error.code=INVALID_SORT`                                                            |
+| Unknown field, field-to-field comparison, unsupported operator | HTTP 400 with `error.code=INVALID_FILTER`                                                          |
 
 Examples illustrate the grammar but SHALL NOT expand a particular operation's allowlist. The canonical request parameters are `filterBy` and ordered repeated `sortBy`; `sortOrder`, arbitrary client SQL, and implicit `+field` syntax are not accepted.
 

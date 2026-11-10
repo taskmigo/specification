@@ -22,10 +22,10 @@ The physical project is `:modules:internal:language`. [CompilationFeature](https
 
 The [backend source snapshot](https://github.com/taskmigo/taskmigo/tree/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server) is **observed implementation evidence**, not an automatic replacement for approved SRS requirements. The table below links existing normative IDs to interface contracts and objective acceptance obligations. The stated acceptance coverage does **not** claim those tests were run during this documentation edit.
 
-| Requirement IDs | Behavior or interface | Normative SRS contract | Verification obligation |
-| --- | --- | --- | --- |
-| SYNTAX-001–004, ENV-001–004 | Compiler source modes, schema/profile features | [Compilation interface](03-external-interface-requirements.md#32-compilation-environment) | [Consumer acceptance](09-verification-validation-and-acceptance.md#93-consumer-compatibility-acceptance) |
-| EVAL-IF-001–002, PARTIAL-001–005 | Direct and partial evaluation result boundaries | [Evaluation contract](03-external-interface-requirements.md#33-evaluation-interface) | [Execution acceptance](09-verification-validation-and-acceptance.md#92-execution-acceptance) |
+| Requirement IDs                  | Behavior or interface                           | Normative SRS contract                                                                    | Verification obligation                                                                                  |
+| -------------------------------- | ----------------------------------------------- | ----------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| SYNTAX-001–004, ENV-001–004      | Compiler source modes, schema/profile features  | [Compilation interface](03-external-interface-requirements.md#32-compilation-environment) | [Consumer acceptance](09-verification-validation-and-acceptance.md#93-consumer-compatibility-acceptance) |
+| EVAL-IF-001–002, PARTIAL-001–005 | Direct and partial evaluation result boundaries | [Evaluation contract](03-external-interface-requirements.md#33-evaluation-interface)      | [Execution acceptance](09-verification-validation-and-acceptance.md#92-execution-acceptance)             |
 
 ### 10.4.1 Source-to-spec reconciliation
 

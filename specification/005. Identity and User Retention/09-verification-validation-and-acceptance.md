@@ -37,14 +37,14 @@ These test files are evidence of intended coverage, not a claim that the test su
 
 ## 9.3 Public HTTP Contract Scenarios
 
-| Scenario | Setup and request | Observable result |
-| --- | --- | --- |
-| Create User | Valid normalized profile and valid initial `roleIds`/`groupIds` | HTTP 201, UUID `data.id`, Location; invalid relation rolls back entire registration |
-| List User projection | GET page 1 size 20 with authorized subset and TOMBSTONE rows present | Only visible users appear; `totalItems` excludes hidden/tombstoned rows; documented field set and status values are used |
-| User query allowlist | Filter by `status` or `retainedAt`; separately try `emails` | Supported expressions work; `emails` filter returns HTTP 400 `INVALID_FILTER` |
-| Clear direct grants | PATCH `/users/{userId}/statements` with `{}` or `{"statementIds":null}` | Direct Statement set becomes empty without modifying Role/Group membership |
-| Retention zero versus positive | DELETE the same eligible test fixture under `P0D` and `P1D` | Direct TOMBSTONE versus RETAINED transition follows [ID-FR-007–009](04-functional-and-behavioral-requirements.md#42-user-deletion-lifecycle) |
-| Configuration patch absence | PATCH `{}`, then PATCH with invalid key or sub-day duration | Empty patch preserves effective value; invalid input is rejected; valid duration round-trips canonically |
-| Group recursion | Create Group from referenced child UUIDs and list it | Recursive `children` projection preserves authorized hierarchy and no cycle can be introduced |
+| Scenario                       | Setup and request                                                       | Observable result                                                                                                                            |
+| ------------------------------ | ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Create User                    | Valid normalized profile and valid initial `roleIds`/`groupIds`         | HTTP 201, UUID `data.id`, Location; invalid relation rolls back entire registration                                                          |
+| List User projection           | GET page 1 size 20 with authorized subset and TOMBSTONE rows present    | Only visible users appear; `totalItems` excludes hidden/tombstoned rows; documented field set and status values are used                     |
+| User query allowlist           | Filter by `status` or `retainedAt`; separately try `emails`             | Supported expressions work; `emails` filter returns HTTP 400 `INVALID_FILTER`                                                                |
+| Clear direct grants            | PATCH `/users/{userId}/statements` with `{}` or `{"statementIds":null}` | Direct Statement set becomes empty without modifying Role/Group membership                                                                   |
+| Retention zero versus positive | DELETE the same eligible test fixture under `P0D` and `P1D`             | Direct TOMBSTONE versus RETAINED transition follows [ID-FR-007–009](04-functional-and-behavioral-requirements.md#42-user-deletion-lifecycle) |
+| Configuration patch absence    | PATCH `{}`, then PATCH with invalid key or sub-day duration             | Empty patch preserves effective value; invalid input is rejected; valid duration round-trips canonically                                     |
+| Group recursion                | Create Group from referenced child UUIDs and list it                    | Recursive `children` projection preserves authorized hierarchy and no cycle can be introduced                                                |
 
 Verify HTTP status, `message.code`, `error.code`, data shape, side effects and audit revocation where appropriate. Reuse existing domain/retention tests rather than multiplying equivalent test cases.

@@ -48,49 +48,49 @@ HTTP operation paths and methods SHALL match the checked-in generated [OpenAPI v
 
 `GET /api/v0/audit/{entityType}/logs` SHALL accept a string `entityType` path parameter. The implemented entity-type allowlist SHALL contain exactly `user`. It SHALL accept optional `page` (one-based, default 1, minimum 1) and `pageSize` (default 20, 1–100). It SHALL NOT imply `filterBy` or `sortBy` support. Successful responses SHALL use HTTP 200, an array of Audit log projections, and [offset pagination metadata](#api-if-004--offset-pagination).
 
-| Field | Type | Presence and meaning |
-| --- | --- | --- |
-| `id` | UUID | Audit event identity |
-| `entityType` | String | `user` for this route |
-| `entityId` | UUID | Audited User identity |
-| `actor.id` | UUID | Actor identity retained for audit linkage |
-| `actor.username` | String | Anonymized when applicable to lifecycle scrub |
-| `occurredAt` | ISO-8601 instant | Event occurrence time |
-| `changes[].field` | String | Affected logical field |
-| `changes[].before`, `changes[].after` | Nullable JSON value | Null for sensitive field changes |
-| `changes[].sensitive` | Boolean | Whether the field's prior/new values are redacted |
+| Field                                 | Type                | Presence and meaning                              |
+| ------------------------------------- | ------------------- | ------------------------------------------------- |
+| `id`                                  | UUID                | Audit event identity                              |
+| `entityType`                          | String              | `user` for this route                             |
+| `entityId`                            | UUID                | Audited User identity                             |
+| `actor.id`                            | UUID                | Actor identity retained for audit linkage         |
+| `actor.username`                      | String              | Anonymized when applicable to lifecycle scrub     |
+| `occurredAt`                          | ISO-8601 instant    | Event occurrence time                             |
+| `changes[].field`                     | String              | Affected logical field                            |
+| `changes[].before`, `changes[].after` | Nullable JSON value | Null for sensitive field changes                  |
+| `changes[].sensitive`                 | Boolean             | Whether the field's prior/new values are redacted |
 
 Request Authorization SHALL apply. The corresponding User list Object Authorization predicate SHALL be unrestricted (`true`) for Audit list access; otherwise the request SHALL be forbidden rather than returning a partial audit log. Returned events SHALL use [AUD-FR-006 ordering](04-functional-and-behavioral-requirements.md#aud-fr-006--audit-read-order). A user-scope absence SHALL not be interpreted as an independent public audit-listing permission.
 
 ### 3.4.2 Envelope types
 
-| Field | Successful response | Failed response |
-| --- | --- | --- |
-| `success` | `true` | `false` |
-| `statusCode` | Actual HTTP status integer | Actual HTTP status integer |
-| `message.code`, `message.text` | Operation-specific outcome code/text | Failure-class code/text |
-| `data` | Endpoint-specific JSON object/array or null for no-body operations | `null` |
-| `error` | `null` | `{code, message, formErrors?}` |
-| `meta.execution.startedAt` | ISO-8601 instant | ISO-8601 instant when request is handled in v0 response context |
-| `meta.execution.duration` | Nonnegative integer milliseconds | Nonnegative integer milliseconds when available |
-| `meta.pagination.type` | `offset` for paginated operations only | Not a generic failure guarantee |
-| `meta.pagination.offset` | `{currentPage, pageSize, totalItems, totalPages}` for paginated operations | Not a generic failure guarantee |
+| Field                          | Successful response                                                        | Failed response                                                 |
+| ------------------------------ | -------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| `success`                      | `true`                                                                     | `false`                                                         |
+| `statusCode`                   | Actual HTTP status integer                                                 | Actual HTTP status integer                                      |
+| `message.code`, `message.text` | Operation-specific outcome code/text                                       | Failure-class code/text                                         |
+| `data`                         | Endpoint-specific JSON object/array or null for no-body operations         | `null`                                                          |
+| `error`                        | `null`                                                                     | `{code, message, formErrors?}`                                  |
+| `meta.execution.startedAt`     | ISO-8601 instant                                                           | ISO-8601 instant when request is handled in v0 response context |
+| `meta.execution.duration`      | Nonnegative integer milliseconds                                           | Nonnegative integer milliseconds when available                 |
+| `meta.pagination.type`         | `offset` for paginated operations only                                     | Not a generic failure guarantee                                 |
+| `meta.pagination.offset`       | `{currentPage, pageSize, totalItems, totalPages}` for paginated operations | Not a generic failure guarantee                                 |
 
 The `error.formErrors` map is optional and SHALL contain field-name-to-message entries for field validation failures. The server SHALL not leak stack traces through the public error envelope. The existence of an internal `CursorMeta` type SHALL NOT be interpreted as a public cursor pagination API.
 
 ### 3.4.3 Common HTTP and application-error mapping
 
-| Condition | HTTP status | `message.code` | `error.code` |
-| --- | --- | --- | --- |
-| Body validation failure | 422 | `validation.failed` | `VALIDATION_ERROR` |
-| Malformed or unreadable JSON | 400 | `request.malformed` | `MALFORMED_REQUEST` |
-| Invalid `filterBy` | 400 | `query.filter.invalid` | `INVALID_FILTER` |
-| Invalid `sortBy` | 400 | `query.sort.invalid` | `INVALID_SORT` |
-| Forbidden request | 403 | `security.forbidden` | `FORBIDDEN` |
-| Missing resource from typed/recognized exception | 404 | `resource.not-found` | `NOT_FOUND` |
-| Recognized invalid Ticket/EAV request | 400 | `request.invalid` | `INVALID_REQUEST` |
-| Recognized Ticket/Template lifecycle conflict | 409 | `resource.state.conflict` | `STATE_CONFLICT` |
-| Unexpected unhandled server error | 500 | `internal.error` | `INTERNAL_ERROR` |
+| Condition                                        | HTTP status | `message.code`            | `error.code`        |
+| ------------------------------------------------ | ----------- | ------------------------- | ------------------- |
+| Body validation failure                          | 422         | `validation.failed`       | `VALIDATION_ERROR`  |
+| Malformed or unreadable JSON                     | 400         | `request.malformed`       | `MALFORMED_REQUEST` |
+| Invalid `filterBy`                               | 400         | `query.filter.invalid`    | `INVALID_FILTER`    |
+| Invalid `sortBy`                                 | 400         | `query.sort.invalid`      | `INVALID_SORT`      |
+| Forbidden request                                | 403         | `security.forbidden`      | `FORBIDDEN`         |
+| Missing resource from typed/recognized exception | 404         | `resource.not-found`      | `NOT_FOUND`         |
+| Recognized invalid Ticket/EAV request            | 400         | `request.invalid`         | `INVALID_REQUEST`   |
+| Recognized Ticket/Template lifecycle conflict    | 409         | `resource.state.conflict` | `STATE_CONFLICT`    |
+| Unexpected unhandled server error                | 500         | `internal.error`          | `INTERNAL_ERROR`    |
 
 Domain typed errors use the separately specified mapping in [API-FR-003](04-functional-and-behavioral-requirements.md#api-fr-003--domain-failures). Missing/invalid authentication has the 401 security boundary and SHALL be checked against its configured versioned security renderer; no single 401 `error.code` is asserted without verifying that renderer. **Status, message code and error code are distinct fields**, and clients SHALL not infer them from human-readable message text.
 

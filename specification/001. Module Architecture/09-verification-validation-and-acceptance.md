@@ -49,10 +49,10 @@ Conformance SHALL be established by applicable architecture tests and review of 
 
 The following scenarios SHALL complement the structural tests rather than replace them.
 
-| Scenario | Setup and action | Expected result | Requirement |
-| --- | --- | --- | --- |
-| Published use case | A consumer module calls a provider's published application interface | The dependency is permitted by declared module boundaries and does not import private persistence or implementation types | [ARCH-IF-002](03-external-interface-requirements.md#arch-if-002--owner-published-contracts) |
-| Private adapter import | A consumer attempts to import an owning context's private repository/entity | Architecture validation rejects the dependency, even if compilation could otherwise succeed | [ARCH-IF-006](03-external-interface-requirements.md#arch-if-006--no-persistence-integration-contract) |
-| Composition boundary | Worker triggers the Identity retention use case | Worker depends only on the published Identity contract and owns no User row mutation logic | [ARCH-IF-007](03-external-interface-requirements.md#arch-if-007--composition-only-application-boundary) |
+| Scenario               | Setup and action                                                            | Expected result                                                                                                           | Requirement                                                                                             |
+| ---------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Published use case     | A consumer module calls a provider's published application interface        | The dependency is permitted by declared module boundaries and does not import private persistence or implementation types | [ARCH-IF-002](03-external-interface-requirements.md#arch-if-002--owner-published-contracts)             |
+| Private adapter import | A consumer attempts to import an owning context's private repository/entity | Architecture validation rejects the dependency, even if compilation could otherwise succeed                               | [ARCH-IF-006](03-external-interface-requirements.md#arch-if-006--no-persistence-integration-contract)   |
+| Composition boundary   | Worker triggers the Identity retention use case                             | Worker depends only on the published Identity contract and owns no User row mutation logic                                | [ARCH-IF-007](03-external-interface-requirements.md#arch-if-007--composition-only-application-boundary) |
 
 Acceptance evidence SHALL be a real passing build/module verification run plus reviewed project graph; the presence of test classes alone is insufficient. Each new boundary deviation SHALL be linked to its proposed provider-owned contract rather than normalized as an exception.
