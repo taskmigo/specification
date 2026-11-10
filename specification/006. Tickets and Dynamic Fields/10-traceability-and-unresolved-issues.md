@@ -18,3 +18,19 @@ The implementation does not specify project association, a status workflow, assi
 ## 10.3 Source Snapshot
 
 Based on backend commit `9c1cd242fe4c5210fdd8dd88311e328a3784d0e1`; subsequent implementation changes require renewed contract review.
+
+## 10.4 Module Contract Traceability and Baseline Discipline
+
+The [backend source snapshot](https://github.com/taskmigo/taskmigo/tree/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server) is **observed implementation evidence**, not an automatic replacement for approved SRS requirements. The table below links existing normative IDs to interface contracts and objective acceptance obligations. The stated acceptance coverage does **not** claim those tests were run during this documentation edit.
+
+| Requirement IDs | Behavior or interface | Normative SRS contract | Verification obligation |
+| --- | --- | --- | --- |
+| TKT-API-001–004, TKT-FR-007–015 | Ticket create/list/read/update and runtime field semantics | [Ticket HTTP contract](03-external-interface-requirements.md#34-explicit-http-operation-inventory) | [Contract matrix](09-verification-validation-and-acceptance.md#93-public-contract-acceptance-matrix) |
+| TKT-API-005–008, TKT-FR-001–006 | Ticket Type and Template lifecycle | [Type and Template contract](03-external-interface-requirements.md#342-ticket-type-and-template-schemas) | [Contract matrix](09-verification-validation-and-acceptance.md#93-public-contract-acceptance-matrix) |
+| TKT-FR-012–015 | Authorized Ticket field queries and compatible dynamic schema context | [Query allowlist](03-external-interface-requirements.md#343-ticket-list-filter-and-sort-allowlists) | [TKT-VER-005–006](09-verification-validation-and-acceptance.md#91-acceptance-cases) |
+
+### 10.4.1 Source-to-spec reconciliation
+
+Ticket Type/template operations are nonpaginated; Ticket list uses offset paging. Ticket `id` is filterable but not sortable in the reviewed static Query Schema. New dynamic field keys cannot be promised by the generated static OpenAPI document. A public Ticket DELETE remains out of scope.
+
+For future changes, classify a finding as **approved requirement**, **observed as-is**, **proposed to-be**, **conflict/drift**, or **unresolved** before rewriting the normative contract. Source evidence should identify the actual backend commit or generated artifact. OpenAPI generation and test presence alone are not conformance evidence; compare the owning module contract, generated schema, and executed test outcome.
