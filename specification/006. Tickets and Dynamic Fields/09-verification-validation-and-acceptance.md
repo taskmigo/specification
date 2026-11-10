@@ -1,30 +1,32 @@
 # 9. Verification, Validation, and Acceptance Evidence
 
+Accept only objectively verifiable Ticket/Type/Template behavior: correct wire shape, partial update semantics, historical stability and secure query results.
+
 ## 9.1 Acceptance Cases
 
 ### TKT-VER-001 — Type lifecycle
 
-Verify creation with unique key, stable key on update, ACTIVE/RETIRED transitions, and rejection of new Ticket creation for retired Types or absent current PUBLISHED template.
+**Verification objective.** Verify creation with unique key, stable key on update, ACTIVE/RETIRED transitions, and rejection of new Ticket creation for retired Types or absent current PUBLISHED template.
 
 ### TKT-VER-002 — Template lifecycle
 
-Verify draft creation/copied fields, field replacement, publication and retirement, including invalid state transitions and immutable published field identity.
+**Verification objective.** Verify draft creation/copied fields, field replacement, publication and retirement, including invalid state transitions and immutable published field identity.
 
 ### TKT-VER-003 — Custom-field types
 
-Verify STRING/NUMBER/BOOLEAN/DATE/DATETIME/UUID/ENUM validation, required/optional behavior, constraint boundaries, duplicate and unknown keys, and null patch removal behavior.
+**Verification objective.** Verify STRING/NUMBER/BOOLEAN/DATE/DATETIME/UUID/ENUM validation, required/optional behavior, constraint boundaries, duplicate and unknown keys, and null patch removal behavior.
 
 ### TKT-VER-004 — Historical schema preservation
 
-Verify an existing Ticket remains readable and patchable with its pinned version after subsequent template publication/retirement and schema changes do not rewrite old Ticket data.
+**Verification objective.** Verify an existing Ticket remains readable and patchable with its pinned version after subsequent template publication/retirement and schema changes do not rewrite old Ticket data.
 
 ### TKT-VER-005 — Authorized list and item
 
-Verify Request and Object Authorization on list/read/update, missing/unauthorized item response, and database-side filtering/sorting before offset pagination.
+**Verification objective.** Verify Request and Object Authorization on list/read/update, missing/unauthorized item response, and database-side filtering/sorting before offset pagination.
 
 ### TKT-VER-006 — Dynamic field ambiguity
 
-Verify global compatible-field intersection, per-Type history and per-Ticket exact-version schema, with ambiguous key/UUID/type fields excluded from global scopes.
+**Verification objective.** Verify global compatible-field intersection, per-Type history and per-Ticket exact-version schema, with ambiguous key/UUID/type fields excluded from global scopes.
 
 ## 9.2 Test Evidence
 

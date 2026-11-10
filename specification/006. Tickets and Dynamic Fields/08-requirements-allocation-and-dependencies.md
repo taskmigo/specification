@@ -1,5 +1,7 @@
 # 8. Requirements Allocation and Dependencies
 
+Ticket owns its external behavior; internal EAV and JPA Query implement reusable technical primitives. Neither internal module becomes an independently exposed Web API.
+
 ## 8.1 Owning Implementations
 
 - **Ticket domain/application:** Type lifecycle, common Ticket fields, API-facing use cases, version pinning.

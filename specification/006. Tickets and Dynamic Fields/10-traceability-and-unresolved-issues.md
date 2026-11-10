@@ -1,5 +1,7 @@
 # 10. Traceability and Unresolved Issues
 
+The source evidence identifies implemented boundaries and gaps. New concepts such as Ticket deletion or assignment require separate product decisions.
+
 ## 10.1 Implementation Map
 
 | Behavior              | Requirements             | Source                                                                                                                                                                                                                        |
