@@ -106,7 +106,7 @@ Group code uniqueness and acyclic child relationships are [functional rules](04-
 | `identity.groups.list` | `id`                                 | EQ, NE                   | Yes      |
 | `identity.groups.list` | `code`, `displayName`, `description` | EQ, NE, CONTAINS         | Yes      |
 
-`emails` and `displayName` in the User response are **not** automatically filterable/sortable fields. Lists SHALL apply Object Authorization and the implicit TOMBSTONE exclusion before pagination and total-count computation. Static generated OpenAPI metadata SHALL advertise only approved static allowlists; invalid filter/sort shall be rejected per [FILTER-002 and SORT-002](../004.%20Query%20Filtering/03-external-interface-requirements.md).
+`emails` and `displayName` in the User response are **not** automatically filterable/sortable fields. Lists SHALL apply Object Authorization and the implicit TOMBSTONE exclusion before pagination and total-count computation. Static generated OpenAPI metadata SHALL advertise only approved static allowlists; invalid filter/sort SHALL be rejected per [FILTER-002 and SORT-002](../004.%20Query%20Filtering/03-external-interface-requirements.md).
 
 ### 3.6.6 Error boundaries
 

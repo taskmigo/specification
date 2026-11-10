@@ -129,7 +129,7 @@ All operations SHALL require the applicable Request Authorization decision. List
 | `description`       | Optional string                                             | Nullable string               |
 | `effect`            | Required exact lowercase `allow` or `deny`                  | Enum `ALLOW` or `DENY`        |
 | `scope`             | Required exact lowercase `request` or `object`              | Enum `REQUEST` or `OBJECT`    |
-| `target.api.method` | Required method or `*` under [target rules](#14-public-api) | String at `target.api.method` |
+| `target.api.method` | Required method or `*` under [target rules](#34-public-api) | String at `target.api.method` |
 | `target.api.path`   | Required bounded target path expression                     | String at `target.api.path`   |
 | `policy`            | Required nonblank source string                             | String, required              |
 
