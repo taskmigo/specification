@@ -10,7 +10,7 @@ The four module snapshots are derived from the backend [generated API v0 OpenAPI
 
 <!-- prettier-ignore -->
 | Module | Scope | API operations | OpenAPI | JSON examples |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | Authorization | Roles and Statements | 6 | [openapi.yaml](../002.%20Authorization/openapi.yaml) | [Examples](../002.%20Authorization/12-api-v0-examples.md) |
 | Identity & User Retention | Users, Groups, Configuration, User Statements | 8 | [openapi.yaml](../005.%20Identity%20and%20User%20Retention/openapi.yaml) | [Examples](../005.%20Identity%20and%20User%20Retention/12-api-v0-examples.md) |
 | Tickets & Dynamic Fields | Tickets, Types, Template versions | 14 | [openapi.yaml](../006.%20Tickets%20and%20Dynamic%20Fields/openapi.yaml) | [Examples](../006.%20Tickets%20and%20Dynamic%20Fields/12-api-v0-examples.md) |

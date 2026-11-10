@@ -6,7 +6,6 @@ The field names, accepted parameters and response schemas are specified in [this
 
 ## 12.1 Implemented Operations
 
-
 <!-- prettier-ignore -->
 |Method|Path|Request / query|Success|`data` shape|
 |---|---|---|---|---|
