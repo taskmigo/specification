@@ -1,81 +1,113 @@
 # 4. Functional and Behavioral Requirements
 
-These are lifecycle **business invariants**: eligible mutation, retention timing, PII purge and transactional revocation. State names are not interchangeable with API actions.
+This section defines the normative **User and Group lifecycle** independently of transport details. [Section 3](03-external-interface-requirements.md) defines HTTP shapes, while [section 5](05-data-and-information-requirements.md) defines retained identifiers and purged fields. Each requirement below SHALL be verifiable by [section 9](09-verification-validation-and-acceptance.md).
 
 ## 4.1 Identity Registration and Grouping
 
 ### ID-FR-001 — User registration invariants
 
-**Normative requirement.** Runtime registration SHALL create an ACTIVE User with normalized username and profile data. Username and first/last name SHALL be nonblank. Username `system` SHALL be reserved for managed provisioning.
+**Precondition:** a caller submits a valid create User request through the registered API and is permitted to create Users.
+
+**Required behavior:** Runtime registration SHALL create an `ACTIVE` User with server-assigned UUID. `username`, `firstName` and `lastName` SHALL be present and nonblank. The reserved username `system` SHALL not be registerable through this operation.
+
+**Failure boundary:** invalid input or the reserved managed identity SHALL not produce a new User or partially assigned grants.
 
 ### ID-FR-002 — Normalization
 
-**Normative requirement.** Username and first/last name SHALL be trimmed. Emails SHALL be normalized to trimmed, lowercase values and deduplicated. `displayName` SHALL be derived from the names rather than independently persisted.
+**Required behavior:** The system SHALL trim usernames and first/last names, normalize email strings by trimming and lowercasing, and deduplicate normalized emails. `displayName` SHALL be derived from profile names rather than independently settable through registration.
+
+**Observable result:** User projections SHALL reflect normalized values; normalization SHALL not create duplicate email entries.
 
 ### ID-FR-003 — Atomic initial assignments
 
-**Normative requirement.** User creation with initial Role and Group IDs SHALL be one transaction; unknown referenced IDs SHALL prevent successful completion.
+**Required behavior:** User creation, requested initial Role assignments and Group membership creation SHALL commit as one mutation. Every referenced Role/Group ID SHALL resolve successfully before completion.
+
+**Failure boundary:** any unknown referenced identifier SHALL cause the registration to fail without leaving a partially created User or subset of assignments.
 
 ### ID-FR-004 — Group hierarchy
 
-**Normative requirement.** Group parent-to-child relations SHALL be acyclic. Creation and internal hierarchy changes SHALL validate referenced child Groups, preserve stable Group codes, and reject graph cycles.
+**Required behavior:** A Group SHALL have stable identity and code. Parent-to-child links SHALL be directed and acyclic; creation and internal hierarchy updates SHALL validate referenced child Groups and maintain consistent reachability.
+
+**Failure boundary:** unknown child Groups or a proposed cycle SHALL be rejected, not silently ignored.
 
 ### ID-FR-005 — Role and Statement assignment
 
-**Normative requirement.** Identity SHALL delegate Role/Statement grant state to Authorization subject grants. Direct assignments SHALL be distinguishable from inherited grants. User mutation operations SHALL verify the User is mutable.
+**Required behavior:** Identity SHALL invoke published Authorization use cases to manage direct User grants and distinguish direct assignments from grants inherited through Roles/Groups. A mutation that targets an ineligible User SHALL be rejected.
+
+**Ownership:** Identity manages User and Group relationships; Authorization remains authoritative for Role and Statement grant state.
 
 ## 4.2 User Deletion Lifecycle
 
+The effective `retention.user` configuration determines which lifecycle transition applies when an ordinary mutable User is deleted. Deletion and cleanup SHALL remain atomic and SHALL satisfy the privacy field enumeration in [section 5](05-data-and-information-requirements.md).
+
 ### ID-FR-006 — Reserved System User
 
-**Normative requirement.** Managed User deletion SHALL reject a User whose username equals the reserved system username `system`.
+**Required behavior:** Managed User deletion SHALL reject a User whose username equals the reserved System User username `system`. No policy grant, retention value or caller type SHALL convert the reserved identity into an ordinary deletable User.
 
 ### ID-FR-007 — Immediate tombstone
 
-**Normative requirement.** When `retention.user=P0D`, deletion SHALL transition directly to TOMBSTONE in the deletion transaction, revoke access, and erase User PII. It SHALL NOT synthesize a RETAINED transition or `retainedAt`.
+**Condition:** `retention.user=P0D` at the time of deletion.
+
+**Required behavior:** The deletion transaction SHALL revoke access, scrub User PII and transition directly to `TOMBSTONE`. It SHALL preserve the stable User UUID but SHALL NOT insert a synthetic `RETAINED` transition or `retainedAt` value.
+
+**Observable result:** Ordinary User queries no longer expose the tombstone; audit history remains under privacy-safe rules.
 
 ### ID-FR-008 — Retained transition
 
-**Normative requirement.** When retention is positive, deleting an ordinary mutable User SHALL revoke direct Role/Statement assignments, Group memberships, and sessions; persist status RETAINED and first `retainedAt` timestamp; and append an audit record in the same transaction.
+**Condition:** a positive retention duration and a mutable ordinary User.
+
+**Required behavior:** Deletion SHALL remove direct Role/Statement assignments, Group memberships and sessions; record the first `retainedAt`; transition to `RETAINED`; and append the relevant mutation audit in the **same transaction**.
+
+**Observable result:** Profile PII remains stored during retention, but the User cannot perform ordinary mutations or authenticate as an ACTIVE User.
 
 ### ID-FR-009 — Retained immutability
 
-**Normative requirement.** A RETAINED or TOMBSTONE User SHALL NOT be an ordinary mutation target. A subsequent public delete or direct-Statement update of a RETAINED User SHALL fail without changing state.
+**Required behavior:** `RETAINED` and `TOMBSTONE` SHALL be ineligible as ordinary mutation targets. A repeated public delete or direct Statement grant replacement targeting a RETAINED User SHALL fail without changing the retained record.
+
+**Important distinction:** This is not a promise that repeated deletion returns a successful idempotent no-op.
 
 ### ID-FR-010 — Terminal tombstone
 
-**Normative requirement.** TOMBSTONE SHALL preserve User UUID and lifecycle timestamp metadata while removing username, first/last names, emails, password hash, direct Role/Statement assignments, Group memberships, and sessions. TOMBSTONE SHALL be terminal for normal runtime User lifecycle operations.
+**Required behavior:** `TOMBSTONE` SHALL be a terminal normal lifecycle state that preserves the User UUID and lifecycle metadata while erasing username, first/last names, email set, password hash, direct grants, Group memberships and sessions.
+
+**Data boundary:** historical Ticket and Audit relationships identifying the User by UUID SHALL remain intact unless their own owning SRS specifies otherwise.
 
 ### ID-FR-011 — PII-safe audit
 
-**Normative requirement.** Tombstoning SHALL scrub user-identifying fields from existing audit records, preserve audit event identities/history, anonymize prior actor username to `Unknown user`, and record sensitive field-change markers without including old/new values.
+**Required behavior:** Tombstoning SHALL preserve Audit event identities/history but scrub identifying historical User field values. Events associated with the former actor SHALL display `Unknown user` in place of identifying actor username; sensitive change markers SHALL have null before/after values.
+
+**Failure boundary:** a deletion audit SHALL not copy removed PII into the diff payload as a new disclosure.
 
 ## 4.3 Retention Worker
 
 ### ID-FR-012 — Scheduled expiration
 
-**Normative requirement.** Worker SHALL invoke retention purge at a fixed delay of one hour. Eligibility SHALL use status RETAINED and `retainedAt <= now - configuredDuration`; changing configured duration SHALL change eligibility on the next purge.
+**Required behavior:** Worker SHALL trigger the published retention use case at a fixed delay of one hour. A RETAINED User is eligible when `retainedAt <= now - effectiveRetentionDuration`. The duration SHALL be read from effective configuration so an update can affect eligibility at the next purge.
 
 ### ID-FR-013 — Safe batched processing
 
-**Normative requirement.** Purge SHALL page candidates by (`retainedAt`, UUID) in batches of at most 100, claim eligible User rows with pessimistic `SKIP LOCKED`, recheck eligibility inside per-User transactions, and continue processing after independent candidate failures.
+**Required behavior:** Retention processing SHALL page candidates in `(retainedAt, UUID)` order, in batches of no more than 100; use pessimistic `SKIP LOCKED` claims; recheck eligibility under a per-User transaction; and allow independent candidate failures without abandoning every other eligible User.
+
+**Concurrency invariant:** two workers SHALL not both perform conflicting cleanup of the same retained User. Partial cleanup of one failing User SHALL not commit as a successful tombstone.
 
 ### ID-FR-014 — User access revocation and login
 
-**Normative requirement.** Retained/tombstoned Users SHALL NOT be able to authenticate as ACTIVE users or use previously stored interactive sessions. User mutation and session-state writes SHALL use locking/eligibility checks to avoid recreating authentication after deletion.
+**Required behavior:** Non-ACTIVE, RETAINED and TOMBSTONE Users SHALL not obtain or continue ordinary ACTIVE interactive authentication. Session and OAuth authorization/consent persistence SHALL use lifecycle eligibility and concurrency guards so a deleted User's usable credentials cannot be recreated after revocation.
 
 ## 4.4 Configuration
 
 ### ID-FR-015 — Whole-day duration
 
-**Normative requirement.** Retention SHALL accept only valid ISO-8601 durations representing nonnegative whole 24-hour days (including `PT24H` for one day), and SHALL serialize canonically as `P<n>D`. Fractional or sub-day durations SHALL be rejected.
+**Required behavior:** Retention input SHALL parse a valid nonnegative ISO-8601 duration representing an **integer number of 24-hour days**. `PT24H` SHALL be accepted as one day; fractional, negative and sub-day durations SHALL be rejected. Successful output SHALL use canonical `P<n>D` representation.
 
 ### ID-FR-016 — Effective default
 
-**Normative requirement.** Absent a persisted `retention.user` configuration row, the effective value SHALL be `P30D`. Configuration updates SHALL be stored in the database.
+**Required behavior:** Configuration SHALL be stored in the database. When no persisted `retention.user` value exists, the API and retention service SHALL use the effective default `P30D`. A PATCH omitting `retention.user` SHALL leave the existing effective value unchanged.
 
 ## 4.5 Visibility
 
 ### ID-FR-017 — Tombstone query exclusion
 
-**Normative requirement.** Ordinary User lookup/list and authorized mutation target selection SHALL exclude TOMBSTONE rows; User list SHALL additionally apply Request/Object Authorization and client query predicates before pagination. RETAINED visibility SHALL depend on the applicable policies rather than an unconditional System User exception.
+**Required behavior:** Normal User list/read target selection SHALL exclude `TOMBSTONE` records. User list SHALL compose the applicable Request/Object Authorization and client predicate in the database **before pagination and total computation**.
+
+**Access distinction:** RETAINED visibility SHALL be determined by the applicable authorization policies. The System User label does not by itself establish a public, unconditional retained-User viewing bypass.
