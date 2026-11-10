@@ -1,5 +1,7 @@
 # 11. Appendices
 
+State and JSON examples illustrate the implemented lifecycle; diagrams do not introduce additional public transition endpoints.
+
 ## 11.1 User State Lifecycle
 
 ```mermaid

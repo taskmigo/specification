@@ -1,5 +1,7 @@
 # 10. Traceability and Unresolved Issues
 
+Source evidence is pinned. Historic product intent and observed code must not be silently merged where they disagree; unknown privacy behavior requires explicit decision.
+
 ## 10.1 Source Traceability
 
 | Contract                       | Requirement IDs            | Implementation                                                                                                                                                                                                                                 |

@@ -1,21 +1,33 @@
 # 2. Overall Description
 
-## 2.1 Identity Model
+## 2.1 User and Group model
 
-A User has a stable UUID, username, first/last name, normalized email set, derived display name, status, and optional retention timestamp. Roles and direct Statements are assigned through Authorization; Groups and memberships are owned by Identity. Group hierarchies are directed and acyclic, and may contain children.
+A User has a stable UUID, required identity name fields, a normalized email set, derived `displayName`, lifecycle status and optional retention timestamps. Groups are hierarchical, directed and acyclic; they hold membership relationships. User/Group-specific queries and persistence are owned by Identity, while Role and Statement grants remain in Authorization.
 
-## 2.2 Lifecycle Perspective
+## 2.2 Registration flow
 
-Public User deletion SHALL select either direct TOMBSTONE (`P0D`) or RETAINED (positive duration). Both paths revoke direct authorization grants, group memberships, and existing sessions. RETAINED state retains identity/profile data but forbids subsequent mutations. The worker later tombstones eligible retained Users, scrubbing PII and protecting audit history.
+On a valid `POST /api/v0/users`, Identity normalizes username, names and email addresses; rejects the reserved `system` username; validates requested Role/Group references; and creates the User and initial assignments atomically. The response exposes the server-created UUID, not credential state or direct grant internals.
 
-## 2.3 Application Configuration
+## 2.3 Deletion and retention lifecycle
 
-A database-backed `retention.user` key has an effective default of `P30D`. The public API exposes this value nested under `retention.user`. Updating configuration affects future lifecycle operations and worker expiry calculations.
+| Condition | Mutation and visible outcome |
+| --- | --- |
+| Ordinary mutable User deleted when `retention.user=P0D` | Immediately TOMBSTONE in the owning transaction; revoke access and scrub listed PII; do not synthesize a RETAINED timestamp |
+| Ordinary mutable User deleted with positive duration | Move to RETAINED with first `retainedAt`; revoke Roles, direct Statements, Group memberships and sessions |
+| RETAINED User reaches configured expiry | Worker safely claims/rechecks eligible User and tombstones it |
+| RETAINED/TOMBSTONE targeted for normal mutation | Reject without modifying protected lifecycle state |
+| Reserved System User targeted for deletion | Reject under the reserved-account constraint |
 
-## 2.4 Visibility and Login
+The worker's fixed-delay trigger is one hour. Retention eligibility is computed from the effective persisted configuration, not a hard-coded duration captured when the User was deleted.
 
-Ordinary User list/read lookup hides TOMBSTONE records. Retained Users remain persisted and participate in normal User list queries subject to the current Request/Object Authorization rules; no blanket public visibility is implied. Authentication and API authorization require ACTIVE User status.
+## 2.4 Privacy and history
 
-## 2.5 Out of Scope
+Tombstoning removes username, first/last names, email identifiers, password hash, direct grants, memberships and sessions while **preserving User UUID and historical business references**. Audit event identities/history remain available under audit authorization rules, but identifying actor names and sensitive prior/new values are anonymized or omitted. Do not confuse stable referential identity with continued storage of PII.
 
-There is no public User profile update endpoint, public Group mutation beyond create/list, general User status-change API, or User restoration API in the reviewed v0 controller set. No Organization domain/API is implied by Group hierarchy.
+## 2.5 Configuration, policy and visibility
+
+The public Configuration API exposes `data.retention.user` and updates only recognized fields. Absent a stored value, the effective default is `P30D`; valid inputs are nonnegative whole-day durations serialized as `P<n>D`. Retained Users remain subject to the same applicable Request and Object Authorization checks; TOMBSTONE users are omitted from normal User projections. Neither status alone grants a privileged viewer blanket access.
+
+## 2.6 Out of scope
+
+No general User PATCH, User GET-by-ID, restoration, User status-transition API, Group update/delete, or Organization abstraction exists in this reviewed v0 public interface set. Future capabilities require an explicit separately approved specification.

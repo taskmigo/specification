@@ -1,30 +1,32 @@
 # 9. Verification, Validation, and Acceptance Evidence
 
+Acceptance SHALL compare zero-day and positive retention, normal versus privileged visibility, PII scrubbing, authorization, and concurrent worker behavior.
+
 ## 9.1 Behavioral Cases
 
 ### ID-VER-001 — Registration and normalization
 
-Verify trimming, normalized email uniqueness, reserved System User protection, atomic Role/Group assignment, and rollback on invalid references.
+**Verification objective.** Verify trimming, normalized email uniqueness, reserved System User protection, atomic Role/Group assignment, and rollback on invalid references.
 
 ### ID-VER-002 — Immediate purge
 
-With `P0D`, verify direct TOMBSTONE, null username/names/password, cleared emails/grants/memberships/sessions, preserved UUID, and no synthetic `retainedAt`.
+**Verification objective.** With `P0D`, verify direct TOMBSTONE, null username/names/password, cleared emails/grants/memberships/sessions, preserved UUID, and no synthetic `retainedAt`.
 
 ### ID-VER-003 — Retention path
 
-With a positive duration, verify RETAINED and nonnull `retainedAt`, no immediate PII purge, cleared access, immutable retained state, and sensitive audit markers.
+**Verification objective.** With a positive duration, verify RETAINED and nonnull `retainedAt`, no immediate PII purge, cleared access, immutable retained state, and sensitive audit markers.
 
 ### ID-VER-004 — Expiry, concurrency and idempotence
 
-Verify expired retained Users become TOMBSTONE after batch processing, non-expired Users remain retained, concurrent workers use `SKIP LOCKED`, each successful cleanup is atomic, and failures are isolated by User.
+**Verification objective.** Verify expired retained Users become TOMBSTONE after batch processing, non-expired Users remain retained, concurrent workers use `SKIP LOCKED`, each successful cleanup is atomic, and failures are isolated by User.
 
 ### ID-VER-005 — Visibility and authentication
 
-Verify TOMBSTONE is excluded from normal User lists and lookups, RETAINED is subject to Object Authorization, and inactive/retained/tombstoned sessions cannot be reused.
+**Verification objective.** Verify TOMBSTONE is excluded from normal User lists and lookups, RETAINED is subject to Object Authorization, and inactive/retained/tombstoned sessions cannot be reused.
 
 ### ID-VER-006 — Configuration
 
-Verify default `P30D`, persisted GET/PATCH, canonical duration, acceptance of `PT24H`, and rejection of sub-day, negative, malformed or unknown-property inputs.
+**Verification objective.** Verify default `P30D`, persisted GET/PATCH, canonical duration, acceptance of `PT24H`, and rejection of sub-day, negative, malformed or unknown-property inputs.
 
 ## 9.2 Implementation Test Evidence
 
