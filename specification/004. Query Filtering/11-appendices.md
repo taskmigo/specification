@@ -37,13 +37,13 @@ flowchart TB
 
 This snapshot is derived from the registered Query Schemas and the [generated OpenAPI v0 document](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/web/src/main/resources/static/api/docs/openapi.yaml). It describes static capabilities only. Operators separated by commas apply to the entire named field group.
 
-| GET collection | Fields and supported operators | Sortable fields |
-| --- | --- | --- |
-| `/api/v0/users` | `id`, `status`: EQ, NE • `username`, `firstName`, `lastName`: EQ, NE, CONTAINS • `retainedAt`: EQ, NE, GT, GTE, LT, LTE | `id`, `username`, `firstName`, `lastName`, `status`, `retainedAt` |
-| `/api/v0/tickets` | `id`, `ticketTypeId`, `createdBy`: EQ, NE • `title`, `status`: EQ, NE, CONTAINS • `createdAt`, `updatedAt`: EQ, NE, GT, GTE, LT, LTE | `title`, `status`, `createdAt`, `updatedAt` |
-| `/api/v0/statements` | `id`: EQ, NE • `code`, `description`, `method`, `path`: EQ, NE, CONTAINS | `id`, `code`, `description`, `method`, `path` |
-| `/api/v0/roles` | `id`: EQ, NE • `code`, `displayName`, `description`: EQ, NE, CONTAINS | `id`, `code`, `displayName`, `description` |
-| `/api/v0/groups` | `id`: EQ, NE • `code`, `displayName`, `description`: EQ, NE, CONTAINS | `id`, `code`, `displayName`, `description` |
+| GET collection       | Fields and supported operators                                                                                                       | Sortable fields                                                   |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
+| `/api/v0/users`      | `id`, `status`: EQ, NE • `username`, `firstName`, `lastName`: EQ, NE, CONTAINS • `retainedAt`: EQ, NE, GT, GTE, LT, LTE              | `id`, `username`, `firstName`, `lastName`, `status`, `retainedAt` |
+| `/api/v0/tickets`    | `id`, `ticketTypeId`, `createdBy`: EQ, NE • `title`, `status`: EQ, NE, CONTAINS • `createdAt`, `updatedAt`: EQ, NE, GT, GTE, LT, LTE | `title`, `status`, `createdAt`, `updatedAt`                       |
+| `/api/v0/statements` | `id`: EQ, NE • `code`, `description`, `method`, `path`: EQ, NE, CONTAINS                                                             | `id`, `code`, `description`, `method`, `path`                     |
+| `/api/v0/roles`      | `id`: EQ, NE • `code`, `displayName`, `description`: EQ, NE, CONTAINS                                                                | `id`, `code`, `displayName`, `description`                        |
+| `/api/v0/groups`     | `id`: EQ, NE • `code`, `displayName`, `description`: EQ, NE, CONTAINS                                                                | `id`, `code`, `displayName`, `description`                        |
 
 For Statements, `method` and `path` are the *query aliases*, even though the response nests them under `target.api`. Ticket custom fields can extend the static Ticket list schema through its server-resolved runtime EAV context, as defined by [TKT-FR-013](../006.%20Tickets%20and%20Dynamic%20Fields/04-functional-and-behavioral-requirements.md#tkt-fr-013--runtime-query-field-snapshots).
 
@@ -53,10 +53,10 @@ The current `GET /api/v0/ticket-types` and `GET /api/v0/audit/{entityType}/logs`
 
 These operation schemas are for authorizing a target, not public `filterBy` query parameters.
 
-| Operation | Approved static Object paths and operators |
-| --- | --- |
-| `identity.users.delete` | `id`, `status`: EQ, NE • `username`: EQ, NE, CONTAINS • `retainedAt`: EQ, NE, GT, GTE, LT, LTE |
-| `identity.users.update-statements` | `id`, `status`: EQ, NE • `username`: EQ, NE, CONTAINS |
+| Operation                           | Approved static Object paths and operators                                                                                                                                                               |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `identity.users.delete`             | `id`, `status`: EQ, NE • `username`: EQ, NE, CONTAINS • `retainedAt`: EQ, NE, GT, GTE, LT, LTE                                                                                                           |
+| `identity.users.update-statements`  | `id`, `status`: EQ, NE • `username`: EQ, NE, CONTAINS                                                                                                                                                    |
 | `tickets.read` and `tickets.update` | `id`, `ticketTypeId`, `createdBy`: EQ, NE • `title`, `status`: EQ, NE, CONTAINS • `createdAt`, `updatedAt`: EQ, NE, GT, GTE, LT, LTE • Compatible dynamic fields from the Ticket's pinned schema version |
 
 The [resource-specific Query Schemas](https://github.com/taskmigo/taskmigo/tree/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules) are the implementation evidence; neither this table nor static OpenAPI replaces runtime metadata resolution.
