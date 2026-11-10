@@ -10,7 +10,7 @@ A successful module SRS SHALL allow an independent backend team, frontend team, 
 - Organize by business capability and consumer-visible behavior, not controller, class, database table, sprint, or development ticket.
 - Treat the module SRS as the authoritative written product contract for **approved** behavior. An implementation or generated OpenAPI document is evidence of implemented behavior, not automatic proof of product intent.
 - Keep shared conventions (envelope, errors, pagination, authentication, filtering grammar) in their existing canonical specification and link to them. Keep each module's operation inventory, field allowlists, domain rules, and deviations in the owning module.
-- Describe *what* the software SHALL do and what can be observed. Keep algorithms, framework selection, storage implementation, class names, and rollout tasks out of normative requirements unless they are explicit stakeholder-approved constraints.
+- Describe _what_ the software SHALL do and what can be observed. Keep algorithms, framework selection, storage implementation, class names, and rollout tasks out of normative requirements unless they are explicit stakeholder-approved constraints.
 - Do not fabricate endpoints, fields, types, defaults, authorization rules, limits, examples, or error codes. Mark missing contract details as unresolved with their evidence gap and resolution condition.
 
 ## Source-of-truth and reconciliation workflow
@@ -18,7 +18,7 @@ A successful module SRS SHALL allow an independent backend team, frontend team, 
 1. **Identify scope.** Read `AGENTS.md`, the relevant module `README.md`, and the linked sections. Find shared specifications and relevant external decisions before changing text.
 2. **Inventory surfaces.** List the module's public HTTP operations, events, relevant roles and objects, domain states, and data projections. For a source-backed baseline, inspect current routes, DTO/schema definitions, validation, authorization, response handling, generated OpenAPI, and relevant tests **for every in-scope operation**. Record the inspected repository/ref or commit in source evidence, without treating that evidence as normative by itself.
 3. **Classify findings.** Mark each candidate as **Approved requirement**, **Observed as-is behavior**, **Proposed to-be behavior**, **Conflict/drift**, or **Unresolved**. A source-code behavior, old issue, or existing passing test SHALL NOT be promoted silently to an approved requirement.
-4. **Resolve contradictions.** Compare applicable user decisions, existing normative SRS, public contracts, implementation, and tests. Where they disagree, keep approved intent intact, expose the mismatch, and request/record a decision. If documentation is explicitly being baselined from code, label the baseline as *as-is* and identify the evidence version. Keep *to-be* changes separate until approved.
+4. **Resolve contradictions.** Compare applicable user decisions, existing normative SRS, public contracts, implementation, and tests. Where they disagree, keep approved intent intact, expose the mismatch, and request/record a decision. If documentation is explicitly being baselined from code, label the baseline as _as-is_ and identify the evidence version. Keep _to-be_ changes separate until approved.
 5. **Draft by ownership.** Place operations in section 3 of their owning module, behavior and rules in section 4, state/data semantics in section 5, measurable qualities in section 6, verification in section 9, and evidence/traceability/unresolved conflicts in section 10. Link instead of copying content across files.
 6. **Review as an independent consumer.** Check that someone who cannot read the backend can produce compatible requests, interpret responses and failures, apply permissions, and derive meaningful acceptance tests. If the answer is no, the specification is incomplete.
 7. **Verify and report.** Check links, IDs, section ownership, Markdown formatting, applicable lint checks, and actual contract drift. Report checks run and gaps separately; never claim checks passed unless executed.
@@ -83,7 +83,7 @@ Use a separate contract table per operation or a clearly linked canonical reusab
 
 Use a compact, repeatable operation block; omit fields that are truly not applicable, not fields that are merely unknown:
 
-~~~markdown
+```markdown
 ### <MODULE>-API-001 — <Operation name>
 
 **Operation:** <METHOD> <PATH>
@@ -92,9 +92,9 @@ Use a compact, repeatable operation block; omit fields that are truly not applic
 
 **Inputs**
 
-| Location | Name | Type/format | Required | Default / validation / semantics |
-| --- | --- | --- | --- | --- |
-| Query | <name> | <type> | <yes/no> | <specific constraint> |
+| Location | Name   | Type/format | Required | Default / validation / semantics |
+| -------- | ------ | ----------- | -------- | -------------------------------- |
+| Query    | <name> | <type>      | <yes/no> | <specific constraint>            |
 
 **Request body:** <Schema/table or Not applicable>
 
@@ -105,7 +105,7 @@ Use a compact, repeatable operation block; omit fields that are truly not applic
 **Rules and side effects:** <Links to normative IDs in sections 4/5>
 
 **Verification:** <Links to scenarios or contract checks in section 9>
-~~~
+```
 
 This is a **template**, not evidence that any endpoint, parameter, status, or error code exists. Do not substitute placeholders for known facts, and do not copy the template into every operation when a concise equivalent is equally unambiguous.
 
