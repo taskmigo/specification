@@ -43,6 +43,6 @@ Verify the current OpenAPI surface does not claim `GET /api/v0/authorization/log
 
 This SRS describes required test coverage, not a claim that the tests have run during document generation.
 
-## Module OpenAPI Contract Verification
+## Specification-First OpenAPI Verification
 
-Verify that [this module's OpenAPI](openapi.yaml) contains only its controller-owned `/api/v0` paths; all referenced component schemas resolve locally; requests/responses match the backend-generated aggregate; and the [JSON examples](12-api-v0-examples.md) demonstrate relevant success/error behavior. Shared DTO envelopes may be copied into each standalone module snapshot. Validation is automated by `npm run openapi:check` in the specification repository.
+Verify the backend-generated OpenAPI against the [authored module HTTP contract](api-contract.md): every specified operation, query/path parameter, request model and required field, response status/data DTO, schema field type, and documented error response MUST match the spec. Extra generated operations are rejected. Run `npm run openapi:check` against the generated backend OpenAPI. Known backend-generation discrepancies remain explicitly reported; `npm run openapi:strict` fails until they are corrected.

@@ -40,7 +40,7 @@ Generated OpenAPI SHALL describe each declared operation's `filterBy` allowliste
 
 ### API-IF-006 — Versioned resources
 
-HTTP operation paths and methods SHALL match the checked-in generated [OpenAPI v0 snapshot](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/web/src/main/resources/static/api/docs/openapi.yaml).
+Generated backend OpenAPI paths, methods, parameters, DTOs and statuses SHALL conform to the authored [normative per-module API contracts](12-api-v0-http-examples.md#2-module-api-contract-index). A discrepancy is a verification failure or an explicitly documented backend-generated defect; it SHALL NOT be resolved by blindly copying generated output into the specification.
 
 ## 3.4 Audit Collection Query Boundary
 
@@ -50,8 +50,8 @@ HTTP operation paths and methods SHALL match the checked-in generated [OpenAPI v
 
 ## 3.5 HTTP Request and Response Examples
 
-The [API v0 HTTP and JSON reference](12-api-v0-http-examples.md) documents the request parameters, request bodies, response envelopes, returned data shapes, and HTTP status for every currently implemented API v0 route, using the generated OpenAPI snapshot and controller DTOs. The normative contracts above remain unchanged.
+The [common v0 conventions](12-api-v0-http-examples.md) define response envelopes and index the normative contracts owned by Authorization, Identity, Ticket and Audit. Each module's `api-contract.md` independently defines its required interface.
 
-## Module-Local OpenAPI Contract
+## Normative HTTP API Contract
 
-The [module OpenAPI 3.1 definition](openapi.yaml) is the source-derived machine-readable contract for the HTTP operations owned by this module, including request schemas, response schemas, endpoint parameters, security requirements and reusable response envelope dependencies. The [module API examples](12-api-v0-examples.md) show the concrete JSON shapes. Both are derived from the implementation-generated OpenAPI; this SRS remains the source for intended feature behavior.
+The [Audit module API contract](api-contract.md) is the authoritative description of the Audit endpoint, its parameters, response fields and allowed errors. See [Audit request/response examples](12-api-v0-examples.md) and the [shared API v0 conventions](12-api-v0-http-examples.md). The implementation-generated OpenAPI SHALL be verified against the authored specification.

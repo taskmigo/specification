@@ -2,7 +2,7 @@
 
 # 12. Audit — API v0 Examples
 
-The field names, accepted parameters and response schemas are specified in [this module's OpenAPI](openapi.yaml); the JSON values in the examples are illustrative rather than captured runtime traffic. Shared response envelopes, error conventions and pagination are documented in the [common API v0 guide](../007.%20Audit%20and%20API%20Contracts/12-api-v0-http-examples.md).
+The [normative module API contract](api-contract.md) defines the actual method/path, query parameters, request/response models and field requirements. These example values are illustrative, not captured runtime traffic; backend-generated OpenAPI MUST be checked against the authored contract. Shared response envelopes, error conventions and pagination are documented in the [common API v0 guide](../007.%20Audit%20and%20API%20Contracts/12-api-v0-http-examples.md).
 
 ## 12.1 Implemented Operations
 

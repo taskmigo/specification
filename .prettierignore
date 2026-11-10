@@ -1,8 +1,5 @@
-# Generated from the backend's OpenAPI; preserve source formatting.
-specification/002. Authorization/openapi.yaml
-specification/005. Identity and User Retention/openapi.yaml
-specification/006. Tickets and Dynamic Fields/openapi.yaml
-specification/007. Audit and API Contracts/openapi.yaml
+# The backend checkout is evidence, not specification source content.
+_backend/
 
-# OpenAPI extraction tool uses fixed source-level whitespace for deterministic snapshots.
-scripts/module-openapi.mjs
+# Checker's source is syntax-checked/executed by the contract verification job.
+scripts/check-openapi-against-spec.mjs

@@ -23,6 +23,13 @@ jobs:
           node-version-file: package.json
           cache: npm
 
+      - name: Checkout backend OpenAPI for contract comparison
+        uses: actions/checkout@v7.0.1
+        with:
+          repository: taskmigo/taskmigo
+          ref: next
+          path: _backend
+
       - run: npm ci
 
       - run: npm run style:check

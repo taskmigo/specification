@@ -54,6 +54,6 @@ The current Ticket Type and Template controllers SHALL be protected by versioned
 
 See the [API v0 HTTP and JSON reference](../007.%20Audit%20and%20API%20Contracts/12-api-v0-http-examples.md) for concrete method/path, input DTO, sample request, successful response, and error envelope for the Ticket and Template APIs.
 
-## Module-Local OpenAPI Contract
+## Normative HTTP API Contract
 
-The [module OpenAPI 3.1 definition](openapi.yaml) is the source-derived machine-readable contract for the HTTP operations owned by this module, including request schemas, response schemas, endpoint parameters, security requirements and reusable response envelope dependencies. The [module API examples](12-api-v0-examples.md) show the concrete JSON shapes. Both are derived from the implementation-generated OpenAPI; this SRS remains the source for intended feature behavior.
+The [module's normative API contract](api-contract.md) specifies each supported HTTP method/path, parameter, request/response DTO, success and error status, field name/type/required/constraints, message code, and authorization boundary. The [JSON examples](12-api-v0-examples.md) show representative serialized requests and responses. **Implementation and generated OpenAPI MUST conform to this authored contract; generated documentation is not authoritative requirements text.**

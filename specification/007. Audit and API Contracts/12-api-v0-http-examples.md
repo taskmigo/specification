@@ -1,26 +1,26 @@
-# 12. API v0 — Shared Conventions and Module OpenAPI Index
+# API v0 — Shared HTTP conventions and normative module contracts
 
-## 12.1 Why OpenAPI Is Split by Module
+## 1. Specification-first contract model
 
-API definitions are maintained alongside their owning bounded-context specifications rather than grouped into one large reference document. Each `openapi.yaml` is a **self-contained OpenAPI 3.1 document** with that module's paths, transitive request/response component schemas, and OAuth2 security scheme. Common schema objects may be repeated between generated snapshots so that each module specification can be opened and validated independently.
+**The Taskmigo specification is the source of truth for API design.** Each bounded context owns an authored `api-contract.md` documenting the methods, paths, query/path parameters, body DTOs, response fields, required/optional data, validation, successful HTTP status, error codes, policy boundary and lifecycle semantics.
 
-The four module snapshots are derived from the backend [generated API v0 OpenAPI](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/web/src/main/resources/static/api/docs/openapi.yaml) at commit `9c1cd242fe4c5210fdd8dd88311e328a3784d0e1`. The backend's generated aggregate remains the **implementation source of truth**. The module files are generated/read-only snapshots, not separately implemented HTTP services.
+The backend generates a single aggregate OpenAPI for clients and tooling. That generated file is an **output of implementation** and SHALL be checked against the authored contract; it SHALL NOT overwrite or redefine the requirement. A disagreement is either a backend implementation/documentation defect or an explicitly reviewed specification change.
 
-## 12.2 Module OpenAPI Index
+## 2. Module API contract index
 
 <!-- prettier-ignore -->
-| Module | Scope | API operations | OpenAPI | JSON examples |
-| --- | --- | --- | --- | --- |
-| Authorization | Roles and Statements | 6 | [openapi.yaml](../002.%20Authorization/openapi.yaml) | [Examples](../002.%20Authorization/12-api-v0-examples.md) |
-| Identity & User Retention | Users, Groups, Configuration, User Statements | 8 | [openapi.yaml](../005.%20Identity%20and%20User%20Retention/openapi.yaml) | [Examples](../005.%20Identity%20and%20User%20Retention/12-api-v0-examples.md) |
-| Tickets & Dynamic Fields | Tickets, Types, Template versions | 14 | [openapi.yaml](../006.%20Tickets%20and%20Dynamic%20Fields/openapi.yaml) | [Examples](../006.%20Tickets%20and%20Dynamic%20Fields/12-api-v0-examples.md) |
-| Audit | User entity audit logs | 1 | [openapi.yaml](openapi.yaml) | [Examples](12-api-v0-examples.md) |
+| Module | Normative contract | Illustrative HTTP/JSON examples | Operations |
+| --- | --- | --- | --- |
+| Authorization | [Role and Statement API contract](../002.%20Authorization/api-contract.md) | [Examples](../002.%20Authorization/12-api-v0-examples.md) | 6 |
+| Identity and User Retention | [User, Group and Configuration API contract](../005.%20Identity%20and%20User%20Retention/api-contract.md) | [Examples](../005.%20Identity%20and%20User%20Retention/12-api-v0-examples.md) | 8 |
+| Tickets and Dynamic Fields | [Ticket, Type and Template API contract](../006.%20Tickets%20and%20Dynamic%20Fields/api-contract.md) | [Examples](../006.%20Tickets%20and%20Dynamic%20Fields/12-api-v0-examples.md) | 14 |
+| Audit | [Audit API contract](api-contract.md) | [Examples](12-api-v0-examples.md) | 1 |
 
-Each operation is recorded in exactly one module document, following **HTTP controller ownership**. For example, the User Statement mutation endpoint is in Identity, even though the Authorization module provides its grant logic. Query Filtering is a supporting capability and has no standalone versioned HTTP controller. Spring Authorization Server exposes OAuth/OIDC protocol endpoints separately; its endpoints are not fabricated as v0 resource APIs.
+The 29 API v0 operations have one HTTP controller owner apiece. For example, `PATCH /api/v0/users/{userId}/statements` belongs to Identity's HTTP contract even though it delegates grant changes to Authorization. Query Filtering exposes supporting DSL and schema capabilities; it does not have an additional HTTP controller. OAuth2/OIDC authorization server endpoints are specified separately under [Authentication and Provisioning](../008.%20Authentication%20and%20Provisioning/README.md).
 
-## 12.3 Standard Success Envelope
+## 3. Standard success response envelope
 
-Every v0 resource API response uses the common envelope (`success`, `statusCode`, `message`, `error`, `meta`, `data`) constructed by `ApiResponseFactory`. The example values below are illustrative:
+All API v0 resource responses SHALL use `success`, `statusCode`, `message`, `error`, `meta` and `data`. On success, `error` is null. The `data` schema is specified separately by the owning operation contract. These are **illustrative JSON values**, not live captures:
 
 ```json
 {
@@ -45,7 +45,11 @@ Every v0 resource API response uses the common envelope (`success`, `statusCode`
 }
 ```
 
-Created resources use HTTP 201 and an appropriate `Location` header. Paginated collection responses additionally include `meta.pagination`:
+HTTP 201 creates SHALL include a `Location` header and the specified resource/identifier payload. HTTP 200 shall use the same envelope for reads, updates and deletes, including `data: null` where indicated by the operation contract.
+
+## 4. Pagination and query rules
+
+Offset-paginated APIs accept `page` (default 1, minimum 1) and `pageSize` (default 20, range 1–100). Response `meta.pagination` is:
 
 ```json
 {
@@ -53,17 +57,17 @@ Created resources use HTTP 201 and an appropriate `Location` header. Paginated c
   "offset": {
     "currentPage": 1,
     "pageSize": 20,
-    "totalItems": 1,
-    "totalPages": 1
+    "totalItems": 42,
+    "totalPages": 3
   }
 }
 ```
 
-`page` defaults to 1, `pageSize` to 20, and page size must be from 1 through 100 on supported offset-paginated endpoints. Not every list is paginated: Ticket Types and Template versions currently return an unpaginated array. Optional `filterBy` and repeated `sortBy` are supported only where declared in the operation and Query Schema.
+Operations that support `filterBy` and repeated `sortBy` SHALL validate requests against their operation-scoped Query Schema and the [static field/operator catalogue](../004.%20Query%20Filtering/11-appendices.md#115-static-operation-capability-matrix). The supporting DSL and runtime dynamic-field constraints are specified by Query Filtering, not inferred from arbitrary response JSON keys. Ticket Type and Template lists are not offset-paginated in the current contract.
 
-## 12.4 Standard Error Envelope
+## 5. Error response envelope
 
-Error responses set `success=false`, `data=null` and contain structured `error` details. For an unsupported sort field, HTTP 400 has the following illustrative structure:
+A failure response SHALL set `success=false`, `data=null`, and `error` to structured machine-readable information. For example, HTTP 400 for invalid sorting has this *illustrative* structure:
 
 ```json
 {
@@ -87,21 +91,33 @@ Error responses set `success=false`, `data=null` and contain structured `error` 
 }
 ```
 
-Malformed JSON returns HTTP 400; body validation generally uses HTTP 422 and may include `error.formErrors`. Failed authentication/authorization normally yields HTTP 401/403. Domain failures can produce 400, 404, 409, or 422 depending on the operation. See [API v0 exception handling](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/web/src/main/java/io/taskmigo/web/api/v0/support/response/ApiV0ExceptionHandler.java).
+Invalid or malformed requests, failed authorization, missing resources and domain conflicts use HTTP 400/401/403/404/409/415/422/500 as applicable to each module's authored endpoint table. Error message text is not a stable identifier; clients SHALL use documented machine-readable codes. Specific input validation may additionally include `formErrors`.
 
-## 12.5 Authentication and Source Traceability
+## 6. Generated OpenAPI conformance verification
 
-Resource operations require an applicable Bearer token, validated User state, and Request Authorization. Their Object Authorization and query filtering vary by module. OAuth2 login and token issuance are provided by Spring Authorization Server and are described under [Authentication and Provisioning](../008.%20Authentication%20and%20Provisioning/README.md), not listed as extra `/api/v0` CRUD operations.
-
-Static query-field/operator information is documented under [Query Filtering](../004.%20Query%20Filtering/11-appendices.md#115-static-operation-capability-matrix). The source-derived OpenAPI files are checked for missing schema references and operation overlap; see `scripts/validate-module-openapi.mjs`.
-
-## 12.6 Regenerating OpenAPI Snapshots
-
-The backend still emits one aggregated, authoritative OpenAPI document. When backend controllers or DTOs change, regenerate module snapshots from that document rather than editing the four files independently.
+After changing API requirements, update the owning `api-contract.md` and acceptance requirements first. Backend code implements the desired behavior, and the backend OpenAPI generator produces `server/apps/web/src/main/resources/static/api/docs/openapi.yaml`. The checker compares the **generated output against authored specification**:
 
 ```bash
-node scripts/module-openapi.mjs --generate ../taskmigo/server/apps/web/src/main/resources/static/api/docs/openapi.yaml
 npm run openapi:check
+npm run openapi:strict
 ```
 
-The relative backend path above assumes that the `specification` and `taskmigo` checkouts share a parent directory; any local path to the backend-generated OpenAPI can be passed. The generator preserves path ownership, includes only transitively referenced component schemas, and checks all module files for syntax and unresolved references. The CI check verifies the committed module snapshots' internal integrity and complete 29-operation baseline; it does **not** independently detect later backend changes unless a newer backend OpenAPI is supplied and the snapshots are regenerated.
+In CI, the specification repo checks out `taskmigo/taskmigo` on `next` under `_backend` and reads the backend-generated OpenAPI. Locally, pass a source YAML path explicitly:
+
+```bash
+node scripts/check-openapi-against-spec.mjs ../taskmigo/server/apps/web/src/main/resources/static/api/docs/openapi.yaml --strict
+```
+
+The comparator verifies all authored operations, accepted query/path parameter names, request DTOs, expected successful statuses, response data schemas, documented error statuses, DTO field names/types, required request fields and enums. It rejects extra generated endpoints not specified in any module. **Neither command generates or edits the authored contract.**
+
+### Known backend documentation mismatches
+
+The current backend generator omits **HTTP 200 successful response documentation on eight Ticket Type/Template operations**, despite controllers returning 200. It also omits the related `TicketTypeInfo` output component. These are implementation-generated documentation defects; the normative Ticket contract deliberately retains the correct 200 behavior and response types.
+
+The normal `openapi:check` CI command reports these named, narrowly allowlisted existing gaps and **fails for any other drift**. The `openapi:strict` command treats even the known gaps as failures, and should pass once the backend OpenAPI generator is repaired. These exceptions must be reviewed/removed when the backend is corrected; they must not expand silently.
+
+## 7. Change control and versioning
+
+- A spec/API change SHALL update its owning module's API contract, field definitions, examples and relevant verification requirements before backend behavior is changed.
+- Backend generated OpenAPI SHALL be regenerated and evaluated against that contract. Inconsistencies SHALL be fixed in the backend generator/DTO/controller or resolved through an explicit requirements change.
+- The specification CI uses the current backend `next` snapshot for comparison and does not itself run the entire backend integration-test suite. Endpoint behavior must additionally be checked with API integration and E2E tests.

@@ -1,7 +1,7 @@
 ---
 metadata:
   version: 0.1.2
-  changelog: Adds module-local OpenAPI and concrete HTTP/JSON contract navigation.
+  changelog: Defines module-owned normative API contracts independently of backend-generated OpenAPI.
 ---
 
 <!-- markdownlint-disable MD041 -->
@@ -26,10 +26,10 @@ metadata:
 
 Read sections 1–11 in order. Start with [external interfaces](03-external-interface-requirements.md), continue through [functional behavior](04-functional-and-behavioral-requirements.md), and consult [verification](09-verification-validation-and-acceptance.md) and [unresolved issues](10-traceability-and-unresolved-issues.md) before treating the specification as complete.
 
-## Module API Reference
+## Normative HTTP/JSON Contract
 
-- [Module OpenAPI 3.1 document](openapi.yaml) — paths, parameters, request bodies, responses, and schema definitions owned by this module
-- [Module API request/response examples](12-api-v0-examples.md) — endpoint index and illustrative JSON payloads
-- [Shared v0 conventions and module index](../007.%20Audit%20and%20API%20Contracts/12-api-v0-http-examples.md) — envelope, errors, pagination and other module contracts
+- [**API contract (normative)**](api-contract.md) — methods, paths, query parameters, request/response DTOs, types, required fields, constraints, success and error codes, and authorization
+- [HTTP/JSON examples](12-api-v0-examples.md) — illustrative request and response bodies
+- [Shared API v0 conventions](../007.%20Audit%20and%20API%20Contracts/12-api-v0-http-examples.md) — common envelope, error and pagination rules
 
-The module OpenAPI is a **self-contained snapshot** extracted from the backend-generated v0 OpenAPI. It does not create a separate deployed API or replace the implementation-generated aggregate.
+The specification is the **source of truth** for backend implementation. The OpenAPI generated in `taskmigo/taskmigo` SHALL be checked against this authored contract, not copied back into it. The `npm run openapi:check` comparator verifies this separation.

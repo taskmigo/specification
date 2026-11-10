@@ -49,6 +49,6 @@ Verify invalid negative/decimal STRING lengths, inverted min/max for STRING/NUMB
 
 Verify a registered custom field with key `severity` is queryable as `object.severity`, is not automatically queryable as `object.customFields.severity`, and is rejected when the operation's history/context makes the key ambiguous or unavailable.
 
-## Module OpenAPI Contract Verification
+## Specification-First OpenAPI Verification
 
-Verify that [this module's OpenAPI](openapi.yaml) contains only its controller-owned `/api/v0` paths; all referenced component schemas resolve locally; requests/responses match the backend-generated aggregate; and the [JSON examples](12-api-v0-examples.md) demonstrate relevant success/error behavior. Shared DTO envelopes may be copied into each standalone module snapshot. Validation is automated by `npm run openapi:check` in the specification repository.
+Verify the backend-generated OpenAPI against the [authored module HTTP contract](api-contract.md): every specified operation, query/path parameter, request model and required field, response status/data DTO, schema field type, and documented error response MUST match the spec. Extra generated operations are rejected. Run `npm run openapi:check` against the generated backend OpenAPI. Known backend-generation discrepancies remain explicitly reported; `npm run openapi:strict` fails until they are corrected.
