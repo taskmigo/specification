@@ -1,110 +1,68 @@
 # 4. Functional and Behavioral Requirements
 
-This section defines typed semantics, evaluation behavior, permitted language constructs and feature gating. Reject invalid forms instead of applying implicit coercion.
+This chapter is the canonical **typed behavioral contract** of the internal Language. An operation is conforming only when source validation, static type/result, evaluation/partial evaluation, and errors all respect the same Environment Schema and Compilation Profile. A valid grammar production is not automatically enabled for a particular consumer.
 
 ## 4.1 Compilation and Semantic AST
 
 ### LANG-001 — Language-owned semantic representation
 
-**Normative requirement.** Source SHALL compile through the parser frontend and semantic analysis into a language-owned typed Semantic AST independent of ANTLR parse-tree classes, ECMAScript semantics, application-domain semantics, consumer profile names, persistence APIs, and host APIs.
+**Required behavior:** Source SHALL pass through the frontend parser and semantic validation to a **language-owned, typed Semantic AST**. Semantic nodes SHALL be independent of ANTLR parse-tree types, JavaScript runtime rules, application-specific policy names, database code and arbitrary host objects.
 
-Equivalent enabled expressions compiled through either source mode SHALL use the same Semantic AST expression semantics.
+**Equivalence:** An enabled expression parsed inside PROGRAM and EXPRESSION modes SHALL retain the same Semantic AST expression semantics.
 
-Verification: Inspect dependency direction and compare equivalent expressions compiled through both modes.
-Traceability: [Product Perspective](02-overall-description.md#21-compiler-and-evaluator-pipeline); TECH-001.
+**Verification:** Inspect dependency direction and compile equivalent expressions through both source entries. See [TECH-001](07-constraints.md).
 
 ### LANG-002 — Typed source result
 
-**Normative requirement.** In `PROGRAM`, every reachable path SHALL execute a `return` with a statically known type, and reachable returns SHALL form one compatible source result type. Reachable fall-through SHALL be rejected.
+**PROGRAM:** Every reachable path SHALL end in `return <expression>;`, and reachable returns SHALL agree on one statically compatible source-result type. A reachable fall-through SHALL be a compile error.
 
-In `EXPRESSION`, the source expression SHALL have a statically known result type and SHALL NOT require `return`.
+**EXPRESSION:** The single source expression SHALL have a statically known result type without a return statement. Results MAY use any supported type; implicit truthy/falsy conversion SHALL not exist.
 
-The result type MAY be any supported type. Truthy/falsy result coercion SHALL NOT exist.
-
-Verification: Compile sources producing booleans, strings, numbers, nullable values, lists, and schema-defined types; reject incompatible program returns and fall-through.
-Traceability: TYPE-001; SYNTAX-001.
+**Verification:** Compile compatible/incompatible branches, nullable and list results, and missing returns.
 
 ### LANG-003 — Immutable local bindings
 
-**Normative requirement.** When `LOCAL_BINDINGS` is enabled in `PROGRAM`, `const` SHALL bind one immutable lexical name. Visibility SHALL begin after declaration and follow lexical block scope. Reassignment, duplicate same-scope names, and forward references SHALL be rejected.
-
-Verification: Test lexical visibility, duplicates, forward references, and disabled local bindings.
-Traceability: ENV-004; TECH-002.
+With `LOCAL_BINDINGS` enabled in PROGRAM mode, `const` SHALL introduce one immutable lexical binding visible only after declaration within the appropriate block scope. Reassignment, duplicate names in one scope and forward references SHALL fail. A profile disabling `LOCAL_BINDINGS` SHALL reject otherwise valid `const` source.
 
 ### LANG-004 — Conditional and return control flow
 
-**Normative requirement.** When enabled in `PROGRAM`, `if` SHALL require a `Bool` condition. Executed `return` SHALL terminate the current path. Direct and partial evaluation SHALL evaluate only branches that can affect the result.
-
-Verification: Test true, false, unknown conditions, early return, and unreachable failures.
-Traceability: TYPE-001; PARTIAL-001; ENV-004.
+In a PROGRAM profile enabling conditional flow, each `if` condition SHALL be Bool; an executed `return` terminates the current path. Direct and partial evaluation SHALL inspect only branches relevant to the resulting value, preserving skipped-branch semantics even where a skipped expression would otherwise fail.
 
 ### LANG-005 — Compilation-profile restrictions
 
-**Normative requirement.** The compiler SHALL enforce the feature set selected by ENV-004 before producing an executable artifact. Disabling a feature SHALL NOT change the semantics of constructs that remain enabled.
-
-Verification: Compile the same source under multiple profiles and confirm disabled features fail and incompatible artifacts are not reused.
-Traceability: ENV-004; DATA-003; PERF-003.
+Every compilation SHALL validate its source against the exact mode and feature set specified by [ENV-004](03-external-interface-requirements.md#env-004--compilation-profile). A disabled feature SHALL cause compilation failure; disabling one feature SHALL not alter the semantics of other enabled constructs. Incompatible mode/schema/feature artifacts SHALL not be reused.
 
 ### LANG-006 — Restricted collection lambdas and intrinsics
 
-**Normative requirement.** `all`, `any`, `none`, and `len` SHALL be canonical compiler-recognized intrinsic forms rather than general callable values.
+`all`, `any`, `none` and `len` SHALL be compiler-recognized bounded intrinsics, **not generic callable functions**. A quantifier lambda SHALL bind exactly one element for its predicate, may read visible outer bindings/schema roots, and SHALL not be stored, returned, invoked independently or passed as a first-class function.
 
-A quantifier lambda SHALL introduce exactly one lexical element binding scoped to its predicate. The lambda SHALL NOT be storable, returnable, independently invokable, or passable to an arbitrary function.
-
-A lambda predicate MAY reference visible outer lexical values and Environment Schema roots in addition to its element binding.
-
-Verification: Accept valid intrinsic forms and captured outer values; reject standalone lambdas, direct lambda invocation, arbitrary function calls, and lambda escape.
-Traceability: SYNTAX-002; SYNTAX-004; TECH-002.
+**Verification:** Accept enabled quantifier/intrinsic calls with outer captures; reject escaping/standalone lambdas and arbitrary function call syntax.
 
 ## 4.2 Type System and Operators
 
 ### TYPE-001 — Static types and no implicit coercion
 
-**Normative requirement.** Every expression and applicable reachable return SHALL be statically typed before execution.
+Every expression and reachable return SHALL have a static type before execution. Built-in value categories SHALL include `Bool`, `String`, `Number`, `Null` and `List<T>`. The Environment Schema MAY add typed scalar and structured types, including structured list element types.
 
-The initial value categories SHALL include:
-
-```text
-Bool
-String
-Number
-Null
-List<T>
-```
-
-Environment Schemas MAY additionally declare schema-defined scalar types and structured types with statically declared properties. `List<T>` MAY use a structured schema-defined element type.
-
-The language SHALL NOT implicitly convert between incompatible types.
-
-Verification: Test scalar, structured, and list typing and reject implicit coercion.
-Traceability: TECH-003.
+**Safety:** Incompatible types SHALL not be coerced implicitly. Mismatches are compilation/evaluation failures rather than surprising converted values.
 
 ### TYPE-002 — Boolean and equality operators
 
-**Normative requirement.** When enabled, `&&` and `||` SHALL operate only on `Bool`; independently enabled `UNARY_NOT` SHALL govern `!` on `Bool`; `==` and `!=` SHALL compare type-compatible operands and return `Bool`. `&&` and `||` SHALL short-circuit.
-
-Verification: Test valid operations, type errors, short-circuiting, and disabled features.
-Traceability: LANG-005; EVAL-001.
+When enabled, `&&` and `||` SHALL operate only on Bool operands, yield Bool and short-circuit. `!` SHALL require Bool and be controlled by the **independent** `UNARY_NOT` feature; `==`/`!=` SHALL compare compatible types and yield Bool. Disabling logical operators SHALL not implicitly disable or enable unary negation.
 
 ### TYPE-003 — Ordering and arithmetic operators
 
-**Normative requirement.** When enabled, ordering operators SHALL require mutually compatible ordered operands. Arithmetic operators SHALL require `Number` unless another overload is explicitly specified. Invalid or non-finite numeric operations SHALL fail.
-
-Verification: Test valid operations, incompatible operands, zero division/modulo, non-finite results, and disabled features.
-Traceability: LANG-005; QUAL-001.
+When enabled, ordering SHALL accept only mutually compatible ordered types. Arithmetic SHALL accept Number unless an explicit overload exists. Division/modulo by zero, non-finite numeric results and incompatible operands SHALL fail rather than produce an unspecified value or hidden coercion.
 
 ### TYPE-004 — Null, lists, and membership
 
-**Normative requirement.** `null` SHALL be a value distinct from absence and `undefined`. Ordering/arithmetic with `null` SHALL be invalid. Equality with `null` SHALL be permitted only when nullability allows it.
+`null` is a distinct value, not an absent or undefined root. Ordering/arithmetic with null SHALL be invalid; equality against null SHALL require compatible nullable typing. List elements SHALL be type-compatible. When enabled, `value in list` SHALL require a compatible element type and return Bool; membership in an empty list SHALL return `false`.
 
-List literals SHALL contain compatible elements. `value in list` SHALL require a compatible element type and return `Bool`. Membership in an empty list SHALL return `false`.
-
-Verification: Test null semantics, list compatibility, membership, and disabled list/membership features.
-Traceability: TYPE-001; LANG-005.
+**Profile distinction:** Even though canonical Language may support membership, a Query/Authorization consumer can forbid it.
 
 ### TYPE-005 — Collection quantifiers and length
 
-**Normative requirement.** When `COLLECTION_QUANTIFIERS` is enabled:
+When `COLLECTION_QUANTIFIERS` is enabled, the canonical forms SHALL be:
 
 ```text
 all(collection, element => predicate)
@@ -112,105 +70,68 @@ any(collection, element => predicate)
 none(collection, element => predicate)
 ```
 
-SHALL require `collection: List<T>`, bind `element: T`, require `predicate: Bool`, and return `Bool`.
+The collection SHALL have `List<T>` type; the bound element SHALL have type `T`; the predicate SHALL be Bool; and the result SHALL be Bool. For empty collections:
 
-The semantics over an empty list SHALL be:
+| Expression | Required result |
+| --- | --- |
+| `all([], p)` | `true` |
+| `any([], p)` | `false` |
+| `none([], p)` | `true` |
 
-```text
-all([], p)  -> true
-any([], p)  -> false
-none([], p) -> true
-```
-
-A nullable collection SHALL NOT be implicitly treated as an empty list. Quantification over a concrete `null` SHALL fail; a statically nullable collection operand SHALL be rejected unless a future specified null-safe construct removes the ambiguity.
-
-When `LENGTH_INTRINSIC` is enabled, `len(value)` SHALL accept a non-null `String` or `List<T>` and return `Number`. It SHALL NOT use host reflection or arbitrary method invocation.
-
-Verification: Test quantifier typing, nested structured element paths, empty-list semantics, null rejection, captured outer values, and `len` over strings/lists.
-Traceability: LANG-006; TYPE-001; ENV-004.
+A concrete null collection SHALL fail, and statically nullable collection operands SHALL be rejected rather than treated as empty unless a future null-safe construct is explicitly specified. When `LENGTH_INTRINSIC` is enabled, `len(value)` SHALL accept only a nonnull String or `List<T>`, returning Number; it SHALL not dispatch to arbitrary host reflection.
 
 ## 4.3 References
 
 ### REF-001 — Static reference resolution
 
-**Normative requirement.** Every value reference SHALL resolve at compile time to a visible `const`, a visible restricted-lambda element binding, or an Environment Schema root/path.
+Every source reference SHALL resolve at compile time to a visible `const`, a scoped quantifier element binding or a declared Environment Schema root/path. Missing roots, undeclared nested properties, computed member paths, general method calls and arbitrary host function invocation SHALL be rejected.
 
-Unknown roots/paths, dynamic paths, method calls, and general call expressions SHALL be rejected.
-
-Verification: Compile valid and invalid nested paths, local bindings, lambda element paths, and general calls.
-Traceability: ENV-001; SYNTAX-004; LANG-006.
+**Verification:** Test nested structured references and both valid and invalid local/lambda references under compatible profiles.
 
 ## 4.4 Direct Evaluation
 
 ### EVAL-001 — Known-input evaluation
 
-**Normative requirement.** When all dependencies required by the selected execution path are known, evaluation SHALL produce exactly one conforming value or an evaluation failure.
-
-Evaluation SHALL preserve short-circuit, `PROGRAM` control-flow, and quantifier short-circuit semantics. `all` MAY stop at the first false predicate; `any` MAY stop at the first true predicate; `none` MAY stop at the first true predicate.
-
-Verification: Evaluate representative sources including skipped failing expressions and quantified collections.
-Traceability: LANG-002; TYPE-002; TYPE-005; EVAL-IF-002.
+Given the required concrete, schema-conforming inputs, direct evaluation SHALL return exactly one value of the compiled source-result type or an explicit evaluation failure. It SHALL preserve PROGRAM control flow and Boolean/quantifier short-circuit behavior. `all` may stop on first false, `any` on first true and `none` on first true; skipped elements SHALL not be evaluated.
 
 ### EVAL-002 — Deterministic values
 
-**Normative requirement.** For the same Semantic AST, Environment Schema, Compilation Profile, and input values, evaluation SHALL produce the same result or same class of failure.
-
-Verification: Repeat identical executions and compare results/failures.
-Traceability: QUAL-001; ENV-004.
+For the same typed Semantic AST, Environment Schema, profile and input values, repeated evaluation SHALL yield the **same value or same failure category**. No hidden host environment, I/O, mutable global state or unbounded runtime behavior may change the result.
 
 ## 4.5 Partial Evaluation
 
 ### PARTIAL-001 — Unknown-preserving evaluation
 
-**Normative requirement.** Partial evaluation SHALL evaluate any expression or applicable statement whose result can be determined from known inputs without evaluating an unknown-dependent path. A source result still depending on unknown input SHALL remain as a typed residual Semantic AST expression unless simplification removes the dependency.
-
-Verification: Partially evaluate mixed known/unknown sources and inspect residual types.
-Traceability: LANG-001; LANG-002.
+Partial evaluation SHALL compute subexpressions fully determined by known values without forcing evaluation of unknown-dependent paths. An unknown-dependent result SHALL remain as a **typed residual Semantic AST expression** unless a semantics-preserving simplification proves its value.
 
 ### PARTIAL-002 — Constant folding and boolean simplification
 
-**Normative requirement.** Compilation and partial evaluation SHALL fold constants when semantics are unchanged. At minimum, standard boolean identities SHALL be preserved.
-
-A simplification SHALL NOT evaluate a branch, operand, or quantifier element that direct evaluation would skip.
-
-Verification: Test boolean identities and skipped failing branches/elements.
-Traceability: TYPE-002; EVAL-001.
+Compilation and specialization SHALL fold constant subexpressions and standard Boolean identities only where observable semantics remain unchanged. Neither step SHALL evaluate a branch, operand or quantifier element that direct evaluation would have skipped, including a skipped expression that would raise an error.
 
 ### PARTIAL-003 — Residual result contract
 
-**Normative requirement.** Successful partial evaluation SHALL produce a concrete value or residual Semantic AST expression conforming to the compiled source result type. Incompatible internal results SHALL fail rather than coerce.
-
-Verification: Inspect residual types and inject incompatible internal results at a test boundary.
-Traceability: LANG-001; LANG-002; EVAL-IF-002.
+A successful partial evaluation SHALL return either a concrete compatible value or a typed residual expression matching the compiled source-result type. A mismatched internal value or malformed residual SHALL fail instead of being coerced.
 
 ### PARTIAL-004 — Dependency metadata
 
-**Normative requirement.** The Semantic AST SHALL retain or provide equivalent dependency metadata sufficient to determine unknown-root dependencies without rediscovering them recursively for every specialization decision.
-
-Verification: Inspect dependency metadata before and after simplification.
-Traceability: PERF-002.
+Semantic AST nodes or equivalent compiled metadata SHALL retain enough dependency information to determine unknown-root dependency **without recursively rediscovering it for every specialization decision**. The metadata SHALL remain valid after simplification.
 
 ### PARTIAL-005 — Quantifier specialization
 
-**Normative requirement.** When a quantifier source collection is concrete, partial evaluation MAY evaluate element predicates and apply quantifier short-circuit semantics. When the collection or element predicate remains symbolic, partial evaluation SHALL preserve a typed residual quantifier expression unless simplification proves a concrete result.
+For a concrete collection, partial evaluation MAY specialize element predicates using permitted short-circuit behavior. For a symbolic collection or still-symbolic predicate, it SHALL preserve a typed residual quantifier unless simplification proves a value. Known outer bindings captured by the element predicate SHALL be specialized correctly.
 
-Captured known outer values SHALL specialize normally inside the residual predicate.
-
-Verification: Partially evaluate concrete, symbolic, empty, and outer-value-capturing quantifiers and compare with direct evaluation semantics.
-Traceability: TYPE-005; PARTIAL-001; PARTIAL-004.
+**Verification:** Compare direct/partial outcomes for concrete, symbolic, empty and outer-capturing collections.
 
 ## 4.6 Additional Implemented Features
 
 ### LANG-007 — String contains intrinsic
 
-**Normative requirement.** When `CONTAINS_INTRINSIC` is enabled, `contains(text, substring)` SHALL accept String operands, return Bool, and evaluate by string containment. This intrinsic SHALL NOT dispatch to arbitrary host methods. When disabled, the source SHALL fail profile validation.
-
-Verification: Compile and execute valid and invalid operands under enabled/disabled profiles.
-Traceability: ENV-004; TECH-002; TYPE-001.
+With `CONTAINS_INTRINSIC` enabled, `contains(text, substring)` SHALL require String operands, return Bool and perform String containment. It SHALL NOT invoke arbitrary host methods; a disabled profile SHALL reject this source form.
 
 ### TYPE-006 — Independently gated Boolean negation
 
-**Normative requirement.** `UNARY_NOT` SHALL independently control Boolean unary `!`; `LOGICAL_OPERATORS` SHALL control binary `&&` and `||`. Invalid operand types SHALL fail typing.
+`UNARY_NOT` SHALL govern unary `!` independently of `LOGICAL_OPERATORS`, which governs `&&` and `||`. Each operation SHALL reject non-Boolean operands. The two feature switches SHALL be tested independently.
 
-Verification: Toggle `UNARY_NOT` independently from `LOGICAL_OPERATORS`.
-Traceability: TYPE-002; ENV-004.
+## 4.7 Verification cross-reference
+
+Use the [canonical syntax/environment interface](03-external-interface-requirements.md), [quality and diagnostics contract](06-quality-and-performance-requirements.md), and [section 9](09-verification-validation-and-acceptance.md) for semantic, negative, partial-evaluation and profile-gating acceptance. A Language feature must also pass its consuming module's narrower profile tests before being used in authorization or client filtering.
