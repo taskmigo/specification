@@ -1,5 +1,7 @@
 # 10. Traceability and Unresolved Issues
 
+This trace is pinned to a specific backend snapshot. Withdrawn historical Authorization Log assumptions SHALL not be reintroduced as current public interfaces.
+
 ## 10.1 Source Traceability
 
 | Requirement group        | Evidence                                                                                                                                                                                                                                                                                                                                                                                                                            |

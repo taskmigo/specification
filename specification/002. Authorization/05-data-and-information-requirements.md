@@ -1,14 +1,16 @@
 # 5. Data and Information Requirements
 
+Statement identity, role hierarchy and immutable operation snapshots are the data contracts. Identity's User/Group data remains owned by Identity.
+
 ## 5.1 Statement State
 
 ### STATE-001 — Canonical Statement
 
-A persisted Statement SHALL have ID, code, description, effect, scope, API target method/path and policy source. Managed reconciliation preserves ID/code while allowing updates to other fields. No persisted policy revision is required by current code.
+**Normative requirement.** A persisted Statement SHALL have ID, code, description, effect, scope, API target method/path and policy source. Managed reconciliation preserves ID/code while allowing updates to other fields. No persisted policy revision is required by current code.
 
 ### STATE-002 — Subject and hierarchy associations
 
-Direct Role/Statement assignments SHALL use persisted subject bindings distinct from hierarchy/closure and managed User/Group state. Effective grants SHALL combine applicable direct and inherited records.
+**Normative requirement.** Direct Role/Statement assignments SHALL use persisted subject bindings distinct from hierarchy/closure and managed User/Group state. Effective grants SHALL combine applicable direct and inherited records.
 
 ## 5.2 Policy Operation State
 
