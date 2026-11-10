@@ -18,7 +18,7 @@ A `PROGRAM` source SHALL contain statements directly at the source root. An `EXP
 Neither mode SHALL require or permit an `export`, module, function declaration, or entry-point wrapper.
 
 Verification: Compile valid examples in each mode and reject incompatible-mode source and excluded declarations.
-Traceability: [Source Modes](02-overall-description.md#221-source-modes); ENV-004.
+Traceability: [Source Modes](02-overall-description.md#22-source-modes); ENV-004.
 
 ### SYNTAX-002 — Canonical grammar
 
@@ -160,7 +160,7 @@ CONTAINS_INTRINSIC
 A disabled feature SHALL fail compilation with a diagnostic identifying the disabled feature. A profile SHALL NOT add behavior outside the canonical language.
 
 Verification: Enable and disable each feature independently and confirm source acceptance and artifact identity follow the profile.
-Traceability: [Compilation Profiles](02-overall-description.md#223-compilation-profiles); LANG-005; DATA-003.
+Traceability: [Compilation Profiles](02-overall-description.md#24-profiles-and-consumers); LANG-005; DATA-003.
 
 ## 3.3 Evaluation Interface
 

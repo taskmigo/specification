@@ -11,7 +11,7 @@ This section defines typed semantics, evaluation behavior, permitted language co
 Equivalent enabled expressions compiled through either source mode SHALL use the same Semantic AST expression semantics.
 
 Verification: Inspect dependency direction and compare equivalent expressions compiled through both modes.
-Traceability: [Product Perspective](02-overall-description.md#21-product-perspective); TECH-001.
+Traceability: [Product Perspective](02-overall-description.md#21-compiler-and-evaluator-pipeline); TECH-001.
 
 ### LANG-002 — Typed source result
 
