@@ -183,11 +183,81 @@ function checkResponse(doc, generated, expected) {
     : "expected data DTO " + expected.response;
 }
 
+function checkQueryExtensions(doc, errors) {
+  const file = path.join(
+    root,
+    "specification/004. Query Filtering/11-appendices.md",
+  );
+  const content = fs.readFileSync(file, "utf8");
+  const section = content.split("## 11.5 Static Operation Capability Matrix")[1]
+    ?.split("## 11.6")[0];
+  if (!section) {
+    errors.push("Missing normative query field/operator matrix");
+    return;
+  }
+  const tick = String.fromCharCode(96);
+  const rows = section.split("\n").filter((line) => line.startsWith("| " + tick + "/api/v0/"));
+  if (rows.length !== 5) {
+    errors.push("Expected five normative query field/operator list definitions");
+  }
+  for (const line of rows) {
+    const parts = line.slice(1, -1).split("|").map((s) => s.trim());
+    if (parts.length !== 3) {
+      errors.push("Malformed query matrix row: " + line);
+      continue;
+    }
+    const endpoint = parts[0].replaceAll(tick, "");
+    const op = doc.paths?.[endpoint]?.get;
+    if (!op) {
+      errors.push("Missing generated query operation GET " + endpoint);
+      continue;
+    }
+    const filter = (op.parameters ?? []).find((p) => p.name === "filterBy");
+    const sort = (op.parameters ?? []).find((p) => p.name === "sortBy");
+    const expectedFilter = {};
+    for (const group of parts[1].split("•")) {
+      const colon = group.indexOf(":");
+      if (colon < 0) {
+        errors.push("Bad field/operator group: " + group);
+        continue;
+      }
+      const fields = group.slice(0, colon).split(tick).filter((_, i) => i % 2 === 1);
+      const operators = group.slice(colon + 1).split(",").map((x) => x.trim());
+      for (const field of fields) {
+        expectedFilter[field] = operators;
+      }
+    }
+    const actualFilter = filter?.["x-filter-by"] ?? {};
+    compareSet(
+      Object.keys(actualFilter),
+      Object.keys(expectedFilter),
+      "GET " + endpoint + " filterable paths",
+      errors,
+    );
+    for (const [field, operators] of Object.entries(expectedFilter)) {
+      compareSet(
+        actualFilter[field] ?? [],
+        operators,
+        "GET " + endpoint + " " + field + " filter operators",
+        errors,
+      );
+    }
+    const sortable = parts[2].split(tick).filter((_, i) => i % 2 === 1);
+    compareSet(
+      sort?.["x-sort-by"] ?? [],
+      sortable,
+      "GET " + endpoint + " sortable paths",
+      errors,
+    );
+  }
+}
+
 function audit(doc, spec, strict) {
   const errors = [];
   const known = [];
   const seen = new Set();
   const { operations, schemas } = spec;
+  checkQueryExtensions(doc, errors);
 
   for (const [key, contract] of operations) {
     const op = doc.paths?.[contract.endpoint]?.[contract.method];
@@ -287,7 +357,8 @@ function audit(doc, spec, strict) {
     const c = operations.get(key);
     return c && !doc.paths?.[c.endpoint]?.[c.method]?.responses?.["200"];
   }).length;
-  if (known.length !== missingKnown + 1) {
+  const missingTypeSchema = doc.components?.schemas?.TicketTypeInfo ? 0 : 1;
+  if (known.length !== missingKnown + missingTypeSchema) {
     errors.push("Known-deviation ledger changed; review approved exceptions");
   }
   if (strict) {

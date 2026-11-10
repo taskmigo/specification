@@ -35,7 +35,7 @@ flowchart TB
 
 ## 11.5 Static Operation Capability Matrix
 
-This snapshot is derived from the registered Query Schemas and the [generated OpenAPI v0 document](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/web/src/main/resources/static/api/docs/openapi.yaml). It describes static capabilities only. Operators separated by commas apply to the entire named field group.
+The following table is the **normative static query contract** for the current API v0 list operations. Backend Query Schemas and generated OpenAPI `x-filter-by`/`x-sort-by` metadata SHALL conform to it, rather than define it. Operators separated by commas apply to the entire named field group.
 
 <!-- prettier-ignore -->
 | GET collection       | Fields and supported operators                                                                                                       | Sortable fields                                                   |
