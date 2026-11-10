@@ -41,3 +41,9 @@ Generated OpenAPI SHALL describe each declared operation's `filterBy` allowliste
 ### API-IF-006 — Versioned resources
 
 HTTP operation paths and methods SHALL match the checked-in generated [OpenAPI v0 snapshot](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/web/src/main/resources/static/api/docs/openapi.yaml).
+
+## 3.4 Audit Collection Query Boundary
+
+### AUD-API-004 — Fixed audit query options
+
+`GET /api/v0/audit/{entityType}/logs` SHALL accept `page` and `pageSize` but not expose `filterBy` or `sortBy`. The server SHALL order results by `occurredAt` descending and `id` descending, as specified in [AUD-FR-006](04-functional-and-behavioral-requirements.md#aud-fr-006--audit-read-order).

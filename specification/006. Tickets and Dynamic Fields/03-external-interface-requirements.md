@@ -39,3 +39,13 @@ Ticket Type SHALL expose `id`, `key`, `name`, `status`, `createdAt`, `updatedAt`
 ## 3.3 Shared API Contract
 
 All v0 operations SHALL use the [API response envelope](../007.%20Audit%20and%20API%20Contracts/README.md). Filter and sort syntax SHALL follow [Query Filtering](../004.%20Query%20Filtering/README.md).
+
+## 3.4 Ticket Type List and Authorization Surface
+
+### TKT-API-009 — Ticket Type listing is not a Ticket query
+
+`GET /api/v0/ticket-types` SHALL return the complete Type collection ordered by `key`, with a basic API response `meta`. This endpoint SHALL NOT be documented as accepting `page`, `pageSize`, `filterBy`, `sortBy`, or `ticketTypeId`; those options belong to supported Ticket collection operations.
+
+### TKT-API-010 — Current Type and template access boundary
+
+The current Ticket Type and Template controllers SHALL be protected by versioned Request Authorization. They do not resolve Object Authorization predicates for Type listing, Type reads/updates, or template operations. This describes a current API limitation, not a guarantee that all Ticket Types are intended to remain universally visible.

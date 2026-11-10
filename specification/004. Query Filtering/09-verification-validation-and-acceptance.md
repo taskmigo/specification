@@ -44,3 +44,13 @@ Verify operation-specific `x-filter-by` operator lists and `x-sort-by` sortable 
 - [Strict filter integration contract](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/query/src/test/java/io/taskmigo/query/Enhancement237FilterByStrictContractTest.java).
 - [Multi-sort contract test](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/web/src/test/java/io/taskmigo/web/api/support/query/ListQueryMultiSortContractTest.java).
 - [Ticket persistence query integration](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/modules/ticket/src/test/java/io/taskmigo/ticket/persistence/TicketQueryPersistenceIntegrationTest.java).
+
+## 9.5 Catalog Parity Acceptance
+
+### QRY-VER-007 — Static fields, operators, and sortability
+
+For each of the five list operations in the [static capability matrix](11-appendices.md#115-static-operation-capability-matrix), verify every supported field/operator and sortable field against its registered Query Schema and generated OpenAPI. Reject each unlisted field or operator with `INVALID_FILTER` or `INVALID_SORT` as applicable.
+
+### QRY-VER-008 — Statement aliases and distinct Object schemas
+
+Verify `object.method` is supported by the Statement list while `object.target.api.method` is not; separately verify the User deletion and statement-update Object Authorization schemas are not interchangeable.

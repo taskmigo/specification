@@ -36,3 +36,13 @@ Input SHALL be checked against the field's type and supported constraints before
 ### TKT-DATA-006 — Historical identity
 
 An EAV instance SHALL retain its `schema_definition_id` and `schema_version_id`. Query schema identity SHALL include effective runtime fields and their field/source identities to prevent binding predicates against incompatible templates.
+
+## 5.4 Field Constraint Validation
+
+### TKT-DATA-007 — Constraint shape and bounds
+
+Field constraint names SHALL be limited to those supported by their data type in [TKT-DATA-005](#tkt-data-005--field-types-and-constraints). `STRING.minLength` and `STRING.maxLength` SHALL be nonnegative integers with minimum not greater than maximum. For NUMBER, DATE and DATETIME, a defined minimum SHALL NOT exceed a defined maximum. `DATE` constraints SHALL parse as ISO calendar dates, and `DATETIME` constraints as ISO instants.
+
+### TKT-DATA-008 — Enumeration and typed values
+
+When an `ENUM.options` constraint is supplied, it SHALL be a nonempty collection of unique, nonblank String keys. A stored ENUM value SHALL match one of the declared options. BOOLEAN values SHALL be Boolean, NUMBER values numeric, UUID values a UUID or UUID string, DATE values ISO dates, and DATETIME values ISO instants; the validator SHALL reject unsupported implicit conversions.

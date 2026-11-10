@@ -103,3 +103,17 @@ Each resource-owning controller SHALL apply Object Authorization to supported li
 ## 3.5 Superseded Public Interface
 
 The prior `LOG-API-001`, `LOG-API-002`, and `LOG-API-003` described `GET /api/v0/authorization/logs` and related decision-log queries. These contracts are **withdrawn** because no such endpoint or persistence exists in the reviewed backend. See [traceability](10-traceability-and-unresolved-issues.md).
+
+## 3.6 Operation-Specific Query and Response Fields
+
+### AUTH-API-007 — Statement query aliases
+
+The Statement list operation SHALL expose `method` and `path` as logical `filterBy` and `sortBy` fields. Its HTTP response SHALL nest these values at `target.api.method` and `target.api.path`. A client SHALL NOT assume that every response JSON property path is a supported query path.
+
+Verification: Compare `GET /api/v0/statements` with [Static query capabilities](../004.%20Query%20Filtering/11-appendices.md#115-static-operation-capability-matrix) and the Statement Query Schema.
+
+### AUTH-API-008 — Role list projection
+
+The Role list SHALL expose `id`, `code`, `displayName`, optional `description`, and recursive `children`. The response serializer SHALL omit `children` when empty and omit `description` when null. This differs from the Group projection, which includes a `children` array.
+
+Verification: Compare Roles with and without children and description in a list response.

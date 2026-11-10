@@ -53,3 +53,13 @@ Managed resources SHALL include the reserved `system` account with initial crede
 ### AUTHN-FR-012 — Managed secret preservation
 
 OAuth client reconciliation SHALL preserve the existing encoded secret when it matches the desired raw secret, and encode a changed secret rather than storing it in plaintext.
+
+## 4.4 Managed Default Access
+
+### AUTHN-FR-013 — Provisioned Roles and policy bindings
+
+The managed installation SHALL declare `system-operator`, `administrator`, and `basic-user` Roles. System Operator and Administrator SHALL obtain broad Request grants and GET Object grants through provisioned Statements, alongside explicit deny conditions on deleting the System User, re-deleting RETAINED Users, and mutating RETAINED User's direct Statements. Administrator SHALL additionally have an Object deny for the System User in the User list.
+
+### AUTHN-FR-014 — Managed membership versus public registration
+
+The managed `system` and `admin` Users SHALL receive their configured Roles and `global` membership through provisioning. Runtime registration SHALL follow [ID-FR-019](../005.%20Identity%20and%20User%20Retention/04-functional-and-behavioral-requirements.md#id-fr-019--no-implicit-group-or-role-assignment), not infer automatic enrollment from the managed Group's description.

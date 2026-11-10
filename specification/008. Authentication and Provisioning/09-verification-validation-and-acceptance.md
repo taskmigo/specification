@@ -39,3 +39,13 @@ Verify invalid references/duplicates fail, Serializable transaction prevents par
 - [Migration tests](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/migration/src/test).
 - [OAuth and security implementation](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/web/src/main/java/io/taskmigo/web/oauth).
 - [Session security implementation](https://github.com/taskmigo/taskmigo/blob/9c1cd242fe4c5210fdd8dd88311e328a3784d0e1/server/apps/web/src/main/java/io/taskmigo/web/security/session).
+
+## 9.5 Managed Policy and Credential Acceptance
+
+### AUTHN-VER-008 — Managed role grants and denied targets
+
+Verify `system-operator` and `administrator` receive the declared Request/GET Object grants; User deletion/statement-mutation Deny Statements override allows; the administrator User list excludes `system`; and `basic-user` supplies no direct policy Statements.
+
+### AUTHN-VER-009 — Managed versus runtime creation
+
+Verify `system` and `admin` receive their explicitly configured Roles and Group membership, whereas public User creation with omitted role/group IDs receives none and does not create an initial credential.

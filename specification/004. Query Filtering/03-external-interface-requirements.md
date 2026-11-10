@@ -67,3 +67,17 @@ A `+` prefix, empty field, duplicate logical field, unknown path or nonsortable 
 ### SORT-003 — Static documentation
 
 Generated OpenAPI SHALL expose supported filter paths/operators via `x-filter-by` and sortable paths via `x-sort-by` for registered operation schemas.
+
+## 3.7 Operation-Level Field Catalog
+
+### SCHEMA-005 — Current static field capabilities
+
+The five `GET` collection operations with `filterBy` SHALL expose only the logical fields and per-field operators in the [current operation capability matrix](11-appendices.md#115-static-operation-capability-matrix). Generated OpenAPI SHALL reflect those static fields; it SHALL NOT imply that properties merely present in a response are queryable.
+
+### SCHEMA-006 — Operation-specific Object Authorization fields
+
+The internal `identity.users.delete` and `identity.users.update-statements` Query Schemas SHALL expose different approved Object Authorization paths from `identity.users.list`, as recorded in the [operation-specific context table](11-appendices.md#116-object-authorization-field-scopes). Ticket read/update SHALL resolve its own schema and historical runtime custom fields, not reuse another Ticket's list context.
+
+### SORT-004 — Sortability is separate from filtering
+
+A filterable field SHALL NOT automatically be sortable. Each listed resource SHALL accept sorting only for the fields marked sortable in its declared Query Schema, including the static and runtime restrictions documented in the [capability matrix](11-appendices.md#115-static-operation-capability-matrix).
