@@ -1,7 +1,7 @@
 ---
 metadata:
-  version: 0.1.0
-  changelog: Adds source-derived OAuth, JWT, protected API, session and managed-resource provisioning contracts.
+  version: 0.1.1
+  changelog: Clarifies module-owned interfaces, independent-consumer acceptance and source-to-spec traceability against the pinned backend baseline.
 ---
 
 <!-- markdownlint-disable MD041 -->
@@ -23,5 +23,7 @@ metadata:
 | 11      | Appendices                               | [11-appendices.md](11-appendices.md)                                                             |
 
 ## Read order
+
+For independent implementation, read [Section 3](03-external-interface-requirements.md) for contracts, [Section 9](09-verification-validation-and-acceptance.md) for acceptance, and [Section 10](10-traceability-and-unresolved-issues.md) for evidence and unresolved drift. Continue reading the remaining sections for normative constraints and domain behavior.
 
 Read sections 1–11 in order. Begin at [Section 3](03-external-interface-requirements.md) for external interfaces, [Section 4](04-functional-and-behavioral-requirements.md) for behavior and [Section 9](09-verification-validation-and-acceptance.md) for coverage.

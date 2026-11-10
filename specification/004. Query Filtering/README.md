@@ -1,7 +1,7 @@
 ---
 metadata:
-  version: 0.3.0
-  changelog: Aligns filtering to implemented restricted expressions, multi-sort, runtime EAV contexts and SQL-side authorization.
+  version: 0.3.1
+  changelog: Clarifies module-owned interfaces, independent-consumer acceptance and source-to-spec traceability against the pinned backend baseline.
 ---
 
 <!-- markdownlint-disable MD041 -->
@@ -23,5 +23,7 @@ metadata:
 | 11      | Appendices                               | [11-appendices.md](11-appendices.md)                                                             |
 
 ## Read order
+
+For independent implementation, read [Section 3](03-external-interface-requirements.md) for contracts, [Section 9](09-verification-validation-and-acceptance.md) for acceptance, and [Section 10](10-traceability-and-unresolved-issues.md) for evidence and unresolved drift. Continue reading the remaining sections for normative constraints and domain behavior.
 
 Read sections 1–11 in order. Use [Section 3](03-external-interface-requirements.md) for the request contract, [Section 4](04-functional-and-behavioral-requirements.md) for query execution and [Section 9](09-verification-validation-and-acceptance.md) for verification.

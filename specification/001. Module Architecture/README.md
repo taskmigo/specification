@@ -1,7 +1,7 @@
 ---
 metadata:
-  version: 0.8.0
-  changelog: Aligns architecture requirements with implemented DDD, Onion, Modulith, internal module and transaction boundaries.
+  version: 0.8.1
+  changelog: Clarifies module-owned interfaces, independent-consumer acceptance and source-to-spec traceability against the pinned backend baseline.
 ---
 
 <!-- markdownlint-disable MD041 -->
@@ -23,5 +23,7 @@ metadata:
 | 11      | Appendices                               | Dependency diagram and examples               | [11-appendices.md](11-appendices.md)                                                             |
 
 ## Read order
+
+For independent implementation, read [Section 3](03-external-interface-requirements.md) for contracts, [Section 9](09-verification-validation-and-acceptance.md) for acceptance, and [Section 10](10-traceability-and-unresolved-issues.md) for evidence and unresolved drift. Continue reading the remaining sections for normative constraints and domain behavior.
 
 Read sections 1 through 11 in sequence. Use [Section 4](04-functional-and-behavioral-requirements.md) for requirements, [Section 7](07-constraints.md) for enforced constraints, and [Section 8](08-requirements-allocation-and-dependencies.md) for the current project graph.

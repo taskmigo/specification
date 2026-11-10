@@ -1,7 +1,7 @@
 ---
 metadata:
-  version: 0.6.2
-  changelog: Aligns internal Language module, unary negation and string contains intrinsic with backend source.
+  version: 0.6.3
+  changelog: Clarifies module-owned interfaces, independent-consumer acceptance and source-to-spec traceability against the pinned backend baseline.
 ---
 
 <!-- markdownlint-disable MD041 -->
@@ -23,5 +23,7 @@ metadata:
 | 11      | Appendices                                        | Canonical examples and supporting material                           | [11-appendices.md](11-appendices.md)                                                             |
 
 ## Read order
+
+For independent implementation, read [Section 3](03-external-interface-requirements.md) for contracts, [Section 9](09-verification-validation-and-acceptance.md) for acceptance, and [Section 10](10-traceability-and-unresolved-issues.md) for evidence and unresolved drift. Continue reading the remaining sections for normative constraints and domain behavior.
 
 Read the documents in section-number order from 1 through 11. Use [Section 3](03-external-interface-requirements.md) for the source/profile contract, [Section 4](04-functional-and-behavioral-requirements.md) for semantics, [Section 7](07-constraints.md) for implementation constraints, and [Section 9](09-verification-validation-and-acceptance.md) for verification evidence.
